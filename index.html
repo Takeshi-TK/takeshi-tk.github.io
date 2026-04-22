@@ -33,6 +33,35 @@
         </p>
       </div>
       <div class="hero-stats">
+        <section class="stat-card hero-id-card">
+          <p class="section-label">Study ID</p>
+          <div class="profile-top">
+            <span class="status-badge">現在のID</span>
+            <strong id="activeProfileName" class="profile-name">guest</strong>
+          </div>
+          <p class="profile-note">
+            登録なしでもすぐに学習できます。アカウント登録をすると勉強内容を保存して、あとで続きから再開できます。
+          </p>
+
+          <label class="field-block">
+            <span>ID を新規登録 / ログイン</span>
+            <input id="profileIdInput" type="text" placeholder="例: hanako-01!">
+          </label>
+          <label class="field-block">
+            <span>Password</span>
+            <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード">
+          </label>
+          <p class="field-help">
+            ID は英字・数字・記号をすべて含む 6 文字以上、パスワードも 6 文字以上で設定してください。
+          </p>
+
+          <div class="inline-actions">
+            <button id="registerProfileButton" class="primary-button" type="button">新規登録</button>
+            <button id="resumeProfileButton" class="ghost-button" type="button">ログイン</button>
+            <button id="resetProfileButton" class="ghost-button danger-button" type="button">このIDの学習履歴をリセット</button>
+          </div>
+        </section>
+
         <div class="stat-card interactive-stat-card">
           <span class="stat-label">カテゴリー</span>
           <strong id="heroCategoryListSummary">初級 / 実用単語 / ビジネス / 旅行</strong>
@@ -62,35 +91,6 @@
 
     <main class="layout">
       <aside class="control-panel">
-        <section class="panel-card">
-          <p class="section-label">Study ID</p>
-          <div class="profile-top">
-            <span class="status-badge">現在のID</span>
-            <strong id="activeProfileName" class="profile-name">guest</strong>
-          </div>
-          <p class="profile-note">
-            登録なしでもすぐに学習できます。アカウント登録をすると勉強内容を保存して、あとで続きから再開できます。
-          </p>
-
-          <label class="field-block">
-            <span>ID を新規登録 / ログイン</span>
-            <input id="profileIdInput" type="text" placeholder="例: hanako-01!">
-          </label>
-          <label class="field-block">
-            <span>Password</span>
-            <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード">
-          </label>
-          <p class="field-help">
-            ID は英字・数字・記号をすべて含む 6 文字以上、パスワードも 6 文字以上で設定してください。
-          </p>
-
-          <div class="inline-actions">
-            <button id="registerProfileButton" class="primary-button" type="button">新規登録</button>
-            <button id="resumeProfileButton" class="ghost-button" type="button">ログイン</button>
-            <button id="resetProfileButton" class="ghost-button danger-button" type="button">このIDの学習履歴をリセット</button>
-          </div>
-        </section>
-
         <section id="adminPanel" class="panel-card hidden">
           <p class="section-label">Admin Menu</p>
           <div class="profile-top">
