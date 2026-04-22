@@ -676,25 +676,46 @@ function buildItemExplanation(item) {
 }
 
 function buildCorrectFeedback(answer) {
+  if (state.studyType === "word") {
+    return `
+      <span class="feedback-lines">
+        <strong>正解です。</strong>
+        <span>${answer.english} = ${answer.japanese}</span>
+      </span>
+    `;
+  }
+
   return `
-    <span class="feedback-lines">
-      <strong>正解です。</strong>
-      <span>${answer.english} = ${answer.japanese}</span>
-      <span><strong>解説:</strong> ${buildItemExplanation(answer)}</span>
+      <span class="feedback-lines">
+        <strong>正解です。</strong>
+        <span>${answer.english} = ${answer.japanese}</span>
+        <span><strong>解説:</strong> ${buildItemExplanation(answer)}</span>
     </span>
   `;
 }
 
 function buildWrongFeedback(selectedOption, options, answer) {
-  const optionMeanings = options
-    .map((item) => `${item.english} = ${item.japanese}`)
-    .join("<br>");
+    const optionMeanings = options
+      .map((item) => `${item.english} = ${item.japanese}`)
+      .join("<br>");
+  
+    if (state.studyType === "word") {
+      return `
+        <span class="feedback-lines">
+          <strong>不正解です。</strong>
+          <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
+          <span>正解: ${answer.english} = ${answer.japanese}</span>
+          <span>選択肢の意味:</span>
+          <span>${optionMeanings}</span>
+        </span>
+      `;
+    }
 
-  return `
-    <span class="feedback-lines">
-      <strong>不正解です。</strong>
-      <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
-      <span><strong>選んだ表現の解説:</strong> ${buildItemExplanation(selectedOption)}</span>
+    return `
+      <span class="feedback-lines">
+        <strong>不正解です。</strong>
+        <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
+        <span><strong>選んだ表現の解説:</strong> ${buildItemExplanation(selectedOption)}</span>
       <span>正解: ${answer.english} = ${answer.japanese}</span>
       <span><strong>正解の解説:</strong> ${buildItemExplanation(answer)}</span>
       <span>選択肢の意味:</span>
