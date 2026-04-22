@@ -33,13 +33,24 @@
         </p>
       </div>
       <div class="hero-stats">
-        <div class="stat-card">
+        <div class="stat-card interactive-stat-card">
           <span class="stat-label">カテゴリー</span>
-          <strong id="heroCategorySummary">初級 / 実用単語 / ビジネス / 旅行</strong>
+          <strong id="heroCategorySummary">初級 を選択中</strong>
+          <div id="categoryButtons" class="category-list hero-category-list" aria-label="カテゴリ選択"></div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card interactive-stat-card">
           <span class="stat-label">学習内容・学習モード</span>
           <strong id="heroModeSummary">単語 / 4択クイズ</strong>
+          <div class="hero-switch-stack">
+            <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習内容">
+              <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語</button>
+              <button id="phraseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ</button>
+            </div>
+            <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習モード">
+              <button id="quizTab" class="mode-button active" type="button" role="tab" aria-selected="true">4択クイズ</button>
+              <button id="walkTab" class="mode-button" type="button" role="tab" aria-selected="false">ウォーキング</button>
+            </div>
+          </div>
         </div>
         <div class="stat-card">
           <span class="stat-label">学習記録</span>
@@ -99,42 +110,6 @@
           </div>
         </section>
 
-        <section class="panel-card">
-          <p class="section-label">Category</p>
-          <div id="categoryButtons" class="category-list" aria-label="カテゴリ選択"></div>
-        </section>
-
-        <section class="panel-card">
-          <div class="content-header">
-            <div>
-              <p class="section-label">Content</p>
-              <h2>学習内容</h2>
-            </div>
-          </div>
-          <div class="mode-switch top-mode-switch" role="tablist" aria-label="学習内容">
-            <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語</button>
-            <button id="phraseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ</button>
-          </div>
-          <p class="panel-note">
-            単語とフレーズを切り替えながら学べます。苦手な項目を優先しつつ、未学習の内容もバランスよく出題します。
-          </p>
-        </section>
-
-        <section class="panel-card">
-          <div class="content-header">
-            <div>
-              <p class="section-label">Mode</p>
-              <h2>学習モード</h2>
-            </div>
-          </div>
-          <div class="mode-switch top-mode-switch" role="tablist" aria-label="学習モード">
-            <button id="quizTab" class="mode-button active" type="button" role="tab" aria-selected="true">4択クイズ</button>
-            <button id="walkTab" class="mode-button" type="button" role="tab" aria-selected="false">ウォーキング</button>
-          </div>
-          <p class="panel-note">
-            クイズは 10 問ごとに正答率を確認でき、続けるかどうかを区切って決められます。
-          </p>
-        </section>
       </aside>
 
       <section class="content-area">
