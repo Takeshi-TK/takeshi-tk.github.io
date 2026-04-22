@@ -55,6 +55,7 @@ const walkPanel = document.querySelector("#walkPanel");
 const quizHeading = document.querySelector("#quizHeading");
 const quizPoolBadge = document.querySelector("#quizPoolBadge");
 const sessionProgressBadge = document.querySelector("#sessionProgressBadge");
+const heroCategoryListSummary = document.querySelector("#heroCategoryListSummary");
 const heroCategorySummary = document.querySelector("#heroCategorySummary");
 const heroModeSummary = document.querySelector("#heroModeSummary");
 const questionMeaning = document.querySelector("#questionMeaning");
@@ -447,7 +448,8 @@ function updateHeroSummary() {
   const studyLabel = studyTypeMeta[state.studyType].label;
   const modeLabel = state.mode === "walk" ? "ウォーキング" : "4択クイズ";
 
-  heroCategorySummary.textContent = `${currentCategory.label} を選択中 / ${categoryLabels}`;
+  heroCategoryListSummary.textContent = categoryLabels;
+  heroCategorySummary.textContent = `${currentCategory.label}を選択中`;
   heroModeSummary.textContent = `${studyLabel} / ${modeLabel}`;
 }
 
