@@ -55,6 +55,8 @@ const walkPanel = document.querySelector("#walkPanel");
 const quizHeading = document.querySelector("#quizHeading");
 const quizPoolBadge = document.querySelector("#quizPoolBadge");
 const sessionProgressBadge = document.querySelector("#sessionProgressBadge");
+const heroCategorySummary = document.querySelector("#heroCategorySummary");
+const heroModeSummary = document.querySelector("#heroModeSummary");
 const questionMeaning = document.querySelector("#questionMeaning");
 const questionHint = document.querySelector("#questionHint");
 const choices = document.querySelector("#choices");
@@ -437,6 +439,18 @@ function updateSessionProgressBadge() {
   sessionProgressBadge.textContent = `10問区切り ${state.quizSession.asked} / ${state.quizSession.size}`;
 }
 
+function updateHeroSummary() {
+  const currentCategory = getCurrentCategory();
+  const categoryLabels = Object.values(getCurrentCollection())
+    .map((category) => category.label)
+    .join(" / ");
+  const studyLabel = studyTypeMeta[state.studyType].label;
+  const modeLabel = state.mode === "walk" ? "ウォーキング" : "4択クイズ";
+
+  heroCategorySummary.textContent = `${currentCategory.label} を選択中 / ${categoryLabels}`;
+  heroModeSummary.textContent = `${studyLabel} / ${modeLabel}`;
+}
+
 function hideSessionSummary() {
   sessionSummaryCard.classList.add("hidden");
 }
@@ -796,6 +810,8 @@ function setMode(mode) {
   if (isQuiz) {
     stopWalking(true);
   }
+
+  updateHeroSummary();
 }
 
 function submitAnswer(option, selectedButton) {
@@ -1282,6 +1298,7 @@ function renderAll() {
   renderPreviousAnswerState();
   syncControls();
   setMode(state.mode);
+  updateHeroSummary();
 }
 
 quizTab.addEventListener("click", () => setMode("quiz"));
