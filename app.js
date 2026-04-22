@@ -86,6 +86,7 @@ const gapValue = document.querySelector("#gapValue");
 const walkStartButton = document.querySelector("#walkStartButton");
 const walkStopButton = document.querySelector("#walkStopButton");
 const walkResetButton = document.querySelector("#walkResetButton");
+const walkReplayButton = document.querySelector("#walkReplayButton");
 
 const state = {
   studyType: "word",
@@ -756,12 +757,28 @@ function createQuestion() {
   choices.innerHTML = "";
 
   for (const option of state.currentQuestion.options) {
+    const card = document.createElement("article");
+    card.className = "choice-card";
+
     const button = document.createElement("button");
     button.type = "button";
     button.className = "choice-button";
-    button.textContent = option.english;
+    button.dataset.english = option.english;
+    button.innerHTML = `<span class="choice-text">${option.english}</span>`;
     button.addEventListener("click", () => submitAnswer(option, button));
-    choices.appendChild(button);
+
+    const audioButton = document.createElement("button");
+    audioButton.type = "button";
+    audioButton.className = "choice-audio-button";
+    audioButton.textContent = "発音";
+    audioButton.setAttribute("aria-label", `${option.english} の発音を聞く`);
+    audioButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      speakNow(option.english, "en-US");
+    });
+
+    card.append(button, audioButton);
+    choices.appendChild(card);
   }
 }
 
@@ -800,7 +817,7 @@ function submitAnswer(option, selectedButton) {
   for (const button of choices.querySelectorAll(".choice-button")) {
     button.disabled = true;
 
-    if (button.textContent === answer.english) {
+    if (button.dataset.english === answer.english) {
       button.classList.add("correct");
     } else if (button === selectedButton && !isCorrect) {
       button.classList.add("wrong");
@@ -929,6 +946,24 @@ function speak(text, lang, rate) {
     utterance.onerror = () => resolve(false);
     speechSynthesis.speak(utterance);
   });
+}
+
+function speakNow(text, lang = "en-US") {
+  if (!("speechSynthesis" in window)) {
+    window.alert("このブラウザでは読み上げ機能が使えません。");
+    return;
+  }
+
+  if (state.walking.active) {
+    window.alert("ウォーキング再生中は自動読み上げが優先です。止めてから発音ボタンを使ってください。");
+    return;
+  }
+
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang;
+  utterance.rate = state.settings.speed;
+  speechSynthesis.speak(utterance);
 }
 
 function wait(ms) {
@@ -1311,6 +1346,10 @@ walkStopButton.addEventListener("click", () => {
 
 walkResetButton.addEventListener("click", () => {
   resetWalking();
+});
+
+walkReplayButton.addEventListener("click", () => {
+  speakNow(walkWord.textContent, "en-US");
 });
 
 document.addEventListener("visibilitychange", () => {
