@@ -86,16 +86,11 @@ const gapValue = document.querySelector("#gapValue");
 const walkStartButton = document.querySelector("#walkStartButton");
 const walkStopButton = document.querySelector("#walkStopButton");
 const walkResetButton = document.querySelector("#walkResetButton");
-const wordBankTitle = document.querySelector("#wordBankTitle");
-const wordBankCount = document.querySelector("#wordBankCount");
-const wordSearchInput = document.querySelector("#wordSearchInput");
-const wordBankList = document.querySelector("#wordBankList");
 
 const state = {
   studyType: "word",
   category: "beginner",
   mode: "quiz",
-  filter: "",
   currentQuestion: null,
   lastAnswer: null,
   answered: false,
@@ -312,22 +307,6 @@ function isMastered(word, category = state.category, studyType = state.studyType
 
 function getStudyItems(category = state.category, studyType = state.studyType) {
   return datasets[studyType][category].words.filter((word) => !isMastered(word, category, studyType));
-}
-
-function getFilteredItems() {
-  const filter = state.filter.trim().toLowerCase();
-  const items = [...getCurrentItems()].sort((left, right) => getWordPriority(right) - getWordPriority(left));
-
-  if (!filter) {
-    return items;
-  }
-
-  return items.filter((item) => {
-    return (
-      item.english.toLowerCase().includes(filter) ||
-      item.japanese.toLowerCase().includes(filter)
-    );
-  });
 }
 
 function getWordPriority(word) {
@@ -619,10 +598,6 @@ function updateSnapshot() {
     ? getWalkingStrategyLabel()
     : "このレベルは完了";
 
-  if (wordBankTitle) {
-    wordBankTitle.textContent = `${category.label}で学べる${studyMeta.label}一覧`;
-  }
-
   updateSessionProgressBadge();
 }
 
@@ -662,25 +637,18 @@ function showPreviousAnswer() {
 }
 
 function buildItemExplanation(item) {
-  if (item.explanation) {
-    return item.explanation;
-  }
-
-  const categoryLabel = getCurrentCategory().label;
-
-  if (state.studyType === "phrase") {
-    return `${categoryLabel}レベルでよく使う表現です。使う場面を思い浮かべながら声に出して確認してみてください。`;
-  }
-
-  return `${categoryLabel}レベルで使う基本語彙です。意味だけでなく、短い文の中でも使えるように繰り返し確認しましょう。`;
+  return item.explanation || "";
 }
 
 function buildCorrectFeedback(answer) {
+  const explanation = buildItemExplanation(answer);
+
   if (state.studyType === "word") {
     return `
       <span class="feedback-lines">
         <strong>正解です。</strong>
         <span>${answer.english} = ${answer.japanese}</span>
+        ${explanation ? `<span><strong>補足:</strong> ${explanation}</span>` : ""}
       </span>
     `;
   }
@@ -689,35 +657,38 @@ function buildCorrectFeedback(answer) {
       <span class="feedback-lines">
         <strong>正解です。</strong>
         <span>${answer.english} = ${answer.japanese}</span>
-        <span><strong>解説:</strong> ${buildItemExplanation(answer)}</span>
-    </span>
-  `;
+        ${explanation ? `<span><strong>解説:</strong> ${explanation}</span>` : ""}
+      </span>
+    `;
 }
 
 function buildWrongFeedback(selectedOption, options, answer) {
-    const optionMeanings = options
-      .map((item) => `${item.english} = ${item.japanese}`)
-      .join("<br>");
-  
-    if (state.studyType === "word") {
-      return `
-        <span class="feedback-lines">
-          <strong>不正解です。</strong>
-          <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
-          <span>正解: ${answer.english} = ${answer.japanese}</span>
-          <span>選択肢の意味:</span>
-          <span>${optionMeanings}</span>
-        </span>
-      `;
-    }
+  const optionMeanings = options
+    .map((item) => `${item.english} = ${item.japanese}`)
+    .join("<br>");
+  const selectedExplanation = buildItemExplanation(selectedOption);
+  const answerExplanation = buildItemExplanation(answer);
 
+  if (state.studyType === "word") {
     return `
       <span class="feedback-lines">
         <strong>不正解です。</strong>
         <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
-        <span><strong>選んだ表現の解説:</strong> ${buildItemExplanation(selectedOption)}</span>
+        <span>正解: ${answer.english} = ${answer.japanese}</span>
+        ${answerExplanation ? `<span><strong>補足:</strong> ${answerExplanation}</span>` : ""}
+        <span>選択肢の意味:</span>
+        <span>${optionMeanings}</span>
+      </span>
+    `;
+  }
+
+  return `
+    <span class="feedback-lines">
+      <strong>不正解です。</strong>
+      <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
+      ${selectedExplanation ? `<span><strong>選んだ表現の解説:</strong> ${selectedExplanation}</span>` : ""}
       <span>正解: ${answer.english} = ${answer.japanese}</span>
-      <span><strong>正解の解説:</strong> ${buildItemExplanation(answer)}</span>
+      ${answerExplanation ? `<span><strong>正解の解説:</strong> ${answerExplanation}</span>` : ""}
       <span>選択肢の意味:</span>
       <span>${optionMeanings}</span>
     </span>
@@ -725,11 +696,13 @@ function buildWrongFeedback(selectedOption, options, answer) {
 }
 
 function buildSkipFeedback(answer) {
+  const explanation = buildItemExplanation(answer);
+
   return `
     <span class="feedback-lines">
       <strong>この問題をスキップしました。</strong>
       <span>正解は ${answer.english} = ${answer.japanese} です。</span>
-      <span><strong>解説:</strong> ${buildItemExplanation(answer)}</span>
+      ${explanation ? `<span><strong>${state.studyType === "word" ? "補足" : "解説"}:</strong> ${explanation}</span>` : ""}
     </span>
   `;
 }
@@ -790,62 +763,6 @@ function createQuestion() {
     button.addEventListener("click", () => submitAnswer(option, button));
     choices.appendChild(button);
   }
-}
-
-function renderWordBank() {
-  if (!wordBankCount || !wordBankList) {
-    return;
-  }
-
-  const items = getFilteredItems();
-  const total = getCurrentItems().length;
-  const studyMeta = studyTypeMeta[state.studyType];
-
-  wordBankCount.textContent = state.filter
-    ? `${items.length} / ${total}${studyMeta.countLabel}`
-    : `${total}${studyMeta.countLabel}を表示中`;
-
-  wordBankList.innerHTML = "";
-
-  if (!items.length) {
-    const empty = document.createElement("article");
-    empty.className = "word-chip";
-    empty.innerHTML = "<strong>一致する項目がありません</strong><span>検索語を変えてみてください。</span>";
-    wordBankList.appendChild(empty);
-    return;
-  }
-
-  for (const item of items) {
-    const record = getWordRecord(item);
-    const status = getWordStatus(record);
-    const chip = document.createElement("article");
-    chip.className = "word-chip";
-    chip.innerHTML = `
-      <div class="word-chip-header">
-        <strong>${item.english}</strong>
-        <span class="word-status ${status.className}">${status.label}</span>
-      </div>
-      <span>${item.japanese}</span>
-      <small>連続正解 ${record.streak} / ミス ${record.wrong} / 回答 ${record.attempts}</small>
-    `;
-    wordBankList.appendChild(chip);
-  }
-}
-
-function getWordStatus(record) {
-  if (record.streak >= 3) {
-    return { label: "習得済み", className: "mastered" };
-  }
-
-  if (!record.attempts) {
-    return { label: "未学習", className: "new" };
-  }
-
-  if (record.wrong >= 2 && record.streak === 0) {
-    return { label: "苦手", className: "weak" };
-  }
-
-  return { label: `連続正解 ${record.streak}`, className: "progress" };
 }
 
 function setMode(mode) {
@@ -920,7 +837,6 @@ function submitAnswer(option, selectedButton) {
 
   saveProfiles();
   updateSnapshot();
-  renderWordBank();
   renderPreviousAnswerState();
   rebuildWalkingQueue();
   updateWalkingDisplay();
@@ -1165,12 +1081,6 @@ function setStudyType(studyType) {
 
   stopWalking(true);
   state.studyType = studyType;
-  state.filter = "";
-
-  if (wordSearchInput) {
-    wordSearchInput.value = "";
-  }
-
   state.category = Object.keys(getCurrentCollection())[0];
   resetLearningFlow();
   renderAll();
@@ -1334,7 +1244,6 @@ function renderAll() {
   rebuildWalkingQueue();
   createQuestion();
   updateWalkingDisplay();
-  renderWordBank();
   renderPreviousAnswerState();
   syncControls();
   setMode(state.mode);
@@ -1371,13 +1280,6 @@ resetProfileButton.addEventListener("click", () => {
 deleteAccountButton.addEventListener("click", () => {
   deleteSelectedAccount();
 });
-
-if (wordSearchInput) {
-  wordSearchInput.addEventListener("input", (event) => {
-    state.filter = event.target.value;
-    renderWordBank();
-  });
-}
 
 walkStrategySelect.addEventListener("change", (event) => {
   state.settings.walkStrategy = event.target.value;
