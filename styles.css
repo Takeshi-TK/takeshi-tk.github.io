@@ -207,6 +207,16 @@ select {
   color: var(--muted);
 }
 
+.profile-note {
+  margin: 14px 0 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(42, 104, 150, 0.08);
+  border: 1px solid rgba(42, 104, 150, 0.14);
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .field-block span,
 .meta-chip span,
 .control-block span,
@@ -446,14 +456,24 @@ select {
   border: 1px solid rgba(31, 42, 55, 0.08);
 }
 
-.ad-prep-note {
+.session-summary {
+  background: linear-gradient(160deg, rgba(255, 248, 239, 0.94), rgba(255, 238, 219, 0.82));
+}
+
+.session-summary h3 {
+  margin: 10px 0 0;
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+}
+
+.session-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.session-summary-actions {
   margin-top: 18px;
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: rgba(42, 104, 150, 0.08);
-  border: 1px dashed rgba(42, 104, 150, 0.3);
-  color: var(--muted);
-  line-height: 1.7;
 }
 
 .feedback.neutral {
@@ -699,6 +719,10 @@ select {
   .word-chip-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .session-summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .prompt-card h3,

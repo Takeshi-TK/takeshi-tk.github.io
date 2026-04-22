@@ -1,18 +1,20 @@
 import { vocabulary } from "./vocabulary.js";
 import { phrases } from "./phrases.js";
 
-const PROFILES_KEY = "stridewords-profiles-v3";
-const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v3";
-const ACTIVE_ROLE_KEY = "stridewords-active-role-v3";
-const SETTINGS_KEY = "stridewords-settings-v3";
+const PROFILES_KEY = "stridewords-profiles-v4";
+const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";
+const ACTIVE_ROLE_KEY = "stridewords-active-role-v4";
+const SETTINGS_KEY = "stridewords-settings-v4";
 const PROFILE_ID_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,40}$/;
 const ADMIN_ID = "TsubasaP";
 const ADMIN_ID_HASH = "6fd48e59450c59af0cb7e49a23244523486f335f7b301076568646e87414548b";
 const ADMIN_PASSWORD_HASH = "2b3a1f35eb496440d6db24f06e857668c3b8b51d6cebee9eda439eb422ed8668";
+
 const datasets = {
   word: vocabulary,
   phrase: phrases
 };
+
 const studyTypeMeta = {
   word: {
     label: "単語",
@@ -52,6 +54,7 @@ const quizPanel = document.querySelector("#quizPanel");
 const walkPanel = document.querySelector("#walkPanel");
 const quizHeading = document.querySelector("#quizHeading");
 const quizPoolBadge = document.querySelector("#quizPoolBadge");
+const sessionProgressBadge = document.querySelector("#sessionProgressBadge");
 const questionMeaning = document.querySelector("#questionMeaning");
 const questionHint = document.querySelector("#questionHint");
 const choices = document.querySelector("#choices");
@@ -61,6 +64,15 @@ const skipButton = document.querySelector("#skipButton");
 const showPreviousAnswerButton = document.querySelector("#showPreviousAnswerButton");
 const previousAnswerCard = document.querySelector("#previousAnswerCard");
 const previousAnswerBody = document.querySelector("#previousAnswerBody");
+const sessionSummaryCard = document.querySelector("#sessionSummaryCard");
+const sessionSummaryHeading = document.querySelector("#sessionSummaryHeading");
+const sessionSummaryText = document.querySelector("#sessionSummaryText");
+const sessionCorrectCount = document.querySelector("#sessionCorrectCount");
+const sessionAttemptCount = document.querySelector("#sessionAttemptCount");
+const sessionSkipCount = document.querySelector("#sessionSkipCount");
+const sessionAccuracyRate = document.querySelector("#sessionAccuracyRate");
+const sessionContinueButton = document.querySelector("#sessionContinueButton");
+const sessionStopButton = document.querySelector("#sessionStopButton");
 const walkBadge = document.querySelector("#walkBadge");
 const walkWord = document.querySelector("#walkWord");
 const walkMeaning = document.querySelector("#walkMeaning");
@@ -87,7 +99,6 @@ const state = {
   currentQuestion: null,
   lastAnswer: null,
   answered: false,
-  nextQuestionTimer: null,
   exposureCounter: 1,
   profiles: loadProfiles(),
   activeProfileId: loadActiveProfileId(),
@@ -96,6 +107,15 @@ const state = {
   wakeLock: {
     sentinel: null,
     supported: "wakeLock" in navigator
+  },
+  quizSession: {
+    size: 10,
+    asked: 0,
+    correct: 0,
+    attempts: 0,
+    skipped: 0,
+    breakPending: false,
+    stopped: false
   },
   walking: {
     active: false,
@@ -175,39 +195,24 @@ function saveSettings() {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
 }
 
-async function requestScreenWakeLock() {
-  if (!state.wakeLock.supported || !window.isSecureContext || document.hidden) {
-    return false;
-  }
-
-  try {
-    if (state.wakeLock.sentinel?.released === false) {
-      return true;
-    }
-
-    state.wakeLock.sentinel = await navigator.wakeLock.request("screen");
-    state.wakeLock.sentinel.addEventListener("release", () => {
-      state.wakeLock.sentinel = null;
-    });
-    return true;
-  } catch {
-    state.wakeLock.sentinel = null;
-    return false;
-  }
+function normalizeProfileId(value) {
+  return value.trim().replace(/\s+/g, "-").slice(0, 40);
 }
 
-async function releaseScreenWakeLock() {
-  if (!state.wakeLock.sentinel) {
-    return;
-  }
+function isValidProfileId(id) {
+  return PROFILE_ID_PATTERN.test(id);
+}
 
-  try {
-    await state.wakeLock.sentinel.release();
-  } catch {
-    // Ignore release failures and clear local state either way.
-  }
+function isValidPassword(password) {
+  return password.trim().length >= 6;
+}
 
-  state.wakeLock.sentinel = null;
+async function sha256(text) {
+  const input = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest("SHA-256", input);
+  return Array.from(new Uint8Array(digest))
+    .map((value) => value.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function ensureActiveProfile() {
@@ -241,31 +246,19 @@ function ensureAdminProfile() {
   saveProfiles();
 }
 
-function normalizeProfileId(value) {
-  return value.trim().replace(/\s+/g, "-").slice(0, 40);
-}
-
-function isValidProfileId(id) {
-  return PROFILE_ID_PATTERN.test(id);
-}
-
-function isValidPassword(password) {
-  return password.trim().length >= 6;
-}
-
-async function sha256(text) {
-  const input = new TextEncoder().encode(text);
-  const digest = await crypto.subtle.digest("SHA-256", input);
-  return Array.from(new Uint8Array(digest))
-    .map((value) => value.toString(16).padStart(2, "0"))
-    .join("");
-}
-
 function getCurrentCollection() {
   return datasets[state.studyType];
 }
 
+function ensureValidCategory() {
+  const collection = getCurrentCollection();
+  if (!collection[state.category]) {
+    state.category = Object.keys(collection)[0];
+  }
+}
+
 function getCurrentCategory() {
+  ensureValidCategory();
   return getCurrentCollection()[state.category];
 }
 
@@ -283,16 +276,22 @@ function getProgressKey(category = state.category, studyType = state.studyType) 
 
 function getCategoryProgress(category = state.category, studyType = state.studyType) {
   const profile = getActiveProfile();
-  return profile.categories[getProgressKey(category, studyType)];
+  const key = getProgressKey(category, studyType);
+
+  if (!profile.categories[key]) {
+    profile.categories[key] = { correct: 0, attempts: 0 };
+  }
+
+  return profile.categories[key];
 }
 
-function getWordKey(word, category = state.category) {
-  return `${state.studyType}::${category}::${word.english}::${word.japanese}`;
+function getWordKey(word, category = state.category, studyType = state.studyType) {
+  return `${studyType}::${category}::${word.english}::${word.japanese}`;
 }
 
-function getWordRecord(word, category = state.category) {
+function getWordRecord(word, category = state.category, studyType = state.studyType) {
   const profile = getActiveProfile();
-  const key = getWordKey(word, category);
+  const key = getWordKey(word, category, studyType);
 
   if (!profile.words[key]) {
     profile.words[key] = {
@@ -307,50 +306,53 @@ function getWordRecord(word, category = state.category) {
   return profile.words[key];
 }
 
-function isMastered(word, category = state.category) {
-  return getWordRecord(word, category).streak >= 3;
+function isMastered(word, category = state.category, studyType = state.studyType) {
+  return getWordRecord(word, category, studyType).streak >= 3;
 }
 
-function getStudyItems(category = state.category) {
-  return getCurrentCollection()[category].words.filter((word) => !isMastered(word, category));
+function getStudyItems(category = state.category, studyType = state.studyType) {
+  return datasets[studyType][category].words.filter((word) => !isMastered(word, category, studyType));
 }
 
 function getFilteredItems() {
   const filter = state.filter.trim().toLowerCase();
-  const words = [...getCurrentItems()];
-
-  words.sort((left, right) => getWordPriority(right) - getWordPriority(left));
+  const items = [...getCurrentItems()].sort((left, right) => getWordPriority(right) - getWordPriority(left));
 
   if (!filter) {
-    return words;
+    return items;
   }
 
-  return words.filter((word) => {
+  return items.filter((item) => {
     return (
-      word.english.toLowerCase().includes(filter) ||
-      word.japanese.toLowerCase().includes(filter)
+      item.english.toLowerCase().includes(filter) ||
+      item.japanese.toLowerCase().includes(filter)
     );
   });
 }
 
 function getWordPriority(word) {
   const record = getWordRecord(word);
+
   if (record.streak >= 3) {
     return -100;
   }
+
   if (!record.attempts) {
     return 20;
   }
+
   return record.wrong * 10 + (3 - Math.min(record.streak, 3)) * 2 - record.correct;
 }
 
 function getWordWeight(word) {
   const record = getWordRecord(word);
+
   if (record.streak >= 3) {
     return 0;
   }
 
   let weight = 1;
+
   if (!record.attempts) {
     weight += 4;
   }
@@ -372,10 +374,12 @@ function getWordWeight(word) {
 
 function shuffle(items) {
   const copy = [...items];
+
   for (let index = copy.length - 1; index > 0; index -= 1) {
     const randomIndex = Math.floor(Math.random() * (index + 1));
     [copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
   }
+
   return copy;
 }
 
@@ -407,11 +411,105 @@ function touchWord(word) {
   state.exposureCounter += 1;
 }
 
-function clearNextQuestionTimer() {
-  if (state.nextQuestionTimer) {
-    window.clearTimeout(state.nextQuestionTimer);
-    state.nextQuestionTimer = null;
+function buildOptions(answer) {
+  const distractors = shuffle(
+    getCurrentItems().filter((item) => item.english !== answer.english)
+  ).slice(0, 3);
+
+  return shuffle([answer, ...distractors]);
+}
+
+function resetQuizSession() {
+  state.quizSession.asked = 0;
+  state.quizSession.correct = 0;
+  state.quizSession.attempts = 0;
+  state.quizSession.skipped = 0;
+  state.quizSession.breakPending = false;
+  state.quizSession.stopped = false;
+}
+
+function resetLearningFlow() {
+  resetQuizSession();
+  state.lastAnswer = null;
+  state.currentQuestion = null;
+  state.answered = false;
+  previousAnswerCard.classList.add("hidden");
+  hideSessionSummary();
+}
+
+function getQuizSessionAccuracy() {
+  return state.quizSession.attempts
+    ? Math.round((state.quizSession.correct / state.quizSession.attempts) * 100)
+    : 0;
+}
+
+function updateSessionProgressBadge() {
+  if (state.quizSession.breakPending) {
+    sessionProgressBadge.textContent = `${state.quizSession.size} / ${state.quizSession.size} 結果確認`;
+    return;
   }
+
+  if (state.quizSession.stopped) {
+    sessionProgressBadge.textContent = "10問区切りで一時停止中";
+    return;
+  }
+
+  sessionProgressBadge.textContent = `10問区切り ${state.quizSession.asked} / ${state.quizSession.size}`;
+}
+
+function hideSessionSummary() {
+  sessionSummaryCard.classList.add("hidden");
+}
+
+function renderSessionSummary() {
+  const accuracy = getQuizSessionAccuracy();
+  const categoryLabel = getCurrentCategory().label;
+  const studyLabel = state.studyType === "phrase" ? "フレーズ" : "単語";
+
+  sessionSummaryHeading.textContent = `${state.quizSession.size}問の結果`;
+  sessionSummaryText.textContent = `${categoryLabel}の${studyLabel}を ${state.quizSession.size}問確認しました。正答率を見て、次の10問へ進むかここで一区切りにするか選べます。`;
+  sessionCorrectCount.textContent = String(state.quizSession.correct);
+  sessionAttemptCount.textContent = String(state.quizSession.attempts);
+  sessionSkipCount.textContent = String(state.quizSession.skipped);
+  sessionAccuracyRate.textContent = `${accuracy}%`;
+  sessionSummaryCard.classList.remove("hidden");
+}
+
+function completeQuizSessionItem(result) {
+  state.quizSession.asked += 1;
+
+  if (result === "correct") {
+    state.quizSession.correct += 1;
+    state.quizSession.attempts += 1;
+  } else if (result === "wrong") {
+    state.quizSession.attempts += 1;
+  } else if (result === "skip") {
+    state.quizSession.skipped += 1;
+  }
+
+  if (state.quizSession.asked >= state.quizSession.size) {
+    state.quizSession.breakPending = true;
+  }
+
+  updateSessionProgressBadge();
+}
+
+function continueQuizSession() {
+  resetQuizSession();
+  hideSessionSummary();
+  createQuestion();
+}
+
+function stopQuizSessionBreak() {
+  state.quizSession.breakPending = false;
+  state.quizSession.stopped = true;
+  updateSessionProgressBadge();
+  renderSessionSummary();
+  feedbackMessage.textContent = "ここで一区切りにしました。再開すると次の10問を始めます。";
+  feedbackMessage.className = "feedback neutral";
+  nextButton.classList.add("hidden");
+  skipButton.disabled = true;
+  choices.innerHTML = "";
 }
 
 function renderProfiles() {
@@ -427,14 +525,12 @@ function renderAdminPanel() {
     return;
   }
 
-  adminStatusText.textContent = "account control";
-  adminAccountSelect.innerHTML = "";
-
   const ids = Object.keys(state.profiles)
     .filter((id) => id !== ADMIN_ID)
     .sort((left, right) => left.localeCompare(right, "ja"));
 
   adminStatusText.textContent = `${ids.length} account${ids.length === 1 ? "" : "s"}`;
+  adminAccountSelect.innerHTML = "";
 
   if (!ids.length) {
     const option = document.createElement("option");
@@ -461,6 +557,7 @@ function renderStudyTypeTabs() {
 }
 
 function renderCategories() {
+  ensureValidCategory();
   categoryButtons.innerHTML = "";
   const studyMeta = studyTypeMeta[state.studyType];
 
@@ -479,8 +576,8 @@ function renderCategories() {
       }
 
       stopWalking(true);
-      clearNextQuestionTimer();
       state.category = key;
+      resetLearningFlow();
       rebuildWalkingQueue();
       renderAll();
     });
@@ -516,6 +613,8 @@ function updateSnapshot() {
   walkLevelCount.textContent = activeWords
     ? `${activeWords}${studyMeta.countLabel}`
     : "完了";
+  quizPoolBadge.textContent = `出題対象 ${activeWords}${studyMeta.countLabel} / 全体 ${totalWords}${studyMeta.countLabel}`;
+  walkLevelCount.textContent = `${activeWords} / ${totalWords}${studyMeta.countLabel}`;
   walkPriorityText.textContent = activeWords
     ? getWalkingStrategyLabel()
     : "このレベルは完了";
@@ -523,22 +622,29 @@ function updateSnapshot() {
   if (wordBankTitle) {
     wordBankTitle.textContent = `${category.label}で学べる${studyMeta.label}一覧`;
   }
+
+  updateSessionProgressBadge();
 }
 
 function renderQuizCompletion() {
   state.currentQuestion = null;
   state.answered = true;
-  questionMeaning.textContent = "このレベルは3連続正解で完了しました";
-  questionHint.textContent = "別のレベルや別の学習対象に切り替えるか、この ID の学習履歴をリセットしてください。";
-  feedbackMessage.textContent = `この ID では現在、出題対象の${studyTypeMeta[state.studyType].zeroText}がありません。`;
+  hideSessionSummary();
+  questionMeaning.textContent = "このレベルは3連続正解で学習完了です";
+  questionHint.textContent = "次のレベルに切り替えるか、このIDの学習記録をリセットしてもう一度取り組めます。";
+  feedbackMessage.textContent = `このIDでは現在、出題対象の${studyTypeMeta[state.studyType].zeroText}がありません。`;
   feedbackMessage.className = "feedback neutral";
   choices.innerHTML = "";
   nextButton.classList.add("hidden");
   skipButton.disabled = true;
+  state.quizSession.breakPending = false;
+  state.quizSession.stopped = false;
+  updateSessionProgressBadge();
 }
 
 function renderPreviousAnswerState() {
   showPreviousAnswerButton.disabled = !state.lastAnswer;
+
   if (!state.lastAnswer) {
     previousAnswerBody.textContent = "前回の回答はまだありません。";
     previousAnswerBody.className = "feedback neutral";
@@ -556,13 +662,17 @@ function showPreviousAnswer() {
 }
 
 function buildItemExplanation(item) {
+  if (item.explanation) {
+    return item.explanation;
+  }
+
   const categoryLabel = getCurrentCategory().label;
 
   if (state.studyType === "phrase") {
-    return `このフレーズは「${item.japanese}」という意味で、${categoryLabel}レベルの実用会話でそのまま使いやすい表現です。`;
+    return `${categoryLabel}レベルでよく使う表現です。使う場面を思い浮かべながら声に出して確認してみてください。`;
   }
 
-  return `「${item.english}」は「${item.japanese}」を表す${categoryLabel}レベルの基本語で、会話や文章の中でよく使います。`;
+  return `${categoryLabel}レベルで使う基本語彙です。意味だけでなく、短い文の中でも使えるように繰り返し確認しましょう。`;
 }
 
 function buildCorrectFeedback(answer) {
@@ -570,14 +680,57 @@ function buildCorrectFeedback(answer) {
     <span class="feedback-lines">
       <strong>正解です。</strong>
       <span>${answer.english} = ${answer.japanese}</span>
-      <span>${buildItemExplanation(answer)}</span>
+      <span><strong>解説:</strong> ${buildItemExplanation(answer)}</span>
+    </span>
+  `;
+}
+
+function buildWrongFeedback(selectedOption, options, answer) {
+  const optionMeanings = options
+    .map((item) => `${item.english} = ${item.japanese}`)
+    .join("<br>");
+
+  return `
+    <span class="feedback-lines">
+      <strong>不正解です。</strong>
+      <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
+      <span><strong>選んだ表現の解説:</strong> ${buildItemExplanation(selectedOption)}</span>
+      <span>正解: ${answer.english} = ${answer.japanese}</span>
+      <span><strong>正解の解説:</strong> ${buildItemExplanation(answer)}</span>
+      <span>選択肢の意味:</span>
+      <span>${optionMeanings}</span>
+    </span>
+  `;
+}
+
+function buildSkipFeedback(answer) {
+  return `
+    <span class="feedback-lines">
+      <strong>この問題をスキップしました。</strong>
+      <span>正解は ${answer.english} = ${answer.japanese} です。</span>
+      <span><strong>解説:</strong> ${buildItemExplanation(answer)}</span>
     </span>
   `;
 }
 
 function createQuestion() {
-  clearNextQuestionTimer();
   previousAnswerCard.classList.add("hidden");
+
+  if (state.quizSession.breakPending || state.quizSession.stopped) {
+    renderSessionSummary();
+    state.currentQuestion = null;
+    state.answered = true;
+    questionMeaning.textContent = `${state.quizSession.size}問ごとのふり返り`;
+    questionHint.textContent = "結果を見て、次の10問へ進むかここで一区切りにするか選んでください。";
+    choices.innerHTML = "";
+    nextButton.classList.add("hidden");
+    skipButton.disabled = true;
+    feedbackMessage.textContent = "10問ごとに正答率を確認できます。";
+    feedbackMessage.className = "feedback neutral";
+    return;
+  }
+
+  hideSessionSummary();
 
   const studyWords = getStudyItems();
   if (!studyWords.length) {
@@ -593,24 +746,21 @@ function createQuestion() {
 
   touchWord(answer);
 
-  const distractors = shuffle(
-    getCurrentItems().filter((word) => word.english !== answer.english)
-  ).slice(0, 3);
-
   state.currentQuestion = {
     answer,
-    options: shuffle([answer, ...distractors])
+    options: buildOptions(answer)
   };
   state.answered = false;
 
   questionMeaning.textContent = answer.japanese;
-  questionHint.textContent = `${getCurrentCategory().description}。意味に合う${studyTypeMeta[state.studyType].label}を選んでください。`;
+  questionHint.textContent = `${getCurrentCategory().description} 英語として最も合うものを選んでください。`;
   feedbackMessage.textContent = "答えを選ぶとここに結果が表示されます。";
   feedbackMessage.className = "feedback neutral";
+  nextButton.textContent = "次の問題へ";
   nextButton.classList.add("hidden");
   skipButton.disabled = false;
-
   choices.innerHTML = "";
+
   for (const option of state.currentQuestion.options) {
     const button = document.createElement("button");
     button.type = "button";
@@ -626,36 +776,36 @@ function renderWordBank() {
     return;
   }
 
-  const words = getFilteredItems();
+  const items = getFilteredItems();
   const total = getCurrentItems().length;
   const studyMeta = studyTypeMeta[state.studyType];
 
   wordBankCount.textContent = state.filter
-    ? `${words.length} / ${total}${studyMeta.countLabel}`
+    ? `${items.length} / ${total}${studyMeta.countLabel}`
     : `${total}${studyMeta.countLabel}を表示中`;
 
   wordBankList.innerHTML = "";
 
-  if (!words.length) {
+  if (!items.length) {
     const empty = document.createElement("article");
     empty.className = "word-chip";
-    empty.innerHTML = "<strong>一致する単語がありません</strong><span>別のキーワードで試してください。</span>";
+    empty.innerHTML = "<strong>一致する項目がありません</strong><span>検索語を変えてみてください。</span>";
     wordBankList.appendChild(empty);
     return;
   }
 
-  for (const word of words) {
-    const record = getWordRecord(word);
+  for (const item of items) {
+    const record = getWordRecord(item);
     const status = getWordStatus(record);
     const chip = document.createElement("article");
     chip.className = "word-chip";
     chip.innerHTML = `
       <div class="word-chip-header">
-        <strong>${word.english}</strong>
+        <strong>${item.english}</strong>
         <span class="word-status ${status.className}">${status.label}</span>
       </div>
-      <span>${word.japanese}</span>
-      <small>連続正解 ${record.streak}回 / ミス ${record.wrong}回 / 学習 ${record.attempts}回</small>
+      <span>${item.japanese}</span>
+      <small>連続正解 ${record.streak} / ミス ${record.wrong} / 回答 ${record.attempts}</small>
     `;
     wordBankList.appendChild(chip);
   }
@@ -663,20 +813,24 @@ function renderWordBank() {
 
 function getWordStatus(record) {
   if (record.streak >= 3) {
-    return { label: "完了", className: "mastered" };
+    return { label: "習得済み", className: "mastered" };
   }
+
   if (!record.attempts) {
     return { label: "未学習", className: "new" };
   }
+
   if (record.wrong >= 2 && record.streak === 0) {
     return { label: "苦手", className: "weak" };
   }
+
   return { label: `連続正解 ${record.streak}`, className: "progress" };
 }
 
 function setMode(mode) {
   state.mode = mode;
   const isQuiz = mode === "quiz";
+
   quizTab.classList.toggle("active", isQuiz);
   walkTab.classList.toggle("active", !isQuiz);
   quizTab.setAttribute("aria-selected", String(isQuiz));
@@ -694,7 +848,6 @@ function submitAnswer(option, selectedButton) {
     return;
   }
 
-  clearNextQuestionTimer();
   state.answered = true;
   skipButton.disabled = true;
 
@@ -708,6 +861,7 @@ function submitAnswer(option, selectedButton) {
 
   for (const button of choices.querySelectorAll(".choice-button")) {
     button.disabled = true;
+
     if (button.textContent === answer.english) {
       button.classList.add("correct");
     } else if (button === selectedButton && !isCorrect) {
@@ -722,23 +876,26 @@ function submitAnswer(option, selectedButton) {
     const correctFeedback = buildCorrectFeedback(answer);
     feedbackMessage.innerHTML = correctFeedback;
     feedbackMessage.className = "feedback correct";
-    nextButton.classList.remove("hidden");
     state.lastAnswer = {
       html: correctFeedback,
       className: "correct"
     };
+    completeQuizSessionItem("correct");
   } else {
     answerRecord.wrong += 1;
     answerRecord.streak = 0;
     const wrongFeedback = buildWrongFeedback(option, state.currentQuestion.options, answer);
     feedbackMessage.innerHTML = wrongFeedback;
     feedbackMessage.className = "feedback wrong";
-    nextButton.classList.remove("hidden");
     state.lastAnswer = {
       html: wrongFeedback,
       className: "wrong"
     };
+    completeQuizSessionItem("wrong");
   }
+
+  nextButton.textContent = state.quizSession.breakPending ? "10問の結果を見る" : "次の問題へ";
+  nextButton.classList.remove("hidden");
 
   saveProfiles();
   updateSnapshot();
@@ -748,22 +905,22 @@ function submitAnswer(option, selectedButton) {
   updateWalkingDisplay();
 }
 
-function buildWrongFeedback(selectedOption, options, answer) {
-  const optionMeanings = options
-    .map((item) => `${item.english} = ${item.japanese}`)
-    .join("<br>");
+function skipCurrentQuestion() {
+  if (state.answered || !state.currentQuestion) {
+    return;
+  }
 
-  return `
-    <span class="feedback-lines">
-      <strong>不正解です。</strong>
-      <span>選んだ ${selectedOption.english} は「${selectedOption.japanese}」でした。</span>
-      <span>${buildItemExplanation(selectedOption)}</span>
-      <span>正解は ${answer.english} = ${answer.japanese} です。</span>
-      <span>${buildItemExplanation(answer)}</span>
-      <span>選択肢の意味:</span>
-      <span>${optionMeanings}</span>
-    </span>
-  `;
+  const answer = state.currentQuestion.answer;
+  const skipFeedback = buildSkipFeedback(answer);
+  state.lastAnswer = {
+    html: skipFeedback,
+    className: "neutral"
+  };
+  renderPreviousAnswerState();
+  completeQuizSessionItem("skip");
+  saveProfiles();
+  updateSnapshot();
+  createQuestion();
 }
 
 function rebuildWalkingQueue() {
@@ -787,6 +944,7 @@ function rebuildWalkingQueue() {
   }
 
   const expanded = [];
+
   for (const word of studyWords) {
     const repeats = Math.min(6, Math.max(1, Math.round(getWordWeight(word) / 2)));
     for (let index = 0; index < repeats; index += 1) {
@@ -800,24 +958,24 @@ function rebuildWalkingQueue() {
 function getWalkingStrategyLabel() {
   switch (state.settings.walkStrategy) {
     case "unseen":
-      return "初見優先";
+      return "未学習を優先";
     case "random":
-      return "完全ランダム";
+      return "ランダム";
     default:
-      return "苦手優先";
+      return "苦手を優先";
   }
 }
 
 function updateWalkingDisplay() {
   if (!state.walking.queue.length) {
     walkWord.textContent = "level complete";
-    walkMeaning.textContent = "このレベルは3連続正解で完了しています。別のレベルに切り替えるか、学習履歴をリセットしてください。";
+    walkMeaning.textContent = "このレベルは3連続正解で学習完了です。別のレベルに切り替えるか、記録をリセットしてもう一度学習できます。";
     return;
   }
 
   const current = state.walking.queue[state.walking.position] ?? state.walking.queue[0];
   walkWord.textContent = current.english;
-  walkMeaning.textContent = `${current.japanese} を英語と日本語で順に再生します。`;
+  walkMeaning.textContent = `${current.japanese} を音読しながら覚えましょう。`;
 }
 
 function speak(text, lang, rate) {
@@ -842,9 +1000,44 @@ function wait(ms) {
   });
 }
 
+async function requestScreenWakeLock() {
+  if (!state.wakeLock.supported || !window.isSecureContext || document.hidden) {
+    return false;
+  }
+
+  try {
+    if (state.wakeLock.sentinel?.released === false) {
+      return true;
+    }
+
+    state.wakeLock.sentinel = await navigator.wakeLock.request("screen");
+    state.wakeLock.sentinel.addEventListener("release", () => {
+      state.wakeLock.sentinel = null;
+    });
+    return true;
+  } catch {
+    state.wakeLock.sentinel = null;
+    return false;
+  }
+}
+
+async function releaseScreenWakeLock() {
+  if (!state.wakeLock.sentinel) {
+    return;
+  }
+
+  try {
+    await state.wakeLock.sentinel.release();
+  } catch {
+    // ignore release failures
+  }
+
+  state.wakeLock.sentinel = null;
+}
+
 async function runWalking(token) {
   if (!("speechSynthesis" in window)) {
-    walkBadge.textContent = "未対応ブラウザ";
+    walkBadge.textContent = "音声非対応";
     walkMeaning.textContent = "このブラウザでは読み上げ機能が使えません。";
     state.walking.active = false;
     await releaseScreenWakeLock();
@@ -859,7 +1052,7 @@ async function runWalking(token) {
     return;
   }
 
-  walkBadge.textContent = state.wakeLock.sentinel ? "再生中・画面オン維持" : "再生中";
+  walkBadge.textContent = state.wakeLock.sentinel ? "再生中 / 画面オン" : "再生中";
 
   while (state.walking.active && token === state.walking.token) {
     if (!state.walking.queue.length) {
@@ -893,7 +1086,7 @@ async function runWalking(token) {
   }
 
   if (!state.walking.active) {
-    walkBadge.textContent = "待機中";
+    walkBadge.textContent = "停止中";
   }
 
   await releaseScreenWakeLock();
@@ -901,6 +1094,7 @@ async function runWalking(token) {
 
 async function startWalking() {
   rebuildWalkingQueue();
+
   if (!state.walking.queue.length) {
     walkBadge.textContent = "完了";
     updateWalkingDisplay();
@@ -911,7 +1105,7 @@ async function startWalking() {
   state.walking.active = true;
   state.walking.token += 1;
   const wakeLockEnabled = await requestScreenWakeLock();
-  walkBadge.textContent = wakeLockEnabled ? "再生準備・画面オン維持" : "再生準備";
+  walkBadge.textContent = wakeLockEnabled ? "再生準備 / 画面オン" : "再生準備";
   runWalking(state.walking.token);
 }
 
@@ -924,7 +1118,7 @@ function stopWalking(resetBadge = true) {
   }
 
   if (resetBadge) {
-    walkBadge.textContent = "待機中";
+    walkBadge.textContent = "停止中";
   }
 
   releaseScreenWakeLock();
@@ -948,32 +1142,34 @@ function setStudyType(studyType) {
     return;
   }
 
-  clearNextQuestionTimer();
   stopWalking(true);
   state.studyType = studyType;
   state.filter = "";
+
   if (wordSearchInput) {
     wordSearchInput.value = "";
   }
-  state.lastAnswer = null;
-  previousAnswerCard.classList.add("hidden");
+
+  state.category = Object.keys(getCurrentCollection())[0];
+  resetLearningFlow();
   renderAll();
 }
 
 async function registerProfile(id, password) {
   const normalized = normalizeProfileId(id);
+
   if (!normalized) {
     window.alert("ID を入力してください。");
     return false;
   }
 
   if (normalized === ADMIN_ID) {
-    window.alert("この ID は管理者専用です。ログインから入ってください。");
+    window.alert("このIDは管理者専用です。別のIDを入力してください。");
     return false;
   }
 
   if (!isValidProfileId(normalized)) {
-    window.alert("ID は英字・数字・記号をすべて含む 6 文字以上で作成してください。");
+    window.alert("ID は英字・数字・記号をすべて含む 6 文字以上で入力してください。");
     return false;
   }
 
@@ -983,24 +1179,22 @@ async function registerProfile(id, password) {
   }
 
   if (state.profiles[normalized]) {
-    window.alert("この ID はすでに登録されています。別の ID を使うか、「既存 ID で再開」を使ってください。");
+    window.alert("そのIDはすでに登録されています。別のIDを使うかログインしてください。");
     return false;
   }
 
-  const confirmed = window.confirm(`ID「${normalized}」を新規作成します。これで良いですか？`);
+  const confirmed = window.confirm(`ID「${normalized}」を新規登録します。よろしいですか？`);
   if (!confirmed) {
     return false;
   }
 
-  clearNextQuestionTimer();
   stopWalking(true);
   state.profiles[normalized] = createEmptyProfile(normalized);
   state.profiles[normalized].passwordHash = await sha256(password);
   state.profiles[normalized].role = "user";
   state.activeProfileId = normalized;
   state.role = "user";
-  state.lastAnswer = null;
-  previousAnswerCard.classList.add("hidden");
+  resetLearningFlow();
   ensureActiveProfile();
   saveProfiles();
   renderAll();
@@ -1009,25 +1203,25 @@ async function registerProfile(id, password) {
 
 async function resumeProfile(id, password) {
   const normalized = normalizeProfileId(id);
+
   if (!normalized) {
-    window.alert("再開したい ID を入力してください。");
+    window.alert("ログインするIDを入力してください。");
     return false;
   }
 
   if (!isValidPassword(password)) {
-    window.alert("再開するにはパスワードを入力してください。");
+    window.alert("ログインにはパスワードを入力してください。");
     return false;
   }
 
   const enteredIdHash = await sha256(normalized);
   const enteredPasswordHash = await sha256(password);
+
   if (enteredIdHash === ADMIN_ID_HASH && enteredPasswordHash === ADMIN_PASSWORD_HASH) {
-    clearNextQuestionTimer();
     stopWalking(true);
     state.activeProfileId = ADMIN_ID;
     state.role = "admin";
-    state.lastAnswer = null;
-    previousAnswerCard.classList.add("hidden");
+    resetLearningFlow();
     ensureAdminProfile();
     ensureActiveProfile();
     renderAll();
@@ -1035,22 +1229,19 @@ async function resumeProfile(id, password) {
   }
 
   if (!state.profiles[normalized]) {
-    window.alert("このブラウザにはその ID の学習履歴がありません。公開版で共有運用する場合は、サーバー側の会員管理が必要です。");
+    window.alert("そのIDの学習記録が見つかりません。新規登録してください。");
     return false;
   }
 
-  const passwordHash = enteredPasswordHash;
-  if (state.profiles[normalized].passwordHash && state.profiles[normalized].passwordHash !== passwordHash) {
+  if (state.profiles[normalized].passwordHash && state.profiles[normalized].passwordHash !== enteredPasswordHash) {
     window.alert("ID またはパスワードが違います。");
     return false;
   }
 
-  clearNextQuestionTimer();
   stopWalking(true);
   state.activeProfileId = normalized;
   state.role = state.profiles[normalized].role || "user";
-  state.lastAnswer = null;
-  previousAnswerCard.classList.add("hidden");
+  resetLearningFlow();
   ensureActiveProfile();
   saveProfiles();
   renderAll();
@@ -1059,15 +1250,13 @@ async function resumeProfile(id, password) {
 
 async function resetCurrentProfile() {
   const password = profilePasswordInput.value;
+
   if (!isValidPassword(password)) {
-    window.alert("リセットするには現在のパスワードを入力してください。");
+    window.alert("このIDの学習履歴をリセットするには、現在のパスワードを入力してください。");
     return;
   }
 
-  const confirmed = window.confirm(
-    `ID「${state.activeProfileId}」の学習履歴をリセットします。よろしいですか？`
-  );
-
+  const confirmed = window.confirm(`ID「${state.activeProfileId}」の学習履歴をリセットします。正解数や進捗保存も初期化されます。よろしいですか？`);
   if (!confirmed) {
     return;
   }
@@ -1079,17 +1268,15 @@ async function resetCurrentProfile() {
 
   const passwordHash = await sha256(password);
   if (profile.passwordHash && profile.passwordHash !== passwordHash) {
-    window.alert("パスワードが違うためリセットできません。");
+    window.alert("パスワードが違うため、このIDの学習履歴をリセットできません。");
     return;
   }
 
-  clearNextQuestionTimer();
   stopWalking(true);
   state.profiles[state.activeProfileId] = createEmptyProfile(state.activeProfileId);
   state.profiles[state.activeProfileId].passwordHash = passwordHash;
   state.profiles[state.activeProfileId].role = profile.role || "user";
-  state.lastAnswer = null;
-  previousAnswerCard.classList.add("hidden");
+  resetLearningFlow();
   saveProfiles();
   renderAll();
 }
@@ -1117,6 +1304,7 @@ function deleteSelectedAccount() {
 }
 
 function renderAll() {
+  ensureValidCategory();
   renderProfiles();
   renderAdminPanel();
   renderStudyTypeTabs();
@@ -1128,15 +1316,18 @@ function renderAll() {
   renderWordBank();
   renderPreviousAnswerState();
   syncControls();
+  setMode(state.mode);
 }
 
 quizTab.addEventListener("click", () => setMode("quiz"));
 walkTab.addEventListener("click", () => setMode("walk"));
 wordTypeTab.addEventListener("click", () => setStudyType("word"));
 phraseTypeTab.addEventListener("click", () => setStudyType("phrase"));
-skipButton.addEventListener("click", () => createQuestion());
+skipButton.addEventListener("click", () => skipCurrentQuestion());
 nextButton.addEventListener("click", () => createQuestion());
 showPreviousAnswerButton.addEventListener("click", () => showPreviousAnswer());
+sessionContinueButton.addEventListener("click", () => continueQuizSession());
+sessionStopButton.addEventListener("click", () => stopQuizSessionBreak());
 
 registerProfileButton.addEventListener("click", async () => {
   if (await registerProfile(profileIdInput.value, profilePasswordInput.value)) {

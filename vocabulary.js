@@ -1,1294 +1,1452 @@
-function parseWords(block) {
-  return block
-    .trim()
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith("#"))
-    .map((line) => {
-      const [english, japanese] = line.split("|").map((item) => item.trim());
-      return { english, japanese };
-    });
+﻿function buildEntries(items) {
+  return items.map(([english, japanese]) => ({ english, japanese }));
 }
+
+function dedupeEntries(items) {
+  const seen = new Set();
+
+  return items.filter(({ english }) => {
+    const key = english.trim().toLowerCase();
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+const beginnerWords = dedupeEntries(
+  []
+  .concat(buildEntries([
+    ["I", "私"],
+    ["you", "あなた"],
+    ["he", "彼"],
+    ["she", "彼女"],
+    ["it", "それ"],
+    ["we", "私たち"],
+    ["they", "彼ら"],
+    ["this", "これ"],
+    ["that", "あれ"],
+    ["these", "これら"],
+    ["those", "あれら"],
+    ["here", "ここ"],
+    ["there", "そこ"],
+    ["who", "だれ"],
+    ["what", "何"],
+    ["when", "いつ"],
+    ["where", "どこ"],
+    ["why", "なぜ"],
+    ["how", "どうやって"],
+    ["yes", "はい"],
+    ["no", "いいえ"],
+    ["not", "〜ない"],
+    ["all", "すべて"],
+    ["some", "いくつかの"],
+    ["any", "いくつかの / どんな〜でも"],
+    ["many", "たくさんの"],
+    ["much", "多くの"],
+    ["few", "少しの"],
+    ["more", "より多くの"],
+    ["most", "ほとんどの"],
+    ["other", "ほかの"],
+    ["another", "もう一つの"],
+    ["same", "同じ"],
+    ["different", "違う"],
+    ["one", "1"],
+    ["two", "2"],
+    ["three", "3"],
+    ["four", "4"],
+    ["five", "5"],
+    ["six", "6"],
+    ["seven", "7"],
+    ["eight", "8"],
+    ["nine", "9"],
+    ["ten", "10"],
+    ["eleven", "11"],
+    ["twelve", "12"],
+    ["thirteen", "13"],
+    ["fourteen", "14"],
+    ["fifteen", "15"],
+    ["sixteen", "16"],
+    ["seventeen", "17"],
+    ["eighteen", "18"],
+    ["nineteen", "19"],
+    ["twenty", "20"],
+    ["first", "最初の"],
+    ["second", "2番目の"],
+    ["third", "3番目の"],
+    ["and", "そして"],
+    ["but", "しかし"],
+    ["or", "または"],
+    ["because", "なぜなら"],
+    ["if", "もし"],
+    ["then", "そのとき"],
+    ["so", "だから"],
+    ["with", "〜と一緒に"],
+    ["without", "〜なしで"],
+    ["for", "〜のために"],
+    ["from", "〜から"],
+    ["to", "〜へ"],
+    ["at", "〜で"],
+    ["in", "〜の中で"],
+    ["on", "〜の上に"],
+    ["under", "〜の下に"],
+    ["near", "〜の近くに"],
+    ["between", "〜の間に"],
+    ["about", "〜について"],
+    ["before", "〜の前に"],
+    ["after", "〜の後に"]
+  ]))
+  .concat(buildEntries([
+    ["person", "人"],
+    ["people", "人々"],
+    ["name", "名前"],
+    ["friend", "友だち"],
+    ["family", "家族"],
+    ["mother", "母"],
+    ["father", "父"],
+    ["mom", "お母さん"],
+    ["dad", "お父さん"],
+    ["parent", "親"],
+    ["child", "子ども"],
+    ["baby", "赤ちゃん"],
+    ["boy", "男の子"],
+    ["girl", "女の子"],
+    ["man", "男性"],
+    ["woman", "女性"],
+    ["brother", "兄弟"],
+    ["sister", "姉妹"],
+    ["son", "息子"],
+    ["daughter", "娘"],
+    ["husband", "夫"],
+    ["wife", "妻"],
+    ["grandfather", "祖父"],
+    ["grandmother", "祖母"],
+    ["uncle", "おじ"],
+    ["aunt", "おば"],
+    ["cousin", "いとこ"],
+    ["neighbor", "近所の人"],
+    ["classmate", "クラスメート"],
+    ["teacher", "先生"],
+    ["student", "生徒"],
+    ["doctor", "医者"],
+    ["nurse", "看護師"],
+    ["driver", "運転手"],
+    ["cook", "料理人"],
+    ["chef", "シェフ"],
+    ["worker", "働く人"],
+    ["staff", "スタッフ"],
+    ["manager", "管理者"],
+    ["boss", "上司"],
+    ["coworker", "同僚"],
+    ["customer", "お客"],
+    ["guest", "客"],
+    ["tourist", "観光客"],
+    ["guide", "案内人"],
+    ["police officer", "警察官"],
+    ["firefighter", "消防士"],
+    ["engineer", "技術者"],
+    ["designer", "デザイナー"],
+    ["artist", "芸術家"],
+    ["musician", "音楽家"],
+    ["player", "選手"],
+    ["owner", "所有者"],
+    ["leader", "リーダー"],
+    ["member", "メンバー"],
+    ["team", "チーム"],
+    ["group", "グループ"],
+    ["couple", "カップル"],
+    ["age", "年齢"],
+    ["job", "仕事"],
+    ["career", "職業人生"]
+  ]))
+  .concat(buildEntries([
+    ["home", "家"],
+    ["house", "住宅"],
+    ["apartment", "アパート"],
+    ["building", "建物"],
+    ["room", "部屋"],
+    ["living room", "居間"],
+    ["bedroom", "寝室"],
+    ["bathroom", "浴室"],
+    ["restroom", "トイレ"],
+    ["kitchen", "台所"],
+    ["hallway", "廊下"],
+    ["stairs", "階段"],
+    ["elevator", "エレベーター"],
+    ["door", "ドア"],
+    ["window", "窓"],
+    ["wall", "壁"],
+    ["floor", "床"],
+    ["ceiling", "天井"],
+    ["roof", "屋根"],
+    ["key", "鍵"],
+    ["lock", "鍵穴"],
+    ["table", "テーブル"],
+    ["desk", "机"],
+    ["chair", "椅子"],
+    ["sofa", "ソファ"],
+    ["bed", "ベッド"],
+    ["pillow", "枕"],
+    ["blanket", "毛布"],
+    ["sheet", "シーツ"],
+    ["towel", "タオル"],
+    ["mirror", "鏡"],
+    ["lamp", "ランプ"],
+    ["light", "明かり"],
+    ["fan", "扇風機"],
+    ["air conditioner", "エアコン"],
+    ["heater", "暖房器具"],
+    ["refrigerator", "冷蔵庫"],
+    ["freezer", "冷凍庫"],
+    ["microwave", "電子レンジ"],
+    ["oven", "オーブン"],
+    ["stove", "コンロ"],
+    ["sink", "流し台"],
+    ["cup", "カップ"],
+    ["glass", "グラス"],
+    ["plate", "皿"],
+    ["bowl", "ボウル"],
+    ["fork", "フォーク"],
+    ["knife", "ナイフ"],
+    ["spoon", "スプーン"],
+    ["chopsticks", "箸"],
+    ["pan", "フライパン"],
+    ["pot", "鍋"],
+    ["bag", "かばん"],
+    ["backpack", "リュック"],
+    ["wallet", "財布"],
+    ["purse", "小銭入れ"],
+    ["umbrella", "傘"],
+    ["watch", "腕時計"],
+    ["clock", "時計"],
+    ["calendar", "カレンダー"],
+    ["battery", "電池"]
+  ]))
+  .concat(buildEntries([
+    ["water", "水"],
+    ["tea", "お茶"],
+    ["coffee", "コーヒー"],
+    ["milk", "牛乳"],
+    ["juice", "ジュース"],
+    ["soda", "炭酸飲料"],
+    ["wine", "ワイン"],
+    ["beer", "ビール"],
+    ["bread", "パン"],
+    ["rice", "ご飯"],
+    ["noodles", "麺"],
+    ["soup", "スープ"],
+    ["salad", "サラダ"],
+    ["sandwich", "サンドイッチ"],
+    ["hamburger", "ハンバーガー"],
+    ["pizza", "ピザ"],
+    ["pasta", "パスタ"],
+    ["cake", "ケーキ"],
+    ["cookie", "クッキー"],
+    ["ice cream", "アイスクリーム"],
+    ["breakfast", "朝食"],
+    ["lunch", "昼食"],
+    ["dinner", "夕食"],
+    ["snack", "軽食"],
+    ["meal", "食事"],
+    ["menu", "メニュー"],
+    ["dish", "料理"],
+    ["order", "注文"],
+    ["bill", "会計"],
+    ["receipt", "レシート"],
+    ["apple", "りんご"],
+    ["banana", "バナナ"],
+    ["orange", "オレンジ"],
+    ["grape", "ぶどう"],
+    ["strawberry", "いちご"],
+    ["peach", "桃"],
+    ["lemon", "レモン"],
+    ["melon", "メロン"],
+    ["pineapple", "パイナップル"],
+    ["tomato", "トマト"],
+    ["potato", "じゃがいも"],
+    ["onion", "玉ねぎ"],
+    ["carrot", "にんじん"],
+    ["cabbage", "キャベツ"],
+    ["lettuce", "レタス"],
+    ["corn", "とうもろこし"],
+    ["bean", "豆"],
+    ["egg", "卵"],
+    ["meat", "肉"],
+    ["beef", "牛肉"],
+    ["pork", "豚肉"],
+    ["chicken", "鶏肉"],
+    ["fish", "魚"],
+    ["shrimp", "えび"],
+    ["cheese", "チーズ"],
+    ["butter", "バター"],
+    ["salt", "塩"],
+    ["sugar", "砂糖"],
+    ["pepper", "こしょう"],
+    ["sauce", "ソース"]
+  ]))
+  .concat(buildEntries([
+    ["place", "場所"],
+    ["area", "地域"],
+    ["street", "通り"],
+    ["road", "道路"],
+    ["corner", "角"],
+    ["crosswalk", "横断歩道"],
+    ["bridge", "橋"],
+    ["park", "公園"],
+    ["station", "駅"],
+    ["bus stop", "バス停"],
+    ["airport", "空港"],
+    ["terminal", "ターミナル"],
+    ["gate", "搭乗口"],
+    ["hotel", "ホテル"],
+    ["hostel", "ホステル"],
+    ["restaurant", "レストラン"],
+    ["cafe", "カフェ"],
+    ["shop", "店"],
+    ["store", "店舗"],
+    ["supermarket", "スーパー"],
+    ["convenience store", "コンビニ"],
+    ["market", "市場"],
+    ["pharmacy", "薬局"],
+    ["hospital", "病院"],
+    ["clinic", "診療所"],
+    ["bank", "銀行"],
+    ["ATM", "ATM"],
+    ["post office", "郵便局"],
+    ["library", "図書館"],
+    ["museum", "博物館"],
+    ["school", "学校"],
+    ["office", "会社"],
+    ["station platform", "駅のホーム"],
+    ["platform", "ホーム"],
+    ["ticket machine", "券売機"],
+    ["map", "地図"],
+    ["guidebook", "ガイドブック"],
+    ["address", "住所"],
+    ["city", "都市"],
+    ["town", "町"],
+    ["village", "村"],
+    ["country", "国"],
+    ["beach", "海辺"],
+    ["sea", "海"],
+    ["river", "川"],
+    ["lake", "湖"],
+    ["mountain", "山"],
+    ["forest", "森"],
+    ["island", "島"],
+    ["bus", "バス"],
+    ["train", "電車"],
+    ["subway", "地下鉄"],
+    ["taxi", "タクシー"],
+    ["car", "車"],
+    ["bicycle", "自転車"],
+    ["motorcycle", "バイク"],
+    ["airplane", "飛行機"],
+    ["ship", "船"],
+    ["ticket", "切符"],
+    ["fare", "運賃"],
+    ["seat", "座席"]
+  ]))
+  .concat(buildEntries([
+    ["head", "頭"],
+    ["face", "顔"],
+    ["hair", "髪"],
+    ["eye", "目"],
+    ["ear", "耳"],
+    ["nose", "鼻"],
+    ["mouth", "口"],
+    ["tooth", "歯"],
+    ["neck", "首"],
+    ["shoulder", "肩"],
+    ["arm", "腕"],
+    ["hand", "手"],
+    ["finger", "指"],
+    ["back", "背中"],
+    ["stomach", "お腹"],
+    ["leg", "脚"],
+    ["knee", "ひざ"],
+    ["foot", "足"],
+    ["toe", "足の指"],
+    ["heart", "心臓"],
+    ["body", "体"],
+    ["health", "健康"],
+    ["medicine", "薬"],
+    ["doctor", "医者"],
+    ["dentist", "歯医者"],
+    ["nurse", "看護師"],
+    ["fever", "熱"],
+    ["cold", "風邪"],
+    ["cough", "せき"],
+    ["headache", "頭痛"],
+    ["stomachache", "腹痛"],
+    ["pain", "痛み"],
+    ["injury", "けが"],
+    ["bandage", "包帯"],
+    ["mask", "マスク"],
+    ["soap", "石けん"],
+    ["shampoo", "シャンプー"],
+    ["toothbrush", "歯ブラシ"],
+    ["toothpaste", "歯みがき粉"],
+    ["healthy", "健康的な"],
+    ["sick", "具合が悪い"],
+    ["tired", "疲れた"],
+    ["hungry", "お腹がすいた"],
+    ["thirsty", "喉が渇いた"],
+    ["sleepy", "眠い"],
+    ["happy", "うれしい"],
+    ["sad", "悲しい"],
+    ["angry", "怒った"],
+    ["worried", "心配した"],
+    ["scared", "こわい"],
+    ["excited", "わくわくした"],
+    ["busy", "忙しい"],
+    ["free", "暇な"],
+    ["safe", "安全な"],
+    ["dangerous", "危険な"],
+    ["careful", "注意深い"],
+    ["relaxed", "落ち着いた"],
+    ["strong", "強い"],
+    ["weak", "弱い"],
+    ["better", "より良い"]
+  ]))
+  .concat(buildEntries([
+    ["shirt", "シャツ"],
+    ["T-shirt", "Tシャツ"],
+    ["jacket", "ジャケット"],
+    ["coat", "コート"],
+    ["sweater", "セーター"],
+    ["hoodie", "パーカー"],
+    ["dress", "ドレス"],
+    ["skirt", "スカート"],
+    ["pants", "ズボン"],
+    ["jeans", "ジーンズ"],
+    ["shorts", "短パン"],
+    ["socks", "靴下"],
+    ["shoes", "靴"],
+    ["boots", "ブーツ"],
+    ["hat", "帽子"],
+    ["cap", "キャップ"],
+    ["glasses", "めがね"],
+    ["sunglasses", "サングラス"],
+    ["ring", "指輪"],
+    ["necklace", "ネックレス"],
+    ["bag", "バッグ"],
+    ["size", "サイズ"],
+    ["small", "小さい"],
+    ["medium", "中くらいの"],
+    ["large", "大きい"],
+    ["price", "値段"],
+    ["sale", "セール"],
+    ["discount", "割引"],
+    ["cash", "現金"],
+    ["credit card", "クレジットカード"],
+    ["debit card", "デビットカード"],
+    ["change", "おつり"],
+    ["customer service", "案内係"],
+    ["fitting room", "試着室"],
+    ["shopping bag", "買い物袋"],
+    ["gift", "贈り物"],
+    ["souvenir", "お土産"],
+    ["package", "包み"],
+    ["box", "箱"],
+    ["bottle", "びん"],
+    ["can", "缶"],
+    ["plastic bag", "ビニール袋"],
+    ["favorite color", "好きな色"],
+    ["red", "赤"],
+    ["blue", "青"],
+    ["green", "緑"],
+    ["yellow", "黄色"],
+    ["black", "黒"],
+    ["white", "白"],
+    ["gray", "灰色"],
+    ["brown", "茶色"],
+    ["pink", "ピンク"],
+    ["purple", "紫"],
+    ["orange color", "オレンジ色"],
+    ["clean", "きれいな"],
+    ["dirty", "汚れた"],
+    ["new", "新しい"],
+    ["old", "古い"],
+    ["pretty", "かわいい"],
+    ["simple", "シンプルな"]
+  ]))
+  .concat(buildEntries([
+    ["book", "本"],
+    ["notebook", "ノート"],
+    ["pen", "ペン"],
+    ["pencil", "鉛筆"],
+    ["eraser", "消しゴム"],
+    ["marker", "マーカー"],
+    ["paper", "紙"],
+    ["dictionary", "辞書"],
+    ["question", "質問"],
+    ["answer", "答え"],
+    ["lesson", "授業"],
+    ["class", "授業"],
+    ["homework", "宿題"],
+    ["test", "テスト"],
+    ["exam", "試験"],
+    ["score", "点数"],
+    ["grade", "成績"],
+    ["practice", "練習"],
+    ["example", "例"],
+    ["note", "メモ"],
+    ["meeting", "会議"],
+    ["report", "報告"],
+    ["email", "メール"],
+    ["message", "メッセージ"],
+    ["call", "電話"],
+    ["computer", "コンピューター"],
+    ["laptop", "ノートパソコン"],
+    ["tablet", "タブレット"],
+    ["phone", "スマホ"],
+    ["screen", "画面"],
+    ["keyboard", "キーボード"],
+    ["mouse", "マウス"],
+    ["printer", "プリンター"],
+    ["charger", "充電器"],
+    ["cable", "ケーブル"],
+    ["battery", "バッテリー"],
+    ["Internet", "インターネット"],
+    ["website", "ウェブサイト"],
+    ["page", "ページ"],
+    ["file", "ファイル"],
+    ["folder", "フォルダー"],
+    ["password", "パスワード"],
+    ["account", "アカウント"],
+    ["user name", "ユーザー名"],
+    ["button", "ボタン"],
+    ["link", "リンク"],
+    ["video", "動画"],
+    ["photo", "写真"],
+    ["music", "音楽"],
+    ["game", "ゲーム"],
+    ["news", "ニュース"],
+    ["work", "仕事"],
+    ["company", "会社"],
+    ["office", "職場"],
+    ["schedule", "予定"],
+    ["task", "作業"],
+    ["plan", "計画"],
+    ["idea", "考え"],
+    ["problem", "問題"],
+    ["solution", "解決"]
+  ]))
+  .concat(buildEntries([
+    ["be", "〜である"],
+    ["have", "持っている"],
+    ["do", "する"],
+    ["make", "作る"],
+    ["get", "得る"],
+    ["take", "取る"],
+    ["put", "置く"],
+    ["use", "使う"],
+    ["need", "必要とする"],
+    ["want", "欲しい"],
+    ["like", "好き"],
+    ["love", "とても好き"],
+    ["know", "知っている"],
+    ["think", "思う"],
+    ["see", "見る"],
+    ["watch", "見る"],
+    ["look", "見る"],
+    ["hear", "聞こえる"],
+    ["listen", "聞く"],
+    ["say", "言う"],
+    ["speak", "話す"],
+    ["talk", "話す"],
+    ["ask", "たずねる"],
+    ["answer", "答える"],
+    ["call", "電話する"],
+    ["help", "助ける"],
+    ["find", "見つける"],
+    ["give", "与える"],
+    ["show", "見せる"],
+    ["bring", "持ってくる"],
+    ["send", "送る"],
+    ["open", "開ける"],
+    ["close", "閉める"],
+    ["start", "始める"],
+    ["finish", "終える"],
+    ["try", "試す"],
+    ["wait", "待つ"],
+    ["keep", "保つ"],
+    ["move", "動く"],
+    ["walk", "歩く"],
+    ["run", "走る"],
+    ["sit", "座る"],
+    ["stand", "立つ"],
+    ["turn", "曲がる"],
+    ["cross", "渡る"],
+    ["ride", "乗る"],
+    ["drive", "運転する"],
+    ["travel", "旅行する"],
+    ["visit", "訪れる"],
+    ["stay", "滞在する"],
+    ["return", "戻る"],
+    ["buy", "買う"],
+    ["pay", "支払う"],
+    ["sell", "売る"],
+    ["eat", "食べる"],
+    ["drink", "飲む"],
+    ["cook", "料理する"],
+    ["wash", "洗う"],
+    ["clean", "掃除する"],
+    ["cut", "切る"],
+    ["order", "注文する"],
+    ["choose", "選ぶ"],
+    ["wear", "着る"],
+    ["change", "変える"],
+    ["carry", "運ぶ"],
+    ["hold", "持つ"],
+    ["write", "書く"],
+    ["read", "読む"],
+    ["study", "勉強する"],
+    ["learn", "学ぶ"],
+    ["teach", "教える"],
+    ["remember", "覚えている"],
+    ["forget", "忘れる"],
+    ["meet", "会う"],
+    ["follow", "ついていく"],
+    ["check", "確認する"],
+    ["reserve", "予約する"],
+    ["book", "予約する"],
+    ["cancel", "キャンセルする"],
+    ["arrive", "到着する"],
+    ["leave", "出発する"],
+    ["rest", "休む"],
+    ["sleep", "眠る"],
+    ["wake", "目覚める"],
+    ["smile", "ほほえむ"],
+    ["laugh", "笑う"],
+    ["cry", "泣く"],
+    ["enjoy", "楽しむ"],
+    ["hope", "願う"],
+    ["plan", "計画する"],
+    ["prepare", "準備する"],
+    ["share", "共有する"],
+    ["borrow", "借りる"],
+    ["lend", "貸す"]
+  ]))
+  .concat(buildEntries([
+    ["today", "今日"],
+    ["tomorrow", "明日"],
+    ["yesterday", "昨日"],
+    ["morning", "朝"],
+    ["afternoon", "午後"],
+    ["evening", "夕方"],
+    ["night", "夜"],
+    ["midnight", "真夜中"],
+    ["day", "日"],
+    ["week", "週"],
+    ["month", "月"],
+    ["year", "年"],
+    ["weekend", "週末"],
+    ["holiday", "休日"],
+    ["vacation", "休暇"],
+    ["spring", "春"],
+    ["summer", "夏"],
+    ["fall", "秋"],
+    ["winter", "冬"],
+    ["Monday", "月曜日"],
+    ["Tuesday", "火曜日"],
+    ["Wednesday", "水曜日"],
+    ["Thursday", "木曜日"],
+    ["Friday", "金曜日"],
+    ["Saturday", "土曜日"],
+    ["Sunday", "日曜日"],
+    ["January", "1月"],
+    ["February", "2月"],
+    ["March", "3月"],
+    ["April", "4月"],
+    ["May", "5月"],
+    ["June", "6月"],
+    ["July", "7月"],
+    ["August", "8月"],
+    ["September", "9月"],
+    ["October", "10月"],
+    ["November", "11月"],
+    ["December", "12月"],
+    ["early", "早い"],
+    ["late", "遅い"],
+    ["now", "今"],
+    ["soon", "すぐに"],
+    ["later", "あとで"],
+    ["always", "いつも"],
+    ["usually", "たいてい"],
+    ["sometimes", "ときどき"],
+    ["often", "しばしば"],
+    ["never", "決して〜ない"],
+    ["again", "もう一度"],
+    ["already", "すでに"],
+    ["still", "まだ"],
+    ["really", "本当に"],
+    ["very", "とても"],
+    ["quite", "かなり"],
+    ["just", "ちょうど"],
+    ["together", "一緒に"],
+    ["inside", "内側に"],
+    ["outside", "外側に"],
+    ["left", "左"],
+    ["right side", "右側"],
+    ["straight", "まっすぐ"],
+    ["up", "上へ"],
+    ["down", "下へ"],
+    ["big", "大きい"],
+    ["small", "小さい"],
+    ["long", "長い"],
+    ["short", "短い"],
+    ["high", "高い"],
+    ["low", "低い"],
+    ["hot", "暑い / 熱い"],
+    ["warm", "暖かい"],
+    ["cool", "涼しい"],
+    ["cold weather", "寒い"],
+    ["rain", "雨"],
+    ["snow", "雪"],
+    ["wind", "風"],
+    ["cloud", "雲"],
+    ["sun", "太陽"],
+    ["sunny", "晴れた"],
+    ["rainy", "雨の"],
+    ["cloudy", "くもった"],
+    ["windy", "風の強い"],
+    ["storm", "嵐"],
+    ["clear", "晴れた"],
+    ["bright", "明るい"],
+    ["dark", "暗い"],
+    ["easy", "簡単な"],
+    ["hard", "難しい"],
+    ["kind", "親切な"],
+    ["nice", "感じのよい"],
+    ["friendly", "親しみやすい"],
+    ["important", "重要な"],
+    ["possible", "可能な"],
+    ["ready", "準備ができた"],
+    ["full", "いっぱいの"],
+    ["empty", "空の"]
+  ]))
+  .concat(buildEntries([
+    ["price", "値段"],
+    ["cost", "費用"],
+    ["payment", "支払い"],
+    ["pay", "支払う"],
+    ["cash", "現金"],
+    ["change", "おつり"],
+    ["receipt", "レシート"],
+    ["cashier", "レジ係"],
+    ["register", "レジ"],
+    ["wallet", "財布"],
+    ["purse", "小さい財布"],
+    ["coin", "硬貨"],
+    ["bill", "紙幣"],
+    ["credit card", "クレジットカード"],
+    ["debit card", "デビットカード"],
+    ["sale", "セール"],
+    ["discount", "割引"],
+    ["coupon", "クーポン"],
+    ["tax", "税金"],
+    ["customer", "客"],
+    ["clerk", "店員"],
+    ["store", "店"],
+    ["market", "市場 / マーケット"],
+    ["mall", "ショッピングモール"],
+    ["shelf", "棚"],
+    ["basket", "買い物かご"],
+    ["cart", "カート"],
+    ["fitting room", "試着室"],
+    ["size", "サイズ"],
+    ["medium", "中くらいの"],
+    ["large", "大きいサイズの"],
+    ["extra large", "特大サイズの"],
+    ["try on", "試着する"],
+    ["return", "返品する"],
+    ["exchange", "交換する"],
+    ["refund", "返金"],
+    ["package", "荷物"],
+    ["delivery", "配達"],
+    ["address", "住所"],
+    ["zip code", "郵便番号"],
+    ["stamp", "切手"],
+    ["mailbox", "郵便受け"],
+    ["post office", "郵便局"],
+    ["breakfast", "朝食"],
+    ["lunch", "昼食"],
+    ["dinner", "夕食"],
+    ["snack", "軽食 / おやつ"],
+    ["dessert", "デザート"],
+    ["soup", "スープ"],
+    ["salad", "サラダ"],
+    ["rice", "ご飯"],
+    ["bread", "パン"],
+    ["noodle", "麺"],
+    ["fruit", "果物"],
+    ["vegetable", "野菜"],
+    ["meat", "肉"],
+    ["fish", "魚"],
+    ["chicken", "鶏肉"],
+    ["beef", "牛肉"],
+    ["pork", "豚肉"],
+    ["egg", "卵"],
+    ["milk", "牛乳"],
+    ["juice", "ジュース"],
+    ["tea", "お茶"],
+    ["coffee", "コーヒー"],
+    ["sugar", "砂糖"],
+    ["salt", "塩"],
+    ["bottle", "ボトル"],
+    ["cup", "カップ"],
+    ["glass", "グラス"],
+    ["plate", "皿"],
+    ["bowl", "ボウル"],
+    ["spoon", "スプーン"],
+    ["fork", "フォーク"],
+    ["knife", "ナイフ"],
+    ["chopsticks", "箸"],
+    ["napkin", "ナプキン"],
+    ["straw", "ストロー"],
+    ["check", "会計"],
+    ["key", "鍵"],
+    ["lock", "鍵をかける / 錠"],
+    ["lamp", "ランプ"],
+    ["pillow", "枕"],
+    ["blanket", "毛布"],
+    ["sheet", "シーツ"],
+    ["towel", "タオル"],
+    ["soap", "石けん"],
+    ["shampoo", "シャンプー"],
+    ["toothbrush", "歯ブラシ"],
+    ["toothpaste", "歯みがき粉"],
+    ["brush", "ブラシ"],
+    ["comb", "くし"],
+    ["dryer", "ドライヤー"],
+    ["mirror", "鏡"],
+    ["wall", "壁"],
+    ["floor", "床"],
+    ["ceiling", "天井"],
+    ["corner", "角"],
+    ["fridge", "冷蔵庫"],
+    ["microwave", "電子レンジ"],
+    ["stove", "コンロ"],
+    ["sink", "流し台"],
+    ["washing machine", "洗濯機"],
+    ["hanger", "ハンガー"],
+    ["laundry basket", "洗濯かご"],
+    ["trash bag", "ごみ袋"],
+    ["tissue", "ティッシュ"],
+    ["remote", "リモコン"],
+    ["outlet", "コンセント"],
+    ["charger", "充電器"],
+    ["smartphone", "スマートフォン"],
+    ["battery", "バッテリー"],
+    ["cable", "ケーブル"],
+    ["screen", "画面"],
+    ["keyboard", "キーボード"],
+    ["mouse", "マウス"],
+    ["browser", "ブラウザ"],
+    ["app", "アプリ"],
+    ["password", "パスワード"],
+    ["Wi-Fi", "Wi-Fi"],
+    ["signal", "電波"],
+    ["download", "ダウンロードする"],
+    ["upload", "アップロードする"],
+    ["click", "クリックする"],
+    ["tap", "タップする"],
+    ["scan", "スキャンする"],
+    ["photo", "写真"],
+    ["video", "動画"],
+    ["pharmacy", "薬局"],
+    ["medicine", "薬"],
+    ["headache", "頭痛"],
+    ["fever", "熱"],
+    ["cough", "せき"],
+    ["cold", "風邪"],
+    ["allergy", "アレルギー"],
+    ["bandage", "ばんそうこう"],
+    ["emergency", "緊急事態"],
+    ["fire", "火事"],
+    ["exit sign", "非常口の表示"],
+    ["lost and found", "忘れ物係"],
+    ["station", "駅"],
+    ["stop", "停留所 / 止まる"],
+    ["platform", "ホーム"],
+    ["ticket gate", "改札"],
+    ["crosswalk", "横断歩道"],
+    ["traffic light", "信号"],
+    ["elevator", "エレベーター"],
+    ["escalator", "エスカレーター"],
+    ["stairs", "階段"],
+    ["entrance fee", "入場料"],
+    ["fare", "運賃"]
+  ])));
+
+const intermediateWords = buildEntries([
+  ["reservation", "予約"],
+  ["passport", "パスポート"],
+  ["luggage", "荷物"],
+  ["suitcase", "スーツケース"],
+  ["boarding pass", "搭乗券"],
+  ["departure", "出発"],
+  ["arrival", "到着"],
+  ["delay", "遅延"],
+  ["traffic", "交通状況"],
+  ["route", "経路"],
+  ["destination", "目的地"],
+  ["direction", "方向"],
+  ["entrance", "入口"],
+  ["exit", "出口"],
+  ["subway", "地下鉄"],
+  ["schedule", "予定"],
+  ["trip", "旅行"],
+  ["journey", "旅"],
+  ["cancel", "取り消す"],
+  ["confirm", "確認する"],
+  ["transfer", "乗り換え"],
+  ["laundry", "洗濯"],
+  ["detergent", "洗剤"],
+  ["trash", "ごみ"],
+  ["recycle", "再利用する"],
+  ["repair", "修理する"],
+  ["replace", "交換する"],
+  ["organize", "整理する"],
+  ["prepare", "準備する"],
+  ["heat", "温める"],
+  ["freeze", "凍らせる"],
+  ["boil", "ゆでる"],
+  ["fry", "焼く / 揚げる"],
+  ["bake", "焼く"],
+  ["mix", "混ぜる"],
+  ["pour", "注ぐ"],
+  ["decorate", "飾る"],
+  ["invite", "招待する"],
+  ["host", "主催する"],
+  ["relax", "くつろぐ"],
+  ["stretch", "伸ばす"],
+  ["exercise", "運動する"],
+  ["message", "メッセージ"],
+  ["reply", "返信する"],
+  ["respond", "応答する"],
+  ["explain", "説明する"],
+  ["describe", "説明する"],
+  ["mention", "言及する"],
+  ["repeat", "繰り返す"],
+  ["pronounce", "発音する"],
+  ["translate", "翻訳する"],
+  ["introduce", "紹介する"],
+  ["greet", "あいさつする"],
+  ["apologize", "謝る"],
+  ["forgive", "許す"],
+  ["promise", "約束する"],
+  ["suggest", "提案する"],
+  ["recommend", "おすすめする"],
+  ["agree", "同意する"],
+  ["disagree", "反対する"],
+  ["argue", "議論する"],
+  ["discuss", "話し合う"],
+  ["complain", "不満を言う"],
+  ["warn", "警告する"],
+  ["advise", "助言する"],
+  ["encourage", "励ます"],
+  ["mood", "気分"],
+  ["emotion", "感情"],
+  ["impression", "印象"],
+  ["opinion", "意見"],
+  ["choice", "選択"],
+  ["reason", "理由"],
+  ["result", "結果"],
+  ["surprised", "驚いた"],
+  ["nervous", "緊張した"],
+  ["embarrassed", "恥ずかしい"],
+  ["relieved", "ほっとした"],
+  ["curious", "興味がある"],
+  ["comfortable", "快適な"],
+  ["confident", "自信がある"],
+  ["honest", "正直な"],
+  ["polite", "丁寧な"],
+  ["serious", "真面目な"],
+  ["actually", "実は"],
+  ["probably", "たぶん"],
+  ["perhaps", "もしかすると"],
+  ["exactly", "正確に / まさに"],
+  ["especially", "特に"],
+  ["instead", "代わりに"],
+  ["otherwise", "さもないと / ほかの場合は"],
+  ["therefore", "したがって"],
+  ["however", "しかしながら"],
+  ["meanwhile", "その間に"],
+  ["recently", "最近"],
+  ["currently", "現在"],
+  ["finally", "ついに / 最後に"],
+  ["suddenly", "突然"],
+  ["quietly", "静かに"],
+  ["carefully", "注意深く"],
+  ["luckily", "幸運にも"],
+  ["unfortunately", "残念ながら"],
+  ["nearly", "ほとんど / もう少しで"],
+  ["exact", "正確な"],
+  ["similar", "似ている"],
+  ["common", "よくある / 一般的な"],
+  ["local", "地元の"],
+  ["public", "公共の"],
+  ["private", "私的な"],
+  ["traditional", "伝統的な"],
+  ["modern", "現代的な"],
+  ["famous", "有名な"],
+  ["popular", "人気のある"],
+  ["useful", "役に立つ"],
+  ["convenient", "便利な"],
+  ["necessary", "必要な"],
+  ["safe", "安全な"],
+  ["dangerous", "危険な"],
+  ["crowded", "混んでいる"],
+  ["quiet", "静かな"],
+  ["available", "利用できる / 空いている"],
+  ["worth", "価値がある"],
+  ["memory", "記憶"],
+  ["habit", "習慣"],
+  ["experience", "経験"],
+  ["skill", "技能"],
+  ["knowledge", "知識"],
+  ["culture", "文化"],
+  ["custom", "習慣 / 風習"],
+  ["relationship", "関係"],
+  ["situation", "状況"],
+  ["environment", "環境"],
+  ["conversation", "会話"],
+  ["topic", "話題"],
+  ["example", "例"],
+  ["sentence", "文"],
+  ["paragraph", "段落"],
+  ["article", "記事"],
+  ["notice", "掲示 / 気づく"],
+  ["announcement", "案内放送 / 発表"],
+  ["instruction", "指示 / 説明"],
+  ["warning", "警告"],
+  ["permission", "許可"],
+  ["invitation", "招待"],
+  ["celebrate", "祝う"],
+  ["avoid", "避ける"],
+  ["borrow", "借りる"],
+  ["lend", "貸す"],
+  ["return home", "帰宅する"],
+  ["arrange", "手配する / 整える"],
+  ["contact", "連絡する / 連絡"],
+  ["share", "共有する"],
+  ["save", "保存する / 節約する"],
+  ["delete", "削除する"],
+  ["compare", "比較する"]
+]);
+
+const advancedWords = buildEntries([
+  ["perspective", "視点"],
+  ["option", "選択肢"],
+  ["evidence", "証拠"],
+  ["assumption", "前提"],
+  ["context", "文脈"],
+  ["strategy", "戦略"],
+  ["approach", "やり方"],
+  ["balance", "バランス"],
+  ["priority", "優先事項"],
+  ["outcome", "結果"],
+  ["impact", "影響"],
+  ["challenge", "課題"],
+  ["opportunity", "機会"],
+  ["solution", "解決策"],
+  ["concern", "懸念"],
+  ["confusion", "混乱"],
+  ["clarity", "明確さ"],
+  ["detail", "詳細"],
+  ["summary", "要約"],
+  ["argument", "主張"],
+  ["analysis", "分析"],
+  ["comparison", "比較"],
+  ["contrast", "対比"],
+  ["conclusion", "結論"],
+  ["possibility", "可能性"],
+  ["probability", "確率"],
+  ["advantage", "利点"],
+  ["disadvantage", "欠点"],
+  ["consequence", "結果"],
+  ["principle", "原則"],
+  ["policy", "方針"],
+  ["process", "過程"],
+  ["progress", "進歩"],
+  ["insight", "洞察"],
+  ["judgment", "判断"],
+  ["decision", "決定"],
+  ["alternative", "代替案"],
+  ["complexity", "複雑さ"],
+  ["efficiency", "効率"],
+  ["consistency", "一貫性"],
+  ["flexibility", "柔軟性"],
+  ["significance", "重要性"],
+  ["persuade", "説得する"],
+  ["justify", "正当化する"],
+  ["evaluate", "評価する"],
+  ["interpret", "解釈する"],
+  ["demonstrate", "示す"],
+  ["highlight", "強調する"],
+  ["clarify", "明確にする"],
+  ["assess", "査定する"],
+  ["consider", "検討する"],
+  ["recognize", "認識する"],
+  ["estimate", "見積もる"],
+  ["negotiate", "交渉する"],
+  ["resolve", "解決する"],
+  ["distinguish", "区別する"],
+  ["specific", "具体的な"],
+  ["abstract", "抽象的な"],
+  ["logical", "論理的な"],
+  ["practical", "実用的な"],
+  ["realistic", "現実的な"],
+  ["interpretation", "解釈"],
+  ["framework", "枠組み"],
+  ["criterion", "基準"],
+  ["variable", "変数 / 要因"],
+  ["factor", "要因"],
+  ["trend", "傾向"],
+  ["pattern", "パターン / 傾向"],
+  ["phenomenon", "現象"],
+  ["hypothesis", "仮説"],
+  ["implication", "含意 / 影響"],
+  ["consensus", "合意"],
+  ["controversy", "論争"],
+  ["objection", "異議"],
+  ["rationale", "根拠"],
+  ["credibility", "信頼性"],
+  ["reliability", "信頼できること"],
+  ["validity", "妥当性"],
+  ["limitation", "限界"],
+  ["scope", "範囲"],
+  ["constraint", "制約"],
+  ["trade-off", "両立しにくい関係"],
+  ["uncertainty", "不確実性"],
+  ["likelihood", "可能性の高さ"],
+  ["tendency", "傾向"],
+  ["bias", "偏り / 先入観"],
+  ["prejudice", "偏見"],
+  ["motivation", "動機"],
+  ["intention", "意図"],
+  ["perception", "認識"],
+  ["awareness", "認識 / 意識"],
+  ["capacity", "能力 / 容量"],
+  ["capability", "遂行能力"],
+  ["competence", "力量"],
+  ["adaptability", "適応力"],
+  ["resilience", "回復力"],
+  ["stability", "安定性"],
+  ["sustainability", "持続可能性"],
+  ["effort", "努力"],
+  ["achievement", "達成"],
+  ["comprehensive", "包括的な"],
+  ["subtle", "微妙な / 繊細な"],
+  ["implicit", "暗黙の"],
+  ["explicit", "明示的な"],
+  ["objective", "客観的な / 目的"],
+  ["subjective", "主観的な"],
+  ["neutral", "中立の"],
+  ["relevant", "関連のある"],
+  ["appropriate", "適切な"],
+  ["accurate", "正確な"],
+  ["precise", "厳密な"],
+  ["thorough", "徹底的な"],
+  ["critical", "重大な / 批判的な"],
+  ["fundamental", "根本的な"],
+  ["essential", "不可欠な"],
+  ["prominent", "著名な / 目立つ"],
+  ["inevitable", "避けられない"],
+  ["allocate", "割り当てる"],
+  ["derive", "導き出す"],
+  ["infer", "推測する"],
+  ["examine", "詳しく調べる"],
+  ["compile", "まとめる / 編集する"],
+  ["formulate", "組み立てる"],
+  ["articulate", "明確に言葉で表す"],
+  ["convey", "伝える"],
+  ["enhance", "高める"],
+  ["diminish", "弱める / 減らす"],
+  ["anticipate", "予測する"],
+  ["prioritize", "優先する"]
+]);
+
+const businessWords = buildEntries([
+  ["meeting", "会議"],
+  ["agenda", "議題"],
+  ["minutes", "議事録"],
+  ["deadline", "締め切り"],
+  ["proposal", "提案"],
+  ["contract", "契約"],
+  ["invoice", "請求書"],
+  ["estimate", "見積もり"],
+  ["budget", "予算"],
+  ["cost", "費用"],
+  ["expense", "経費"],
+  ["profit", "利益"],
+  ["revenue", "売上"],
+  ["client", "顧客"],
+  ["vendor", "取引先"],
+  ["stakeholder", "関係者"],
+  ["department", "部署"],
+  ["staff", "スタッフ"],
+  ["manager", "管理者"],
+  ["leader", "リーダー"],
+  ["task", "タスク"],
+  ["project", "プロジェクト"],
+  ["scope", "範囲"],
+  ["timeline", "日程"],
+  ["milestone", "節目"],
+  ["deliverable", "成果物"],
+  ["update", "進捗報告"],
+  ["report", "報告書"],
+  ["feedback", "意見"],
+  ["request", "依頼"],
+  ["approval", "承認"],
+  ["review", "確認"],
+  ["revision", "修正版"],
+  ["draft", "下書き"],
+  ["version", "版"],
+  ["figure", "数値"],
+  ["data", "データ"],
+  ["forecast", "予測"],
+  ["target", "目標"],
+  ["resource", "資源"],
+  ["risk", "リスク"],
+  ["ownership", "担当責任"],
+  ["coordination", "調整"],
+  ["follow-up", "フォロー"],
+  ["delivery", "納品"],
+  ["launch", "開始"],
+  ["implementation", "実装"],
+  ["maintenance", "保守"],
+  ["presentation", "発表"],
+  ["attachment", "添付ファイル"],
+  ["quarter", "四半期"],
+  ["fiscal year", "会計年度"],
+  ["earnings", "利益 / 収益"],
+  ["margin", "利益率 / 余白"],
+  ["turnover", "売上高 / 離職率"],
+  ["cash flow", "資金繰り"],
+  ["asset", "資産"],
+  ["liability", "負債"],
+  ["equity", "自己資本"],
+  ["procurement", "調達"],
+  ["inventory", "在庫"],
+  ["shipment", "出荷"],
+  ["warehouse", "倉庫"],
+  ["logistics", "物流"],
+  ["compliance", "法令順守"],
+  ["regulation", "規制"],
+  ["confidentiality", "機密保持"],
+  ["disclosure", "開示"],
+  ["partnership", "提携"],
+  ["subsidiary", "子会社"],
+  ["head office", "本社"],
+  ["branch office", "支店"],
+  ["headcount", "人員数"],
+  ["recruitment", "採用"],
+  ["interview", "面接"],
+  ["onboarding", "入社時研修 / 受け入れ"],
+  ["training", "研修"],
+  ["evaluation", "評価"],
+  ["promotion", "昇進 / 販促"],
+  ["compensation", "報酬 / 補償"],
+  ["salary", "給与"],
+  ["bonus", "賞与"],
+  ["benefit", "福利厚生 / 利点"],
+  ["leave", "休暇"],
+  ["overtime", "残業"],
+  ["attendance", "出勤状況"],
+  ["productivity", "生産性"],
+  ["workflow", "業務の流れ"],
+  ["procedure", "手順"],
+  ["guideline", "指針"],
+  ["manual", "マニュアル"],
+  ["documentation", "文書化資料"],
+  ["requirement", "要件"],
+  ["specification", "仕様"],
+  ["roadmap", "計画表"],
+  ["backlog", "未処理案件"],
+  ["issue", "課題 / 問題"],
+  ["bug", "不具合"],
+  ["testing", "テスト"],
+  ["deployment", "配備 / リリース"],
+  ["renewal", "更新"],
+  ["negotiation", "交渉"],
+  ["quotation", "見積書"],
+  ["purchase order", "発注書"],
+  ["payment terms", "支払条件"],
+  ["due date", "支払期限 / 納期"],
+  ["approval flow", "承認フロー"],
+  ["escalation", "上位報告 / エスカレーション"],
+  ["summary", "要約"],
+  ["action item", "対応事項"],
+  ["next step", "次の対応"],
+  ["attendee", "出席者"],
+  ["chairperson", "議長"],
+  ["conference room", "会議室"],
+  ["web conference", "オンライン会議"],
+  ["mute", "ミュート"],
+  ["screen sharing", "画面共有"],
+  ["network issue", "通信トラブル"],
+  ["availability", "空き状況"],
+  ["reschedule", "日程変更する"],
+  ["tentative", "仮の / 暫定の"]
+]);
+
+const travelWords = buildEntries([
+  ["airport", "空港"],
+  ["terminal", "ターミナル"],
+  ["boarding gate", "搭乗口"],
+  ["security check", "保安検査"],
+  ["customs", "税関"],
+  ["immigration", "入国審査"],
+  ["arrival hall", "到着ロビー"],
+  ["departure board", "出発案内板"],
+  ["ticket counter", "チケット売り場"],
+  ["platform number", "ホーム番号"],
+  ["train line", "路線"],
+  ["one-way ticket", "片道切符"],
+  ["round-trip ticket", "往復切符"],
+  ["seat reservation", "座席予約"],
+  ["transfer station", "乗換駅"],
+  ["taxi stand", "タクシー乗り場"],
+  ["intersection", "交差点"],
+  ["traffic light", "信号"],
+  ["landmark", "目印"],
+  ["distance", "距離"],
+  ["front desk", "フロント"],
+  ["check-in", "チェックイン"],
+  ["check-out", "チェックアウト"],
+  ["room key", "部屋の鍵"],
+  ["single room", "シングルルーム"],
+  ["double room", "ダブルルーム"],
+  ["twin room", "ツインルーム"],
+  ["view", "眺め"],
+  ["luggage storage", "荷物預かり"],
+  ["museum", "博物館"],
+  ["temple", "寺"],
+  ["shrine", "神社"],
+  ["admission fee", "入場料"],
+  ["souvenir", "お土産"],
+  ["guidebook", "ガイドブック"],
+  ["tourist spot", "観光地"],
+  ["viewpoint", "展望スポット"],
+  ["specialty", "名物"],
+  ["ingredient", "材料"],
+  ["spicy", "辛い"],
+  ["mild", "辛くない"],
+  ["dessert", "デザート"],
+  ["service charge", "サービス料"],
+  ["tip", "チップ"],
+  ["cashier", "レジ"],
+  ["clinic", "診療所"],
+  ["injury", "けが"],
+  ["emergency", "緊急事態"],
+  ["police station", "警察署"],
+  ["embassy", "大使館"],
+  ["visa", "ビザ"],
+  ["travel insurance", "旅行保険"],
+  ["passport control", "入国審査"],
+  ["baggage claim", "手荷物受取所"],
+  ["carry-on bag", "機内持ち込み手荷物"],
+  ["checked baggage", "預け荷物"],
+  ["window seat", "窓側席"],
+  ["aisle seat", "通路側席"],
+  ["delayed flight", "遅延便"],
+  ["connecting flight", "乗り継ぎ便"],
+  ["boarding time", "搭乗時刻"],
+  ["departure gate", "出発ゲート"],
+  ["arrival time", "到着時刻"],
+  ["bus stop", "バス停"],
+  ["train station", "鉄道駅"],
+  ["subway station", "地下鉄駅"],
+  ["fare adjustment", "運賃精算"],
+  ["rental car", "レンタカー"],
+  ["parking lot", "駐車場"],
+  ["highway", "高速道路"],
+  ["street corner", "街角"],
+  ["pedestrian crossing", "歩行者横断路"],
+  ["city center", "市内中心部"],
+  ["old town", "旧市街"],
+  ["district", "地区"],
+  ["map", "地図"],
+  ["navigation app", "地図アプリ"],
+  ["hostel", "ホステル"],
+  ["guesthouse", "ゲストハウス"],
+  ["vacancy", "空室"],
+  ["non-smoking room", "禁煙室"],
+  ["smoking room", "喫煙室"],
+  ["breakfast included", "朝食付き"],
+  ["late check-out", "レイトチェックアウト"],
+  ["wake-up call", "モーニングコール"],
+  ["room service", "ルームサービス"],
+  ["laundry service", "ランドリーサービス"],
+  ["restaurant", "レストラン"],
+  ["menu", "メニュー"],
+  ["set meal", "定食"],
+  ["vegetarian", "菜食主義者向け"],
+  ["allergy-friendly", "アレルギー対応の"],
+  ["bottled water", "ボトル入りの水"],
+  ["tap water", "水道水"],
+  ["portion", "一人前 / 量"],
+  ["reservation number", "予約番号"],
+  ["sold out", "売り切れ"],
+  ["line", "列 / 行列"],
+  ["ticket office", "切符売り場"],
+  ["one-day pass", "一日乗車券"],
+  ["coin locker", "コインロッカー"],
+  ["restroom", "化粧室"],
+  ["elevator hall", "エレベーターホール"],
+  ["stairs exit", "階段出口"],
+  ["tour guide", "ツアーガイド"],
+  ["audio guide", "音声ガイド"],
+  ["exhibition", "展示"],
+  ["temple grounds", "寺院の境内"],
+  ["observation deck", "展望台"],
+  ["scenery", "景色"],
+  ["sunset", "夕焼け / 日没"],
+  ["local dish", "郷土料理"],
+  ["street food", "屋台料理"],
+  ["bill split", "割り勘"],
+  ["currency exchange", "両替"],
+  ["ATM fee", "ATM手数料"],
+  ["lost property", "遺失物"],
+  ["travel adapter", "変換プラグ"],
+  ["charging station", "充電スポット"],
+  ["first aid", "応急手当"],
+  ["prescription", "処方箋"],
+  ["travel clinic", "旅行者向け診療所"]
+]);
 
 export const vocabulary = {
   beginner: {
     label: "初級",
-    description: "日常会話の土台になる基本語彙を広くカバー",
-    words: parseWords(`
-# people and daily life
-I|私
-you|あなた
-he|彼
-she|彼女
-we|私たち
-they|彼ら
-this|これ
-that|それ
-these|これら
-those|それら
-someone|だれか
-everyone|みんな
-friend|友達
-family|家族
-mother|母
-father|父
-sister|姉妹
-brother|兄弟
-child|子ども
-parent|親
-baby|赤ちゃん
-teacher|先生
-student|生徒
-doctor|医者
-nurse|看護師
-driver|運転手
-worker|働く人
-neighbor|近所の人
-guest|お客さん
-team|チーム
-group|グループ
-name|名前
-age|年齢
-job|仕事
-home|家
-room|部屋
-door|ドア
-window|窓
-table|テーブル
-chair|いす
-bed|ベッド
-sofa|ソファ
-kitchen|台所
-bathroom|浴室
-floor|床
-wall|壁
-key|鍵
-bag|かばん
-phone|電話
-computer|コンピューター
-screen|画面
-book|本
-notebook|ノート
-pen|ペン
-paper|紙
-money|お金
-card|カード
-ticket|切符
-map|地図
-picture|写真
-photo|写真
-music|音楽
-movie|映画
-game|ゲーム
-song|歌
-story|物語
-
-# time and schedule
-time|時間
-day|日
-week|週
-month|月
-year|年
-today|今日
-tomorrow|明日
-yesterday|昨日
-morning|朝
-afternoon|午後
-evening|夕方
-night|夜
-weekend|週末
-Monday|月曜日
-Tuesday|火曜日
-Wednesday|水曜日
-Thursday|木曜日
-Friday|金曜日
-Saturday|土曜日
-Sunday|日曜日
-early|早く
-late|遅く
-now|今
-soon|すぐに
-again|もう一度
-always|いつも
-usually|たいてい
-sometimes|ときどき
-often|よく
-never|決して
-first|最初の
-last|最後の
-next|次の
-before|前に
-after|後で
-hour|時間
-minute|分
-second|秒
-break|休憩
-holiday|休日
-
-# places and movement
-school|学校
-office|会社
-store|店
-shop|お店
-station|駅
-airport|空港
-hotel|ホテル
-restaurant|レストラン
-cafe|カフェ
-park|公園
-street|通り
-road|道
-city|都市
-town|町
-country|国
-beach|海辺
-river|川
-mountain|山
-sea|海
-bus|バス
-train|電車
-car|車
-taxi|タクシー
-bike|自転車
-plane|飛行機
-walk|歩く
-run|走る
-go|行く
-come|来る
-leave|出発する
-arrive|着く
-stop|止まる
-turn|曲がる
-cross|渡る
-ride|乗る
-drive|運転する
-travel|旅行する
-visit|訪ねる
-stay|滞在する
-return|戻る
-
-# food and shopping
-water|水
-tea|お茶
-coffee|コーヒー
-milk|牛乳
-juice|ジュース
-bread|パン
-rice|ご飯
-egg|卵
-meat|肉
-fish|魚
-vegetable|野菜
-fruit|果物
-apple|りんご
-banana|バナナ
-orange|オレンジ
-cake|ケーキ
-lunch|昼食
-dinner|夕食
-breakfast|朝食
-snack|軽食
-menu|メニュー
-order|注文する
-bill|勘定
-price|値段
-cheap|安い
-expensive|高い
-buy|買う
-pay|支払う
-sell|売る
-cash|現金
-change|お釣り
-market|市場
-mall|ショッピングモール
-clothes|服
-shirt|シャツ
-pants|ズボン
-shoes|靴
-hat|帽子
-coat|コート
-size|サイズ
-color|色
-
-# body and feelings
-head|頭
-face|顔
-eye|目
-ear|耳
-nose|鼻
-mouth|口
-hand|手
-arm|腕
-leg|脚
-foot|足
-heart|心
-body|体
-health|健康
-fever|熱
-pain|痛み
-tired|疲れた
-hungry|お腹がすいた
-thirsty|喉が渇いた
-sleepy|眠い
-happy|うれしい
-sad|悲しい
-angry|怒った
-scared|怖い
-busy|忙しい
-free|暇な
-fine|元気な
-good|良い
-bad|悪い
-great|すばらしい
-okay|大丈夫
-
-# common verbs
-be|いる
-have|持っている
-do|する
-make|作る
-get|得る
-take|取る
-put|置く
-use|使う
-need|必要とする
-want|欲しい
-like|好き
-love|大好き
-hate|嫌う
-know|知っている
-think|思う
-see|見る
-watch|見る
-look|見る
-hear|聞こえる
-listen|聞く
-say|言う
-speak|話す
-talk|話す
-ask|尋ねる
-answer|答える
-call|電話する
-help|助ける
-find|見つける
-give|与える
-show|見せる
-bring|持ってくる
-send|送る
-open|開ける
-close|閉める
-start|始める
-finish|終える
-try|試す
-wait|待つ
-keep|保つ
-move|動く
-
-# practical adjectives and adverbs
-big|大きい
-small|小さい
-long|長い
-short|短い
-high|高い
-low|低い
-hot|暑い
-cold|寒い
-warm|暖かい
-cool|涼しい
-new|新しい
-old|古い
-young|若い
-easy|簡単な
-hard|難しい
-fast|速い
-slow|遅い
-near|近い
-far|遠い
-right|正しい
-wrong|間違った
-clean|きれいな
-dirty|汚れた
-full|いっぱいの
-empty|空の
-beautiful|美しい
-kind|親切な
-nice|感じのよい
-ready|準備ができた
-safe|安全な
-really|本当に
-maybe|たぶん
-very|とても
-quite|かなり
-just|ちょうど
-around|あたりに
-together|一緒に
-inside|内側に
-outside|外側に
-away|離れて
-left|左
-straight|まっすぐ
-favorite|お気に入りの
-problem|問題
-question|質問
-answer|答え
-lesson|授業
-party|パーティー
-weather|天気
-rain|雨
-sunny|晴れた
-cloudy|曇った
-windy|風の強い
-umbrella|傘
-stationery|文房具
-wallet|財布
-glasses|眼鏡
-break|壊れる
-fix it|それを直す
-carry|運ぶ
-hold|持つ
-borrow from|から借りる
-lend to|に貸す
-enjoy|楽しむ
-`)
+    description: "日常生活、移動、買い物、食事、体調管理でよく使う実用的な基本単語をまとめたレベルです。",
+    words: beginnerWords
   },
   intermediate: {
     label: "中級",
-    description: "旅行・生活・雑談でよく使う語彙と表現を強化",
-    words: parseWords(`
-# travel and movement
-reservation|予約
-passport|パスポート
-luggage|荷物
-suitcase|スーツケース
-backpack|リュック
-boarding pass|搭乗券
-platform|ホーム
-departure|出発
-arrival|到着
-delay|遅延
-traffic|交通
-route|経路
-destination|目的地
-direction|方向
-corner|角
-entrance|入口
-exit|出口
-bridge|橋
-subway|地下鉄
-highway|高速道路
-local train|各駅電車
-express train|急行電車
-schedule|予定
-plan|計画
-trip|旅行
-journey|旅
-adventure|冒険
-tour|観光
-guide|案内人
-booking|予約
-cancel|取り消す
-confirm|確認する
-miss|逃す
-catch|間に合う
-transfer|乗り換える
-pack|荷造りする
-unpack|荷ほどきする
-board|乗り込む
-land|着陸する
-explore|探索する
-
-# home and daily routines
-laundry|洗濯
-detergent|洗剤
-trash|ごみ
-recycle|再利用する
-vacuum|掃除機をかける
-clean up|片づける
-wash up|洗い物をする
-fold|たたむ
-hang|掛ける
-repair|修理する
-fix|直す
-replace|取り替える
-borrow|借りる
-lend|貸す
-share|共有する
-store away|しまう
-organize|整理する
-prepare|準備する
-serve|出す
-heat|温める
-cool down|冷ます
-freeze|凍らせる
-defrost|解凍する
-slice|薄く切る
-boil|ゆでる
-fry|揚げる
-bake|焼く
-mix|混ぜる
-pour|注ぐ
-taste|味見する
-smell|においがする
-decorate|飾る
-invite|招待する
-host|主催する
-drop by|立ち寄る
-hang out|一緒に過ごす
-relax|くつろぐ
-rest|休む
-stretch|伸びをする
-exercise|運動する
-
-# communication
-message|メッセージ
-text|メッセージを送る
-reply|返信する
-respond|応答する
-explain|説明する
-describe|描写する
-mention|言及する
-repeat|繰り返す
-pronounce|発音する
-spell|つづる
-translate|翻訳する
-introduce|紹介する
-greet|あいさつする
-apologize|謝る
-forgive|許す
-promise|約束する
-suggest|提案する
-recommend|勧める
-agree|賛成する
-disagree|反対する
-argue|言い争う
-discuss|話し合う
-chat|おしゃべりする
-joke|冗談を言う
-complain|不満を言う
-warn|警告する
-advise|助言する
-encourage|励ます
-invite over|家に招く
-catch up|近況を話す
-figure out|理解する
-point out|指摘する
-bring up|話題に出す
-calm down|落ち着く
-cheer up|元気を出す
-speak up|もっと大きな声で話す
-slow down|ゆっくりにする
-write down|書き留める
-look up|調べる
-fill out|記入する
-
-# feelings and opinions
-feeling|気持ち
-mood|気分
-emotion|感情
-impression|印象
-opinion|意見
-idea|考え
-choice|選択
-reason|理由
-result|結果
-favorite|お気に入り
-surprised|驚いた
-nervous|緊張した
-embarrassed|恥ずかしい
-relieved|ほっとした
-excited|わくわくした
-proud|誇らしい
-lonely|さみしい
-upset|動揺した
-worried|心配した
-curious|興味がある
-interested|興味がある
-bored|退屈した
-comfortable|快適な
-uncomfortable|居心地が悪い
-confident|自信がある
-careful|注意深い
-honest|正直な
-polite|礼儀正しい
-quiet|静かな
-loud|うるさい
-serious|まじめな
-funny|おかしい
-strange|変な
-useful|役に立つ
-helpful|助けになる
-important|重要な
-special|特別な
-possible|可能な
-impossible|不可能な
-worth it|その価値がある
-
-# work and school basics
-project|プロジェクト
-task|作業
-homework|宿題
-report|報告書
-presentation|発表
-practice|練習
-lesson|授業
-classmate|クラスメート
-coworker|同僚
-manager|管理者
-customer|顧客
-client|取引先
-meeting|会議
-deadline|締め切り
-shift|勤務時間
-break time|休憩時間
-uniform|制服
-training|研修
-skill|技能
-experience|経験
-goal|目標
-plan ahead|前もって計画する
-review|見直す
-check|確認する
-update|更新する
-arrange|手配する
-prepare for|備える
-handle|対処する
-solve|解決する
-improve|改善する
-focus on|集中する
-finish up|終わらせる
-show up|現れる
-take care of|面倒を見る
-set up|準備する
-clean out|片づける
-turn in|提出する
-pick up|受け取る
-drop off|届ける
-follow up|追加で確認する
-
-# shopping and services
-receipt|レシート
-refund|返金
-exchange|交換
-discount|割引
-sale|セール
-coupon|クーポン
-stock|在庫
-service|サービス
-counter|窓口
-cashier|レジ係
-delivery|配達
-shipping|発送
-package|荷物
-post office|郵便局
-bank|銀行
-account|口座
-balance|残高
-deposit|預け入れ
-withdraw|引き出す
-charge|請求する
-membership|会員資格
-appointment|予約
-insurance|保険
-prescription|処方箋
-medicine|薬
-clinic|診療所
-pharmacy|薬局
-haircut|散髪
-salon|美容室
-repair shop|修理店
-customer service|顧客対応
-support desk|サポート窓口
-line up|列に並ぶ
-sign up|登録する
-log in|ログインする
-log out|ログアウトする
-turn on|電源を入れる
-turn off|電源を切る
-plug in|差し込む
-charge up|充電する
-
-# health and lifestyle
-habit|習慣
-lifestyle|生活習慣
-diet|食事制限
-sleep schedule|睡眠のリズム
-symptom|症状
-cough|せき
-sneeze|くしゃみ
-headache|頭痛
-stomachache|腹痛
-injury|けが
-recovery|回復
-appointment card|診察券
-checkup|健康診断
-healthy|健康的な
-unhealthy|不健康な
-fresh|新鮮な
-salty|塩辛い
-sweet|甘い
-sour|すっぱい
-bitter|苦い
-spicy|辛い
-delicious|おいしい
-awful|ひどい
-crowded|混んだ
-empty seat|空席
-line|列
-seat|席
-reservation time|予約時間
-flu|インフルエンザ
-appointment time|予約時刻
-commute|通勤する
-rush hour|通勤ラッシュ
-neighborhood|近所
-delivery box|宅配ボックス
-apply for|に申し込む
-register for|に登録する
-membership card|会員証
-return item|返品する
-pick a seat|席を選ぶ
-window seat|窓側の席
-aisle seat|通路側の席
-change trains|電車を乗り換える
-get lost|道に迷う
-look around|見て回る
-spend time|時間を過ごす
-save money|お金を節約する
-run out of|を使い切る
-take medicine|薬を飲む
-feel better|気分がよくなる
-call back|折り返し電話する
-show around|案内して回る
-stop by|立ち寄る
-make sure|確かめる
-`
-    )
+    description: "予定調整、生活、移動、買い物、説明などで使う語彙を広げるレベルです。",
+    words: intermediateWords
   },
   advanced: {
     label: "上級",
-    description: "実用会話を一段深くする抽象語・説明語彙・応答表現",
-    words: parseWords(`
-# thinking and communication
-assume|思い込む
-realize|気づく
-recognize|認識する
-consider|考慮する
-compare|比較する
-contrast|対比する
-judge|判断する
-estimate|見積もる
-predict|予測する
-analyze|分析する
-interpret|解釈する
-summarize|要約する
-clarify|明確にする
-emphasize|強調する
-highlight|目立たせる
-define|定義する
-state|述べる
-argue that|と主張する
-admit|認める
-deny|否定する
-suggest that|と示唆する
-point out that|と指摘する
-imply|ほのめかす
-meanwhile|その一方で
-therefore|したがって
-however|しかしながら
-otherwise|そうでなければ
-instead|その代わりに
-in fact|実際には
-at least|少なくとも
-actually|実際に
-basically|基本的には
-frankly|率直に言うと
-personally|個人的には
-apparently|見たところ
-obviously|明らかに
-especially|特に
-generally|一般的に
-rarely|めったに
-eventually|最終的に
-
-# practical verbs
-manage|なんとかやる
-deal with|対処する
-cope with|うまく対処する
-avoid|避ける
-reduce|減らす
-increase|増やす
-maintain|維持する
-improve on|さらに良くする
-adjust|調整する
-adapt|適応する
-recover|回復する
-prevent|防ぐ
-protect|守る
-replace|置き換える
-combine|組み合わせる
-separate|分ける
-expand|広げる
-limit|制限する
-deliver|届ける
-achieve|達成する
-require|必要とする
-allow|許可する
-permit|認める
-refuse|断る
-accept|受け入れる
-decline|丁重に断る
-hesitate|ためらう
-rush|急ぐ
-delay|遅らせる
-postpone|延期する
-reschedule|予定を変更する
-cancel out|打ち消す
-sort out|整理して解決する
-work out|うまくいく
-carry on|続ける
-leave out|省く
-turn out|結果的にそうなる
-end up|結局そうなる
-make up for|埋め合わせる
-run into|偶然出会う
-
-# nuanced daily conversation
-awkward|気まずい
-smooth|スムーズな
-stable|安定した
-flexible|柔軟な
-reliable|信頼できる
-reasonable|妥当な
-fair|公平な
-appropriate|適切な
-effective|効果的な
-efficient|効率的な
-practical|実用的な
-realistic|現実的な
-specific|具体的な
-general|一般的な
-common|よくある
-rare|珍しい
-formal|形式ばった
-casual|気軽な
-familiar|なじみのある
-unfamiliar|見慣れない
-typical|典型的な
-unusual|珍しい
-convenient|便利な
-inconvenient|不便な
-comfortable enough|十分に快適な
-stressful|負担の大きい
-annoying|いらいらする
-pleasant|心地よい
-impressive|印象的な
-disappointing|期待外れの
-interesting enough|十分興味深い
-complicated|ややこしい
-simple enough|十分シンプルな
-clear|明確な
-unclear|不明確な
-accurate|正確な
-inaccurate|不正確な
-available|利用できる
-unavailable|利用できない
-necessary|必要な
-
-# relationships and society
-relationship|関係
-connection|つながり
-trust|信頼
-respect|尊重
-support|支援
-encouragement|励まし
-responsibility|責任
-permission|許可
-opportunity|機会
-challenge|課題
-solution|解決策
-decision|決定
-discussion|議論
-conversation|会話
-agreement|合意
-disagreement|不一致
-conflict|対立
-issue|問題
-concern|懸念
-priority|優先事項
-preference|好み
-expectation|期待
-pressure|圧力
-stress|ストレス
-balance|バランス
-boundary|境界
-influence|影響
-community|地域社会
-environment|環境
-culture|文化
-tradition|伝統
-custom|習慣
-behavior|振る舞い
-attitude|態度
-response|反応
-reaction|反応
-feedback|意見
-advice|助言
-apology|謝罪
-gratitude|感謝
-
-# abstract but practical
-option|選択肢
-alternative|代案
-possibility|可能性
-probability|確率
-evidence|根拠
-fact|事実
-detail|詳細
-context|文脈
-background|背景
-purpose|目的
-benefit|利益
-drawback|欠点
-risk|危険
-impact|影響
-effect|効果
-result in|結果として生じる
-lead to|につながる
-depend on|次第である
-consist of|から成る
-belong to|に属する
-relate to|関係する
-refer to|言及する
-apply to|当てはまる
-focus on|集中する
-base on|基づく
-rely on|頼る
-stand out|目立つ
-fit in|なじむ
-catch on|広まる
-hold on|少し待つ
-go over|見直す
-come up with|思いつく
-break down|故障する
-settle down|落ち着く
-back up|支える
-step back|一歩引く
-move forward|前進する
-pay attention|注意を払う
-take into account|考慮に入れる
-make sense|意味をなす
-
-# service and problem solving
-resolve|解決する
-arrangement|手配
-confirmation|確認
-availability|空き状況
-alternative plan|別案
-replacement|代替品
-refund policy|返金方針
-warranty|保証
-maintenance|保守
-inspection|点検
-damage|損害
-repair cost|修理費
-compensation|補償
-complaint|苦情
-request|依頼
-inquiry|問い合わせ
-notice|お知らせ
-reminder|念押し
-announcement|案内
-instruction|指示
-guideline|指針
-procedure|手順
-step|手順
-condition|条件
-requirement|要件
-standard|基準
-quality|品質
-delay notice|遅延連絡
-shipping issue|配送トラブル
-technical issue|技術的な問題
-network issue|通信の問題
-access problem|アクセス障害
-unexpected|予想外の
-urgent|緊急の
-immediate|即時の
-temporary|一時的な
-permanent|恒久的な
-overall|全体として
-exactly|正確に
-roughly|おおよそ
-
-# advanced day-to-day verbs
-apologize for|を謝る
-appreciate|感謝する
-applaud|称賛する
-criticize|批判する
-blame|責める
-forgive someone|人を許す
-convince|納得させる
-persuade|説得する
-remind|思い出させる
-warn against|に注意を促す
-notify|通知する
-inform|知らせる
-update someone|人に最新状況を伝える
-brief|手短に説明する
-consult|相談する
-coordinate|調整する
-organize properly|きちんと整理する
-negotiate|交渉する
-request politely|丁寧に頼む
-decline politely|丁寧に断る
-respond quickly|すばやく返答する
-follow through|最後までやり切る
-keep track of|追跡する
-check in|様子を確認する
-check out|確認して出る
-drop in|立ち寄る
-wrap up|締めくくる
-reach out|連絡する
-figure things out|物事を理解する
-make progress|進歩する
-keep in mind|心に留める
-on the other hand|一方で
-as a result|その結果
-to be honest|正直に言うと
-from my point of view|私の見方では
-in that case|その場合は
-for the time being|当面は
-in advance|前もって
-in detail|詳しく
-by mistake|うっかり
-on purpose|わざと
-make a difference|違いを生む
-take responsibility|責任を負う
-meet expectations|期待に応える
-fall behind|遅れを取る
-keep up with|についていく
-look into|詳しく調べる
-bring about|引き起こす
-settle an issue|問題を解決する
-come to an agreement|合意に達する
-under pressure|プレッシャーの中で
-in a hurry|急いで
-for now|今のところ
-at the moment|現時点では
-without a doubt|間違いなく
-`)
+    description: "説明や議論で使いやすい、抽象度の高い語彙を扱うレベルです。",
+    words: advancedWords
   },
   business: {
     label: "ビジネス",
-    description: "会議・メール・営業・事務で使いやすい実務語彙を集中学習",
-    words: parseWords(`
-# office basics
-agenda|議題
-meeting room|会議室
-conference call|電話会議
-online meeting|オンライン会議
-schedule meeting|会議を設定する
-minutes|議事録
-attendee|出席者
-participant|参加者
-speaker|発表者
-presentation deck|資料
-slide|スライド
-handout|配布資料
-document|文書
-file|ファイル
-folder|フォルダ
-draft|草案
-final version|最終版
-approval|承認
-reviewer|確認者
-manager|上司
-director|部長
-executive|役員
-department|部署
-division|部門
-branch|支店
-head office|本社
-remote work|在宅勤務
-office hours|営業時間
-shift schedule|勤務表
-attendance|出勤
-absence|欠勤
-vacation|休暇
-day off|休み
-overtime|残業
-payroll|給与計算
-salary|給料
-bonus|賞与
-benefit package|福利厚生
-policy|方針
-compliance|法令順守
-
-# email and communication
-subject line|件名
-attachment|添付ファイル
-cc|CC
-bcc|BCC
-reply all|全員に返信
-forward|転送する
-follow-up email|追跡メール
-confirmation email|確認メール
-reminder email|リマインドメール
-deadline reminder|締め切り連絡
-send over|送る
-share with|共有する
-loop in|関係者を入れる
-touch base|軽く確認する
-reach out to|連絡する
-keep posted|状況を知らせ続ける
-let me know|知らせてください
-as discussed|話した通り
-for reference|参考までに
-for your review|ご確認用
-please advise|ご指示ください
-appreciate your help|ご協力に感謝します
-thanks in advance|よろしくお願いします
-best regards|敬具
-sincerely|敬具
-internal memo|社内メモ
-announcement|告知
-notice|通知
-inquiry|問い合わせ
-response time|返答時間
-
-# project management
-project plan|計画書
-milestone|節目
-timeline|日程
-deliverable|成果物
-scope|範囲
-requirement|要件
-specification|仕様
-task owner|担当者
-assignee|割り当て担当
-priority|優先度
-status update|進捗報告
-progress report|進捗レポート
-issue tracker|課題管理表
-bug report|不具合報告
-roadmap|ロードマップ
-kickoff|キックオフ
-launch|公開する
-rollout|展開
-implementation|実装
-deployment|導入
-testing|テスト
-quality check|品質確認
-revision|修正版
-feedback round|フィードバック回
-approval flow|承認フロー
-resource|リソース
-budget|予算
-cost estimate|費用見積もり
-actual cost|実績費用
-budget overrun|予算超過
-adjust schedule|日程調整する
-move up|前倒しにする
-push back|後ろ倒しにする
-assign task|タスクを割り当てる
-complete task|タスクを完了する
-track progress|進捗を追う
-meet deadline|締め切りを守る
-miss deadline|締め切りに遅れる
-on schedule|予定通り
-behind schedule|予定より遅れて
-
-# sales and customer communication
-client meeting|顧客会議
-customer call|顧客との通話
-proposal|提案書
-quotation|見積書
-estimate|見積もり
-contract|契約
-agreement|合意書
-invoice|請求書
-purchase order|発注書
-payment term|支払条件
-renewal|更新
-subscription|契約サービス
-lead|見込み客
-prospect|有望顧客
-sales pitch|売り込み
-demo|実演
-trial|試用
-offer|提案
-discount|値引き
-promotion|販促
-campaign|キャンペーン
-closing|成約
-deal|取引
-revenue|売上
-profit|利益
-margin|利益率
-target|目標
-sales target|売上目標
-pipeline|案件パイプライン
-account manager|担当営業
-customer success|顧客成功支援
-support ticket|問い合わせ票
-renew contract|契約更新する
-request quote|見積依頼する
-send invoice|請求書を送る
-process payment|支払いを処理する
-close deal|契約を決める
-win business|案件を取る
-lose business|案件を失う
-
-# meetings and negotiation
-open the meeting|会議を始める
-wrap up the meeting|会議を締める
-share screen|画面共有する
-go through|順に確認する
-raise a point|論点を出す
-make a suggestion|提案する
-give an update|最新状況を伝える
-report back|報告する
-approve budget|予算承認する
-request approval|承認依頼する
-gain approval|承認を得る
-negotiate terms|条件交渉する
-counteroffer|対案
-compromise|妥協案
-mutual benefit|相互利益
-partnership|提携
-stakeholder|関係者
-decision maker|決裁者
-consensus|合意
-alignment|足並みがそろうこと
-next step|次のステップ
-action item|対応項目
-owner|担当者
-due date|期限
-follow-up meeting|フォロー会議
-reschedule meeting|会議を変更する
-cancel meeting|会議を取り消す
-attendance list|出席者一覧
-discussion point|議論のポイント
-objection|異議
-
-# hr and administration
-recruitment|採用
-job posting|求人票
-resume|履歴書
-interview|面接
-candidate|候補者
-onboarding|受け入れ研修
-orientation|オリエンテーション
-training session|研修会
-evaluation|評価
-performance review|人事評価
-promotion|昇進
-transfer|異動
-resignation|退職
-employment contract|雇用契約
-probation period|試用期間
-attendance record|勤怠記録
-expense report|経費精算
-business trip|出張
-transportation cost|交通費
-reimbursement|払い戻し
-facility|設備
-equipment|機器
-asset|資産
-inventory|在庫
-procurement|調達
-vendor|仕入先
-supplier|供給業者
-purchase request|購入申請
-approval route|承認経路
-internal process|社内手続き
-
-# finance and operations
-cash flow|資金繰り
-operating cost|運営費
-expense|費用
-fixed cost|固定費
-variable cost|変動費
-forecast|予測
-financial report|財務報告
-quarterly result|四半期決算
-annual report|年次報告
-tax|税金
-profit and loss|損益
-balance sheet|貸借対照表
-investment|投資
-return on investment|投資対効果
-purchase|購入
-shipment|出荷
-delivery date|納期
-warehouse|倉庫
-stock level|在庫水準
-order volume|受注量
-production|生産
-output|生産量
-efficiency|効率
-workflow|業務フロー
-operation|運営
-maintenance|保守
-troubleshooting|問題切り分け
-incident|障害
-downtime|停止時間
-recovery plan|復旧計画
-
-# business conversation verbs
-approve|承認する
-reject|却下する
-submit|提出する
-review|確認する
-revise|修正する
-finalize|確定する
-negotiate|交渉する
-coordinate|調整する
-escalate|上位に引き上げる
-delegate|任せる
-prioritize|優先順位をつける
-streamline|効率化する
-allocate|割り当てる
-monitor|監視する
-measure|測定する
-analyze|分析する
-report|報告する
-summarize|要約する
-confirm|確認する
-clarify|明確にする
-resolve|解決する
-address|対処する
-launch a project|案件を始動する
-close a project|案件を終了する
-sign a contract|契約する
-renew a deal|取引を更新する
-share feedback|意見を共有する
-manage risk|リスクを管理する
-reduce cost|コストを削減する
-increase revenue|売上を伸ばす
-book a meeting|会議を入れる
-send a reminder|リマインドを送る
-confirm attendance|出席確認する
-review the contract|契約書を確認する
-revise the proposal|提案書を修正する
-prepare an estimate|見積もりを作る
-approve the request|申請を承認する
-reject the request|申請を却下する
-share the schedule|予定を共有する
-adjust the budget|予算を調整する
-report an issue|問題を報告する
-solve the issue|問題を解決する
-improve efficiency|効率を改善する
-reduce the delay|遅れを減らす
-meet the target|目標を達成する
-miss the target|目標未達になる
-gain trust|信頼を得る
-build a relationship|関係を築く
-reply promptly|すぐ返信する
-keep the deadline|期限を守る
-check the figures|数字を確認する
-update the client|顧客に状況共有する
-arrange delivery|納品を手配する
-`)
+    description: "会議、進行管理、メール、資料確認で使う実務語彙を学ぶレベルです。",
+    words: businessWords
+  },
+  travel: {
+    label: "旅行",
+    description: "移動、宿泊、観光、食事、トラブル対応で使う旅行語彙を学ぶレベルです。",
+    words: travelWords
   }
 };
+
