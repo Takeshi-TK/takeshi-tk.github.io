@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StrideWords | 英単語学習サイト</title>
+  <meta name="description" content="英単語と実用フレーズを、四択クイズとウォーキングモードで学べる学習サイトです。初級からビジネスまで対応しています。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <nav class="site-nav" aria-label="サイトナビゲーション">
+      <a class="nav-brand" href="./index.html">StrideWords</a>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">English Training Studio</p>
+        <h1>StrideWords</h1>
+        <p class="hero-text">
+          レベル別の四択クイズとウォーキングモードで、日常会話とビジネス会話の実用英単語を学べる学習サイトです。
+          学習 ID ごとに苦手な単語を記録して、復習を重ねるほど出題内容があなた向けに絞られていきます。
+        </p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <span class="stat-label">レベル</span>
+          <strong>初級 / 中級 / 上級 / ビジネス</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">学習方式</span>
+          <strong>四択クイズ + ウォーキング</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">プロフィール</span>
+          <strong>ID ごとに学習履歴保存</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="control-panel">
+        <section class="panel-card">
+          <p class="section-label">Study ID</p>
+          <div class="profile-top">
+            <span class="status-badge">現在の ID</span>
+            <strong id="activeProfileName" class="profile-name">guest</strong>
+          </div>
+
+          <label class="field-block">
+            <span>ID を新規登録 / 再開</span>
+            <input id="profileIdInput" type="text" placeholder="例: hanako-01!">
+          </label>
+          <label class="field-block">
+            <span>Password</span>
+            <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード">
+          </label>
+          <p class="field-help">ID は英字・数字・記号をすべて含む 6 文字以上、パスワードも 6 文字以上で設定してください。</p>
+
+          <div class="inline-actions">
+            <button id="registerProfileButton" class="primary-button" type="button">新規登録</button>
+            <button id="resumeProfileButton" class="ghost-button" type="button">ログイン</button>
+            <button id="resetProfileButton" class="ghost-button danger-button" type="button">この ID をリセット</button>
+          </div>
+        </section>
+
+        <section id="adminPanel" class="panel-card hidden">
+          <p class="section-label">Admin Menu</p>
+          <div class="profile-top">
+            <span class="status-badge">管理者専用</span>
+            <strong id="adminStatusText" class="profile-name">account control</strong>
+          </div>
+
+          <label class="field-block">
+            <span>削除対象アカウント</span>
+            <select id="adminAccountSelect"></select>
+          </label>
+          <p class="field-help">ここに表示されるのは一般ユーザーのアカウントだけです。</p>
+
+          <div class="inline-actions">
+            <button id="deleteAccountButton" class="ghost-button danger-button" type="button">選択アカウントを削除</button>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <p class="section-label">Category</p>
+          <div id="categoryButtons" class="category-list" aria-label="カテゴリ選択"></div>
+        </section>
+
+        <section class="panel-card">
+          <div class="content-header">
+            <div>
+              <p class="section-label">Content</p>
+              <h2>学習対象</h2>
+            </div>
+          </div>
+          <div class="mode-switch top-mode-switch" role="tablist" aria-label="学習対象">
+            <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語</button>
+            <button id="phraseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ</button>
+          </div>
+          <p class="panel-note">
+            単語とフレーズは分けて学習できます。苦手判定もそれぞれ別で保存されます。
+          </p>
+        </section>
+
+        <section class="panel-card">
+          <div class="content-header">
+            <div>
+              <p class="section-label">Mode</p>
+              <h2>学習モード切替</h2>
+            </div>
+          </div>
+          <div class="mode-switch top-mode-switch" role="tablist" aria-label="学習モード">
+            <button id="quizTab" class="mode-button active" type="button" role="tab" aria-selected="true">四択クイズ</button>
+            <button id="walkTab" class="mode-button" type="button" role="tab" aria-selected="false">ウォーキング</button>
+          </div>
+          <p class="panel-note">
+            正解でも不正解でも、解説を確認したあとに `次の問題へ` を押して進める方式です。
+          </p>
+        </section>
+
+      </aside>
+
+      <section class="content-area">
+        <section id="quizPanel" class="content-card quiz-panel">
+          <div class="content-header">
+            <div>
+              <p class="section-label">Multiple Choice</p>
+              <h2 id="quizHeading">四択クイズ</h2>
+            </div>
+            <div class="header-actions">
+              <span id="quizPoolBadge" class="status-badge">出題対象 0語</span>
+              <button id="showPreviousAnswerButton" class="ghost-button" type="button">前回の回答を表示</button>
+              <button id="skipButton" class="ghost-button" type="button">別の問題へ</button>
+            </div>
+          </div>
+
+          <div class="prompt-card">
+            <p class="prompt-label">日本語の意味</p>
+            <h3 id="questionMeaning">読み込み中...</h3>
+            <p id="questionHint" class="prompt-hint">この意味に合う英単語を1つ選んでください。</p>
+          </div>
+
+          <div id="choices" class="choice-grid" aria-live="polite"></div>
+
+          <div class="quiz-footer">
+            <p id="feedbackMessage" class="feedback neutral">答えを選ぶとここに結果が表示されます。</p>
+            <button id="nextButton" class="primary-button hidden" type="button">次の問題へ</button>
+          </div>
+
+          <div id="previousAnswerCard" class="review-card hidden">
+            <p class="section-label">Previous Answer</p>
+            <div id="previousAnswerBody" class="feedback neutral">前回の回答はまだありません。</div>
+          </div>
+        </section>
+
+        <section id="walkPanel" class="content-card hidden">
+          <div class="content-header">
+            <div>
+              <p class="section-label">Walking Mode</p>
+              <h2>耳で覚えるウォーキングモード</h2>
+            </div>
+            <span id="walkBadge" class="status-badge">待機中</span>
+          </div>
+
+          <div class="walk-actions top-actions">
+            <button id="walkStartButton" class="primary-button" type="button">スタート</button>
+            <button id="walkStopButton" class="ghost-button" type="button">ストップ</button>
+            <button id="walkResetButton" class="ghost-button" type="button">先頭から</button>
+          </div>
+
+          <div class="walk-controls">
+            <label class="control-block">
+              <span>再生方針</span>
+              <select id="walkStrategySelect">
+                <option value="unseen">初見優先</option>
+                <option value="weak">苦手優先</option>
+                <option value="random">完全ランダム</option>
+              </select>
+            </label>
+
+            <label class="control-block">
+              <span>再生スピード</span>
+              <select id="speedSelect">
+                <option value="1.0">1.0x</option>
+                <option value="1.1">1.1x</option>
+                <option value="1.2">1.2x</option>
+                <option value="1.3">1.3x</option>
+                <option value="1.4">1.4x</option>
+                <option value="1.5">1.5x</option>
+              </select>
+            </label>
+
+            <label class="control-block">
+              <span>単語間の間隔</span>
+              <input id="gapRange" type="range" min="1" max="5" step="1" value="2">
+              <strong id="gapValue">2秒</strong>
+            </label>
+          </div>
+
+          <div class="walk-meta">
+            <div class="meta-chip">
+              <span>選択レベル</span>
+              <strong id="walkLevelName">初級</strong>
+            </div>
+            <div class="meta-chip">
+              <span>出題対象</span>
+              <strong id="walkLevelCount">0語</strong>
+            </div>
+            <div class="meta-chip">
+              <span>再生方針</span>
+              <strong id="walkPriorityText">苦手語を優先</strong>
+            </div>
+          </div>
+
+          <div class="walking-display">
+            <p class="prompt-label">現在の単語</p>
+            <h3 id="walkWord">press start</h3>
+            <p id="walkMeaning" class="walk-meaning">スタートすると英単語と日本語を順番に読み上げます。</p>
+          </div>
+
+          <p class="panel-note">
+            ウォーキングモードもこの ID の学習履歴を使って、苦手な単語や未学習語が優先して流れるようにしています。
+            対応ブラウザでは再生中に画面が消えにくくなるよう調整しています。
+          </p>
+        </section>
+
+        <section class="content-card compact-card">
+          <p class="section-label">Study Snapshot</p>
+          <div class="snapshot-grid">
+            <div>
+              <span class="snapshot-label">正解数</span>
+              <strong id="correctCount">0</strong>
+            </div>
+            <div>
+              <span class="snapshot-label">回答数</span>
+              <strong id="attemptCount">0</strong>
+            </div>
+            <div>
+              <span class="snapshot-label">正答率</span>
+              <strong id="accuracyRate">0%</strong>
+            </div>
+            <div>
+              <span class="snapshot-label">出題対象</span>
+              <strong id="activeWordCount">0</strong>
+            </div>
+            <div>
+              <span class="snapshot-label">完了語数</span>
+              <strong id="masteredWordCount">0</strong>
+            </div>
+            <div>
+              <span class="snapshot-label">収録語数</span>
+              <strong id="wordCount">0</strong>
+            </div>
+          </div>
+          <div class="progress-wrap" aria-hidden="true">
+            <div id="accuracyBar" class="progress-bar"></div>
+          </div>
+        </section>
+
+        <section class="content-card compact-card">
+          <div class="content-header">
+            <div>
+              <p class="section-label">Publishing Ready</p>
+              <h2>公開・広告準備メモ</h2>
+            </div>
+          </div>
+          <div class="ad-prep-note">
+            このサイトはオンライン公開と AdSense 導入の準備ができるように作っています。
+            公開時は `adsense-config.js` に `publisherId` を入れ、`privacy.html` などの固定ページも一緒に公開してください。
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="footer-brand" href="./index.html">StrideWords</a>
+      <div class="footer-links">
+        <a href="./index.html">学習ページ</a>
+        <a href="./privacy.html">プライバシーポリシー</a>
+        <a href="./terms.html">利用規約</a>
+        <a href="./contact.html">お問い合わせ</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="./adsense-config.js"></script>
+  <script src="./adsense-loader.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
