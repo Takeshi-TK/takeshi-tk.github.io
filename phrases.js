@@ -6,7 +6,22 @@ function buildEntries(items) {
   }));
 }
 
-export const phrases = {
+function dedupeEntries(items) {
+  const seen = new Set();
+
+  return items.filter(({ english }) => {
+    const key = english.trim().toLowerCase();
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+const legacyPhrases = {
   beginner: {
     label: "初級",
     description: "まずは短くて使いやすい基本フレーズから身につけるレベルです。",
@@ -151,5 +166,117 @@ export const phrases = {
       ["Where is the boarding gate?", "搭乗口はどこですか", "空港で最重要レベルに実用的な表現です。gate 番号がわかっていても方向確認に使えます。"],
       ["Be careful of slippery floors.", "床が滑りやすいので気をつけてください", "be careful of ... は「〜に注意する」「〜に気をつける」という意味の熟語で、人、物、場所、状況など具体的な対象に対して注意を促す際に使われます。危険なものや注意すべき対象の前に置いて使います。ここでは slippery floors で「滑りやすい床」に注意を促しています。"]
     ])
+  }
+};
+
+const basicPhraseWords = dedupeEntries([
+  ...legacyPhrases.beginner.words,
+  ...buildEntries([
+    ["See you tomorrow.", "また明日ね", "別れ際に次の日また会う予定があるときの自然な一言です。See you later よりも日時がはっきりしています。"],
+    ["What time is it now?", "今何時ですか", "時刻をたずねる基本表現です。now を入れることで、今の時刻を知りたい意図がより明確になります。"],
+    ["I'm hungry.", "お腹が空きました", "体調や状態を短く伝える基本表現です。食事の提案につなげやすい一言でもあります。"],
+    ["I'm tired.", "疲れました", "学校や仕事、移動のあとに気分を素直に伝える表現です。I'm a little tired. とすると少しやわらかく聞こえます。"],
+    ["Can you show me?", "見せてもらえますか", "やり方や場所、画面などを実際に見たいときに使える便利な表現です。説明だけで足りないときに役立ちます。"],
+    ["Please wait a moment.", "少し待ってください", "相手に短く待ってもらいたいときの丁寧な表現です。a moment を入れると、少しの時間だと伝えられます。"],
+    ["This is my friend.", "こちらは私の友だちです", "人を紹介するときの基本表現です。This is my brother. や This is my teacher. にもそのまま応用できます。"],
+    ["I like this one.", "私はこれが好きです", "いくつかの選択肢の中から好みを伝えるときの言い方です。買い物や注文でも使いやすい表現です。"],
+    ["Where are you from?", "どこの出身ですか", "初対面の会話でよく使う質問です。国、地域、町など相手の背景を自然にたずねられます。"],
+    ["What do you do after school?", "放課後は何をしますか", "学生同士の会話で使いやすい質問です。after school を work に変えると仕事後の予定にも応用できます。"],
+    ["I'm ready.", "準備できました", "出発や開始の前に自分の状態を短く伝える基本表現です。会話でも行動の区切りでも使いやすいです。"],
+    ["Please come in.", "どうぞ入ってください", "家や部屋、教室などに人を迎え入れるときの自然な表現です。"],
+    ["Can you hear me?", "聞こえますか", "対面でもオンラインでも使える基本表現です。音声が届いているか確認したいときに便利です。"],
+    ["I forgot my umbrella.", "傘を忘れました", "忘れ物を伝える短い実用表現です。my umbrella の部分を入れ替えるだけで応用しやすいです。"],
+    ["Let's go together.", "一緒に行きましょう", "友だちや家族を誘うときの基本表現です。会話を前向きに進めやすい一言です。"]
+  ])
+]);
+
+const practicalPhraseWords = dedupeEntries([
+  ...legacyPhrases.intermediate.words,
+  ...legacyPhrases.advanced.words,
+  ...buildEntries([
+    ["Could you write it down for me?", "書いてもらえますか", "聞き取りにくい単語や住所、番号などを文字で確認したいときの表現です。口頭だけでは不安な場面で役立ちます。"],
+    ["I need a little more time.", "もう少し時間が必要です", "その場ですぐに決められないときや、準備に少し時間が欲しいときに使える表現です。丁寧で使い回しやすい一言です。"],
+    ["That depends on the situation.", "それは状況によります", "一つの答えに決めきれないときに使う自然な表現です。depends on ... で「〜次第だ」という意味になります。"],
+    ["I'm trying to remember the word.", "その単語を思い出そうとしています", "言いたいことはあるのに単語が出てこないときのつなぎとして便利です。会話を止めずに続けやすくなります。"],
+    ["Can you give me an example?", "例を挙げてもらえますか", "説明をもっと具体的に理解したいときの定番表現です。抽象的な話を実例に落としたい場面で使えます。"],
+    ["I didn't catch the last part.", "最後の部分を聞き取れませんでした", "全部ではなく一部だけ聞き逃したときに自然な言い方です。say that again よりも具体的に伝えられます。"],
+    ["Let's keep it simple.", "簡単にいきましょう", "話を複雑にしすぎず、分かりやすく進めたいときの表現です。説明や相談の場面で使いやすいです。"],
+    ["What's the easiest way to get there?", "そこへ行く一番簡単な方法は何ですか", "移動手段や行き方を比較しながら知りたいときに便利です。fastest ではなく easiest を使うので負担の少ない方法をたずねられます。"],
+    ["I may need to change the plan.", "予定を変更する必要があるかもしれません", "確定ではないが、予定変更の可能性を先に伝える表現です。相手に心づもりをしてもらえます。"],
+    ["Could you check if it's available?", "利用できるか確認してもらえますか", "空き状況や在庫、対応可否を確認してほしいときの定番表現です。available がとても実用的です。"],
+    ["I'm still thinking about it.", "まだ考えています", "即答を避けたいときのやわらかい返しです。断定せずに保留の姿勢を自然に伝えられます。"],
+    ["That would make things easier.", "そうすると楽になります", "提案や選択肢について、よりやりやすくなると伝える表現です。things を使って状況全体をまとめて表せます。"],
+    ["Could you send me the details later?", "詳細をあとで送ってもらえますか", "その場で全部覚えられないときや、文章で確認したいときに便利な表現です。later によって急ぎではないことも伝わります。"],
+    ["Let's focus on the main point first.", "まず要点から見ましょう", "話が広がりすぎたときに、中心となる論点へ戻すための表現です。"]
+  ])
+]);
+
+const businessPhraseWords = dedupeEntries([
+  ...legacyPhrases.business.words,
+  ...buildEntries([
+    ["Could you share the file with the team?", "そのファイルをチームに共有してもらえますか", "社内の共有作業でよく使う表現です。share A with B で「AをBに共有する」という形になります。"],
+    ["Let's confirm the deadline once again.", "締切をもう一度確認しましょう", "日程トラブルを防ぐために、あらためて確認するときの言い方です。once again を入れると再確認の意図が明確です。"],
+    ["We need to prioritize the urgent tasks.", "急ぎの作業を優先する必要があります", "タスクが多いときに優先順位をはっきりさせる表現です。prioritize はビジネスで非常によく使います。"],
+    ["I'll prepare a short summary.", "短い要約を用意します", "会議後ややり取りのあとで要点を整理して共有するときに自然な一言です。short summary で簡潔さも伝えられます。"],
+    ["Could you update the spreadsheet?", "表を更新していただけますか", "数値管理や進捗表の更新を頼む場面で使いやすい表現です。spreadsheet は実務で頻出です。"],
+    ["Let's move this discussion offline.", "この件は別で話しましょう", "全体会議の場ではなく、後で個別に詳しく話したいときの表現です。offline は「オフラインで」というより「この場の外で」の意味で使われます。"],
+    ["We should clarify the requirements.", "要件を明確にしたほうがよいです", "作業の前提や条件があいまいなときに使う実務表現です。requirements は開発でも事務でも頻出です。"],
+    ["I'll send the revised draft this afternoon.", "修正版の下書きを今日の午後に送ります", "修正後の資料送付予定を伝える自然な文です。revised draft はそのまま実務で使えます。"],
+    ["Please keep the client informed.", "顧客に状況共有をお願いします", "担当者へ継続的な報告を依頼するときの表現です。keep A informed で「Aに状況を知らせ続ける」となります。"],
+    ["Let's review the risks before launch.", "公開前にリスクを確認しましょう", "リリース前の確認で使いやすい表現です。before launch によってタイミングが明確になります。"],
+    ["Could you add this to the agenda?", "これを議題に追加してもらえますか", "会議前に話したい項目を入れてほしいときの表現です。agenda は会議運営で頻出です。"],
+    ["I'll follow up with the vendor.", "取引先に確認を取ります", "外部先とのやり取りを自分が担当すると伝える表現です。follow up with ... が実務で使いやすい形です。"],
+    ["We need a quick status update.", "短い進捗共有が必要です", "長い説明ではなく、要点だけの進捗確認を求める表現です。status update は会議やチャットで非常によく使われます。"],
+    ["Could you confirm the final version?", "最終版を確認してもらえますか", "修正版が複数あるときに、最終版で問題ないか見てもらう定番表現です。"],
+    ["Let's set a realistic timeline.", "現実的なスケジュールを立てましょう", "無理のない進行計画を作りたいときの表現です。realistic が実務の温度感によく合います。"]
+  ])
+]);
+
+const travelPhraseWords = dedupeEntries([
+  ...legacyPhrases.travel.words,
+  ...buildEntries([
+    ["Is this seat taken?", "この席は空いていますか", "電車、バス、待合室などで座ってよいか確認する基本表現です。taken は「使われている、埋まっている」という意味です。"],
+    ["Could I have a non-smoking room?", "禁煙の部屋をお願いできますか", "ホテルで部屋の希望を伝える定番表現です。smoking room と対で覚えると便利です。"],
+    ["Can I leave my bag after check-out?", "チェックアウト後も荷物を預けられますか", "ホテルを出たあとに身軽に行動したいときによく使う表現です。after check-out が実用的です。"],
+    ["How long is the wait?", "どのくらい待ちますか", "列、レストラン、窓口などで待ち時間をたずねる短く便利な表現です。"],
+    ["Which bus goes to the city center?", "どのバスが市内中心部へ行きますか", "バス移動で路線を確認したいときに使う表現です。goes to ... で目的地へ向かう交通手段を聞けます。"],
+    ["Could you tell me the Wi-Fi password?", "Wi-Fiのパスワードを教えてもらえますか", "ホテルやカフェで非常によく使う表現です。password をはっきり入れると伝わりやすいです。"],
+    ["I'd like a table near the window.", "窓際の席をお願いします", "レストランで席の希望を丁寧に伝える言い方です。near the window は景色が見たいときに便利です。"],
+    ["Can I have this to go?", "これを持ち帰りにできますか", "食べ物や飲み物を持ち帰りたいときの定番表現です。アメリカ英語圏で特によく使われます。"],
+    ["Do you have anything without dairy?", "乳製品を使っていないものはありますか", "食事制限やアレルギー対応で便利な表現です。without dairy で乳製品なしを自然に伝えられます。"],
+    ["Where can I buy a SIM card?", "SIMカードはどこで買えますか", "海外到着後に通信手段を確保したいときの実用表現です。空港や街中でそのまま使えます。"],
+    ["Is it safe to walk here at night?", "このあたりは夜に歩いても安全ですか", "治安を確認したいときの丁寧で実用的な質問です。at night を入れると夜間の安全性に限定できます。"],
+    ["Could you help me find my hotel?", "ホテルを探すのを手伝ってもらえますか", "道に迷ったときや現在地が分からないときに使える表現です。find my hotel で目的が明確に伝わります。"],
+    ["How much is the entrance fee?", "入場料はいくらですか", "観光施設や展示会で料金を確認する基本表現です。admission fee と言い換えられる場面もあります。"],
+    ["Can I take pictures here?", "ここで写真を撮ってもいいですか", "撮影可否を確認したいときの定番表現です。寺社や美術館では特に役立ちます。"],
+    ["Where is the nearest convenience store?", "一番近いコンビニはどこですか", "旅行中によく必要になる店を探す実用表現です。nearest によって近場を探していることが明確になります。"],
+    ["Could I have another towel?", "タオルをもう一枚もらえますか", "ホテルで追加備品をお願いするときに自然な表現です。another を使うと追加依頼だと伝わります。"],
+    ["What time should I check out?", "チェックアウトは何時までですか", "ホテルの退出時刻を確認したいときの表現です。ルールをはっきり確認できて便利です。"],
+    ["Can you recommend a local dish?", "地元のおすすめ料理はありますか", "観光先で名物料理を知りたいときの自然な質問です。local dish がその土地らしさを表します。"],
+    ["Is breakfast included?", "朝食は含まれていますか", "宿泊予約の内容を確認するときに非常によく使う表現です。included によって料金に入っているかをたずねられます。"],
+    ["Which line should I take?", "どの路線に乗ればいいですか", "電車や地下鉄で路線選びに迷ったときの基本表現です。travel でかなり実用的です。"]
+  ])
+]);
+
+export const phrases = {
+  basic: {
+    label: "初級",
+    description: "中学生レベルの一般会話でまず使いたい短くて基本的なフレーズです。",
+    words: basicPhraseWords
+  },
+  practical: {
+    label: "実用単語",
+    description: "予定調整、説明、聞き返し、相談など日常を広げる実用フレーズです。",
+    words: practicalPhraseWords
+  },
+  business: {
+    label: "ビジネス",
+    description: "会議、共有、確認、依頼、進行管理で使いやすい仕事向けのフレーズです。",
+    words: businessPhraseWords
+  },
+  travel: {
+    label: "旅行",
+    description: "移動、宿泊、注文、買い物、トラブル対応でそのまま使える旅行フレーズです。",
+    words: travelPhraseWords
   }
 };
