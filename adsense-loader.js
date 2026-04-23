@@ -4,7 +4,11 @@
     return;
   }
 
-  if (document.querySelector('script[data-stridewords-adsense="true"]')) {
+  const existingScript = document.querySelector(
+    'script[data-stridewords-adsense="true"], script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]'
+  );
+
+  if (existingScript) {
     return;
   }
 

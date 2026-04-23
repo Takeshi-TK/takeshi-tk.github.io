@@ -60,17 +60,18 @@ GitHub Pages でも静的サイトとしてそのまま公開できます。
 
 1. 公開後の本番ドメインを AdSense の `Sites` に追加
 2. サイト審査が通るまで待つ
-3. `adsense-config.js` を編集する
+3. `adsense-config.js` が本番 publisher ID になっていることを確認する
 
 ```js
 window.strideWordsAdsense = {
   enableAutoAds: true,
-  publisherId: "ca-pub-xxxxxxxxxxxxxxxx",
+  publisherId: "ca-pub-3121682237695422",
   note: "本番用の publisher ID"
 };
 ```
 
-4. デプロイし直す
+4. `ads.txt` がサイトルートで開けることを確認する
+5. デプロイし直す
 
 ## 注意
 

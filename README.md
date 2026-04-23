@@ -29,12 +29,13 @@
 
 ## AdSense 準備
 
-`adsense-config.js` を編集してください。
+AdSense の publisher ID は設定済みです。
 
 - `enableAutoAds: true`
-- `publisherId: "ca-pub-xxxxxxxxxxxxxxxx"`
+- `publisherId: "ca-pub-3121682237695422"`
+- `ads.txt` をサイトルートで配信
 
-公開ドメインを AdSense のサイト一覧に追加して、審査完了後に有効化する想定です。
+公開ドメインを AdSense のサイト一覧に追加して、審査完了後に表示される想定です。
 
 ## 補足
 

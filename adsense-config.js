@@ -1,5 +1,5 @@
 window.strideWordsAdsense = {
-  enableAutoAds: false,
-  publisherId: "",
-  note: "公開前に enableAutoAds を true にし、publisherId に ca-pub-xxxxxxxxxxxxxxxx を設定してください。"
+  enableAutoAds: true,
+  publisherId: "ca-pub-3121682237695422",
+  note: "Google AdSense Auto ads are enabled for the production publisher ID."
 };

@@ -32,67 +32,68 @@
           登録なしでもすぐ始められ、アカウントを作ると学習内容を保存して続きから再開できます。
         </p>
       </div>
-      <div class="hero-stats">
-        <section class="stat-card hero-id-card">
-          <p class="section-label">Study ID</p>
-          <div class="profile-top">
-            <span class="status-badge">現在のID</span>
-            <strong id="activeProfileName" class="profile-name">guest</strong>
-          </div>
-          <p class="profile-note">
-            登録なしでもすぐに学習できます。アカウント登録をすると勉強内容を保存して、あとで続きから再開できます。
-          </p>
-
-          <label class="field-block">
-            <span>ID を新規登録 / ログイン</span>
-            <input id="profileIdInput" type="text" placeholder="例: hanako-01!">
-          </label>
-          <label class="field-block">
-            <span>Password</span>
-            <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード">
-          </label>
-          <p class="field-help">
-            ID は英字・数字・記号をすべて含む 6 文字以上、パスワードも 6 文字以上で設定してください。
-          </p>
-
-          <div class="inline-actions">
-            <button id="registerProfileButton" class="primary-button" type="button">新規登録</button>
-            <button id="resumeProfileButton" class="ghost-button" type="button">ログイン</button>
-            <button id="resetProfileButton" class="ghost-button danger-button" type="button">このIDの学習履歴をリセット</button>
-          </div>
-        </section>
-
-        <div class="stat-card interactive-stat-card">
-          <span class="stat-label">カテゴリー</span>
-          <strong id="heroCategoryListSummary">初級 / 実用単語 / ビジネス / 旅行</strong>
-          <p id="heroCategorySummary" class="hero-selection-text">初級を選択中</p>
-          <div id="categoryButtons" class="category-list hero-category-list" aria-label="カテゴリ選択"></div>
-        </div>
-        <div class="stat-card interactive-stat-card">
-          <span class="stat-label">学習内容・学習モード</span>
-          <strong id="heroModeSummary">単語 / 4択クイズ</strong>
-          <div class="hero-switch-stack">
-            <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習内容">
-              <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語</button>
-              <button id="phraseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ</button>
-            </div>
-            <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習モード">
-              <button id="quizTab" class="mode-button active" type="button" role="tab" aria-selected="true">4択クイズ</button>
-              <button id="walkTab" class="mode-button" type="button" role="tab" aria-selected="false">ウォーキング</button>
-            </div>
-          </div>
-        </div>
-        <div class="stat-card emphasis-card">
-          <span class="stat-label">学習ガイド</span>
-          <strong class="emphasis-title">登録なしでもすぐ使えます</strong>
-          <p class="emphasis-text">まずはそのまま単語・フレーズ学習を始められます。</p>
-          <p class="emphasis-text emphasis-subtext">学習記録を登録すると進捗を保存して続きから再開できます。</p>
-        </div>
-      </div>
     </header>
 
     <main class="layout">
       <aside class="control-panel">
+        <div class="hero-stats">
+          <section class="stat-card hero-id-card">
+            <p class="section-label">Study ID</p>
+            <div class="profile-top">
+              <span class="status-badge">現在のID</span>
+              <strong id="activeProfileName" class="profile-name">guest</strong>
+            </div>
+            <p class="profile-note">
+              登録なしでもすぐに学習できます。アカウント登録をすると勉強内容を保存して、あとで続きから再開できます。
+            </p>
+
+            <label class="field-block">
+              <span>ID を新規登録 / ログイン</span>
+              <input id="profileIdInput" type="text" placeholder="例: hanako-01!">
+            </label>
+            <label class="field-block">
+              <span>Password</span>
+              <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード">
+            </label>
+            <p class="field-help">
+              ID は英字・数字・記号をすべて含む 6 文字以上、パスワードも 6 文字以上で設定してください。
+            </p>
+
+            <div class="inline-actions">
+              <button id="registerProfileButton" class="primary-button" type="button">新規登録</button>
+              <button id="resumeProfileButton" class="ghost-button" type="button">ログイン</button>
+              <button id="resetProfileButton" class="ghost-button danger-button" type="button">このIDの学習履歴をリセット</button>
+            </div>
+          </section>
+
+          <div class="stat-card interactive-stat-card">
+            <span class="stat-label">カテゴリー</span>
+            <strong id="heroCategoryListSummary">初級 / 実用単語 / ビジネス / 旅行</strong>
+            <p id="heroCategorySummary" class="hero-selection-text">初級を選択中</p>
+            <div id="categoryButtons" class="category-list hero-category-list" aria-label="カテゴリ選択"></div>
+          </div>
+          <div class="stat-card interactive-stat-card">
+            <span class="stat-label">学習内容・学習モード</span>
+            <strong id="heroModeSummary">単語 / 4択クイズ</strong>
+            <div class="hero-switch-stack">
+              <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習内容">
+                <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語</button>
+                <button id="phraseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ</button>
+              </div>
+              <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習モード">
+                <button id="quizTab" class="mode-button active" type="button" role="tab" aria-selected="true">4択クイズ</button>
+                <button id="walkTab" class="mode-button" type="button" role="tab" aria-selected="false">ウォーキング</button>
+              </div>
+            </div>
+          </div>
+          <div class="stat-card emphasis-card">
+            <span class="stat-label">学習ガイド</span>
+            <strong class="emphasis-title">登録なしでもすぐ使えます</strong>
+            <p class="emphasis-text">まずはそのまま単語・フレーズ学習を始められます。</p>
+            <p class="emphasis-text emphasis-subtext">学習記録を登録すると進捗を保存して続きから再開できます。</p>
+          </div>
+        </div>
+
         <section id="adminPanel" class="panel-card hidden">
           <p class="section-label">Admin Menu</p>
           <div class="profile-top">

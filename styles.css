@@ -87,10 +87,7 @@ select {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 16px;
-  padding: 20px;
+  padding: 22px 24px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 28px;
   background:
@@ -103,6 +100,10 @@ select {
       rgba(255, 255, 255, 0.02) 20px
     );
   box-shadow: var(--shadow);
+}
+
+.hero-copy {
+  max-width: 920px;
 }
 
 .eyebrow,
@@ -218,8 +219,8 @@ select {
 
 .layout {
   display: grid;
-  grid-template-columns: 290px 1fr;
-  gap: 14px;
+  grid-template-columns: minmax(300px, 370px) minmax(0, 1fr);
+  gap: 18px;
   margin-top: 14px;
   align-items: start;
 }
@@ -228,6 +229,11 @@ select {
 .content-area {
   display: grid;
   gap: 14px;
+}
+
+.control-panel,
+.content-area {
+  min-width: 0;
 }
 
 .panel-card,
@@ -731,6 +737,21 @@ select {
 
 .page-section + .page-section {
   margin-top: 24px;
+}
+
+@media (min-width: 981px) {
+  .control-panel {
+    position: sticky;
+    top: 14px;
+  }
+
+  .content-area {
+    gap: 16px;
+  }
+
+  .compact-card .snapshot-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 980px) {
