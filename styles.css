@@ -42,6 +42,7 @@ body {
     radial-gradient(circle at top left, rgba(219, 108, 50, 0.18), transparent 32%),
     radial-gradient(circle at bottom right, rgba(42, 104, 150, 0.14), transparent 28%),
     linear-gradient(135deg, #efe4d2, #f7f2e9 42%, #ece5da);
+  overflow-x: hidden;
 }
 
 body.dark-mode {
@@ -55,6 +56,19 @@ button,
 input,
 select {
   font: inherit;
+}
+
+p,
+span,
+strong,
+button,
+label,
+input,
+select,
+h1,
+h2,
+h3 {
+  overflow-wrap: anywhere;
 }
 
 body.dark-mode input,
@@ -85,8 +99,10 @@ body.dark-mode .usage-help-result.ready {
 }
 
 .page-shell {
-  width: min(1360px, calc(100% - 20px));
+  width: calc(100% - 20px);
+  max-width: 1360px;
   margin: 14px auto 28px;
+  overflow-x: clip;
 }
 
 .site-nav,
@@ -220,6 +236,8 @@ body.dark-mode .hero {
   line-height: 1.6;
   font-size: 0.94rem;
   color: var(--muted);
+  line-break: anywhere;
+  word-break: break-word;
 }
 
 .hero-stats {
@@ -316,6 +334,7 @@ body.dark-mode .hero {
 
 .panel-card,
 .content-card {
+  min-width: 0;
   padding: 18px;
   border-radius: 20px;
   background: var(--paper);
@@ -372,6 +391,7 @@ body.dark-mode .hero {
   border: 1px solid rgba(42, 104, 150, 0.14);
   color: var(--muted);
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .field-block span,
@@ -952,7 +972,7 @@ body.dark-mode .hero {
 
 @media (max-width: 700px) {
   .page-shell {
-    width: min(100% - 20px, 1220px);
+    width: calc(100% - 20px);
     margin: 12px auto 28px;
   }
 

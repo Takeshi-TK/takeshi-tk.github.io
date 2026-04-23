@@ -1084,6 +1084,279 @@ function buildPracticalWordExample(word, meaning) {
     }
   };
 
+  Object.assign(exactExamples, {
+    i: {
+      examples: [
+        ["I live in Japan.", "私は日本に住んでいます。"],
+        ["I need some help.", "私は少し助けが必要です。"]
+      ]
+    },
+    you: {
+      examples: [
+        ["You are welcome.", "どういたしまして。"],
+        ["Do you have a minute?", "少し時間がありますか。"]
+      ]
+    },
+    he: {
+      examples: [
+        ["He works near here.", "彼はこの近くで働いています。"],
+        ["He is my friend.", "彼は私の友だちです。"]
+      ]
+    },
+    she: {
+      examples: [
+        ["She speaks English well.", "彼女は英語を上手に話します。"],
+        ["She is at home now.", "彼女は今、家にいます。"]
+      ]
+    },
+    it: {
+      examples: [
+        ["It is very useful.", "それはとても役に立ちます。"],
+        ["I found it yesterday.", "私は昨日それを見つけました。"]
+      ]
+    },
+    we: {
+      examples: [
+        ["We can start now.", "私たちは今始められます。"],
+        ["We went there together.", "私たちは一緒にそこへ行きました。"]
+      ]
+    },
+    they: {
+      examples: [
+        ["They are waiting outside.", "彼らは外で待っています。"],
+        ["They helped me yesterday.", "彼らは昨日私を助けてくれました。"]
+      ]
+    },
+    finger: {
+      examples: [
+        ["This is my finger.", "これは私の指です。"],
+        ["I hurt my finger.", "指をけがしました。"]
+      ]
+    },
+    hand: {
+      examples: [
+        ["Please raise your hand.", "手を上げてください。"],
+        ["I washed my hands.", "手を洗いました。"]
+      ]
+    },
+    head: {
+      examples: [
+        ["My head hurts.", "頭が痛いです。"],
+        ["Please keep your head up.", "顔を上げてください。"]
+      ]
+    },
+    face: {
+      examples: [
+        ["Please wash your face.", "顔を洗ってください。"],
+        ["She has a kind face.", "彼女は優しい顔をしています。"]
+      ]
+    },
+    eye: {
+      examples: [
+        ["My eye hurts.", "目が痛いです。"],
+        ["Please close your eyes.", "目を閉じてください。"]
+      ]
+    },
+    ear: {
+      examples: [
+        ["My ear hurts.", "耳が痛いです。"],
+        ["I heard it with my own ears.", "私はそれを自分の耳で聞きました。"]
+      ]
+    },
+    nose: {
+      examples: [
+        ["My nose is running.", "鼻水が出ています。"],
+        ["He touched his nose.", "彼は鼻を触りました。"]
+      ]
+    },
+    mouth: {
+      examples: [
+        ["Please open your mouth.", "口を開けてください。"],
+        ["My mouth is dry.", "口が渇いています。"]
+      ]
+    },
+    tooth: {
+      examples: [
+        ["My tooth hurts.", "歯が痛いです。"],
+        ["I brush my teeth every morning.", "私は毎朝歯を磨きます。"]
+      ]
+    },
+    foot: {
+      examples: [
+        ["My foot hurts.", "足が痛いです。"],
+        ["Please wipe your feet.", "足を拭いてください。"]
+      ]
+    },
+    toe: {
+      examples: [
+        ["I hurt my toe.", "足の指をけがしました。"],
+        ["My toe hurts.", "足の指が痛いです。"]
+      ]
+    },
+    body: {
+      examples: [
+        ["My body feels tired.", "体が疲れている感じがします。"],
+        ["Exercise is good for your body.", "運動は体に良いです。"]
+      ]
+    },
+    water: {
+      examples: [
+        ["Can I have some water?", "水をもらえますか。"],
+        ["I drink water every morning.", "私は毎朝水を飲みます。"]
+      ]
+    },
+    coffee: {
+      examples: [
+        ["I drink coffee every morning.", "私は毎朝コーヒーを飲みます。"],
+        ["Can I have a coffee?", "コーヒーを1杯もらえますか。"]
+      ]
+    },
+    tea: {
+      examples: [
+        ["Would you like some tea?", "お茶はいかがですか。"],
+        ["I drink tea after dinner.", "私は夕食後にお茶を飲みます。"]
+      ]
+    },
+    bread: {
+      examples: [
+        ["I ate bread for breakfast.", "朝食にパンを食べました。"],
+        ["This bread is fresh.", "このパンは新鮮です。"]
+      ]
+    },
+    rice: {
+      examples: [
+        ["I eat rice every day.", "私は毎日ご飯を食べます。"],
+        ["The rice is ready.", "ご飯ができました。"]
+      ]
+    },
+    go: {
+      examples: [
+        ["I go to work by train.", "私は電車で仕事へ行きます。"],
+        ["Let's go together.", "一緒に行きましょう。"]
+      ]
+    },
+    come: {
+      examples: [
+        ["Please come here.", "ここに来てください。"],
+        ["I will come back tomorrow.", "明日戻ってきます。"]
+      ]
+    },
+    have: {
+      examples: [
+        ["I have a question.", "質問があります。"],
+        ["Do you have time?", "時間はありますか。"]
+      ]
+    },
+    be: {
+      examples: [
+        ["Please be careful.", "気をつけてください。"],
+        ["I want to be ready.", "準備ができている状態でいたいです。"]
+      ]
+    },
+    do: {
+      examples: [
+        ["I do my homework at night.", "私は夜に宿題をします。"],
+        ["What should I do?", "私は何をすればいいですか。"]
+      ]
+    },
+    make: {
+      examples: [
+        ["I make breakfast every morning.", "私は毎朝朝食を作ります。"],
+        ["Can you make a reservation?", "予約を取れますか。"]
+      ]
+    },
+    get: {
+      examples: [
+        ["I got a message from him.", "彼からメッセージを受け取りました。"],
+        ["Can I get a ticket?", "チケットをもらえますか。"]
+      ]
+    },
+    take: {
+      examples: [
+        ["Please take this seat.", "この席に座ってください。"],
+        ["I take the bus to school.", "私は学校へバスで行きます。"]
+      ]
+    },
+    use: {
+      examples: [
+        ["Can I use this pen?", "このペンを使ってもいいですか。"],
+        ["I use this app every day.", "私はこのアプリを毎日使います。"]
+      ]
+    },
+    need: {
+      examples: [
+        ["I need your help.", "あなたの助けが必要です。"],
+        ["Do you need anything?", "何か必要ですか。"]
+      ]
+    },
+    want: {
+      examples: [
+        ["I want some water.", "水が欲しいです。"],
+        ["What do you want to do?", "何をしたいですか。"]
+      ]
+    },
+    like: {
+      examples: [
+        ["I like this song.", "私はこの歌が好きです。"],
+        ["Do you like coffee?", "コーヒーは好きですか。"]
+      ]
+    },
+    eat: {
+      examples: [
+        ["I eat breakfast at seven.", "私は7時に朝食を食べます。"],
+        ["Let's eat together.", "一緒に食べましょう。"]
+      ]
+    },
+    drink: {
+      examples: [
+        ["I drink water after exercise.", "運動後に水を飲みます。"],
+        ["Do you drink coffee?", "コーヒーを飲みますか。"]
+      ]
+    },
+    buy: {
+      examples: [
+        ["I want to buy this.", "これを買いたいです。"],
+        ["Where can I buy a ticket?", "どこで切符を買えますか。"]
+      ]
+    },
+    pay: {
+      examples: [
+        ["Can I pay by card?", "カードで支払えますか。"],
+        ["I paid for lunch.", "昼食代を支払いました。"]
+      ]
+    },
+    read: {
+      examples: [
+        ["I read a book before bed.", "寝る前に本を読みます。"],
+        ["Can you read this message?", "このメッセージを読めますか。"]
+      ]
+    },
+    write: {
+      examples: [
+        ["Please write your name here.", "ここに名前を書いてください。"],
+        ["I wrote an email.", "メールを書きました。"]
+      ]
+    },
+    today: {
+      examples: [
+        ["I am busy today.", "今日は忙しいです。"],
+        ["Let's start today.", "今日始めましょう。"]
+      ]
+    },
+    tomorrow: {
+      examples: [
+        ["See you tomorrow.", "また明日会いましょう。"],
+        ["I will call you tomorrow.", "明日電話します。"]
+      ]
+    },
+    yesterday: {
+      examples: [
+        ["I was tired yesterday.", "昨日は疲れていました。"],
+        ["I bought this yesterday.", "これは昨日買いました。"]
+      ]
+    }
+  });
+
   if (exactExamples[lower]) {
     return exactExamples[lower];
   }
@@ -1154,29 +1427,98 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
+  if (/頭|顔|髪|目|耳|鼻|口|歯|首|肩|腕|手|指|背中|お腹|脚|ひざ|足|心臓|体/.test(meaning)) {
+    return {
+      examples: [
+        [`My ${word} hurts.`, `${meaning}が痛いです。`],
+        [`Please be careful with your ${word}.`, `${meaning}を大事にしてください。`]
+      ]
+    };
+  }
+
+  if (/水|お茶|コーヒー|牛乳|ジュース|飲料|ワイン|ビール|パン|ご飯|麺|スープ|サラダ|食事|料理|りんご|バナナ|肉|魚|卵|チーズ|塩|砂糖|こしょう|ソース/.test(meaning)) {
+    return {
+      examples: [
+        [`I like ${word}.`, `私は${meaning}が好きです。`],
+        [`Can I have some ${word}?`, `${meaning}を少しもらえますか。`]
+      ]
+    };
+  }
+
+  if (/人|友だち|家族|母|父|親|子ども|赤ちゃん|男の子|女の子|男性|女性|兄弟|姉妹|息子|娘|夫|妻|先生|生徒|医者|看護師|運転手|店員|スタッフ|上司|同僚|観光客|警察官|技術者|デザイナー|所有者|リーダー|メンバー/.test(meaning)) {
+    return {
+      examples: [
+        [`She is a ${word}.`, `彼女は${meaning}です。`],
+        [`I talked to the ${word}.`, `その${meaning}と話しました。`]
+      ]
+    };
+  }
+
+  if (/する|使う|作る|取る|置く|欲しい|好き|思う|見る|聞く|話す|たずねる|答える|助ける|見つける|与える|送る|開ける|閉める|始める|終える|待つ|動く|歩く|走る|座る|立つ|旅行する|訪れる|戻る|買う|支払う|売る|食べる|飲む|料理する|洗う|掃除する|切る|注文する|選ぶ|着る|変える|運ぶ|持つ|書く|読む|勉強する|学ぶ|教える|忘れる|会う|確認する|予約する|到着する|出発する|休む|眠る|笑う|泣く|楽しむ|準備する|共有する|借りる|貸す/.test(meaning)) {
+    return {
+      examples: [
+        [`I want to ${word}.`, `私は${meaning}ことをしたいです。`],
+        [`Please ${word} it.`, `それを${meaning}してください。`]
+      ]
+    };
+  }
+
+  if (/今日|明日|昨日|朝|午後|夕方|夜|週末|休日|休暇/.test(meaning)) {
+    return {
+      examples: [
+        [`I am busy ${word}.`, `${meaning}は忙しいです。`],
+        [`Let's talk ${word}.`, `${meaning}話しましょう。`]
+      ]
+    };
+  }
+
+  if (/月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日/.test(meaning)) {
+    return {
+      examples: [
+        [`I have a meeting on ${word}.`, `${meaning}に会議があります。`],
+        [`See you on ${word}.`, `${meaning}に会いましょう。`]
+      ]
+    };
+  }
+
+  if (/1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月/.test(meaning)) {
+    return {
+      examples: [
+        [`I will go there in ${word}.`, `${meaning}にそこへ行きます。`],
+        [`The event is in ${word}.`, `そのイベントは${meaning}です。`]
+      ]
+    };
+  }
+
+  if (/\s/.test(word)) {
+    return {
+      examples: [
+        [`I need to check the ${word}.`, `${meaning}を確認する必要があります。`],
+        [`Where is the ${word}?`, `${meaning}はどこですか。`]
+      ]
+    };
+  }
+
   return {
-    meaningNote: `${meaning}という意味です。英文の中で「どんな場面で使うか」を確認しましょう。`,
     examples: [
-      [`This ${word} is useful.`, `この${meaning}は役に立ちます。`],
-      [`I need the ${word}.`, `その${meaning}が必要です。`]
-    ],
-    note: "一般的な例文です。表示が不自然な場合は、意味を確認するための補助として使ってください。"
+      [`This is a ${word}.`, `これは${meaning}です。`],
+      [`Where is the ${word}?`, `${meaning}はどこですか。`]
+    ]
   };
 }
 
 function buildLocalUsageExamples(context, reason = "") {
   const answer = context.answer;
   const selectedOption = context.selectedOption || null;
-  const categoryLabel = getCurrentCategory().label;
   const prefix = reason ? `${reason}\n\n` : "";
 
   if (state.studyType === "phrase") {
     const mistakeNote = selectedOption && selectedOption.english !== answer.english
       ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
       : "";
-    const explanation = answer.explanation ? `\n使いどころ: ${answer.explanation}` : "";
+    const cleanPhrase = answer.english.replace(/[.!?。！？]+$/, "");
 
-    return `${prefix}使用例\n${answer.english}\n意味: ${answer.japanese}${explanation}\n例: 会話ではこの表現をそのまま1文として使えます。まず音読して、次に自分の状況に置き換えて練習しましょう。${mistakeNote}`;
+    return `${prefix}使用例\n例1: ${answer.english}\n訳1: ${answer.japanese}\n例2: I said, "${cleanPhrase}."\n訳2: 私は「${answer.japanese}」と言いました。${mistakeNote}`;
   }
 
   const word = answer.english;
@@ -1189,7 +1531,7 @@ function buildLocalUsageExamples(context, reason = "") {
     .map(([english, japanese], index) => `例${index + 1}: ${english}\n訳${index + 1}: ${japanese}`)
     .join("\n");
 
-  return `${prefix}使用例\n意味の補足: ${example.meaningNote}\n${exampleLines}\n使い方: ${example.note}\n練習: 例文を音読して、主語や場所だけ変えて言い換えてみましょう。${mistakeNote}`;
+  return `${prefix}使用例\n${exampleLines}${mistakeNote}`;
 }
 
 function renderUsageHelpActions(container, context) {
@@ -1202,7 +1544,7 @@ function renderUsageHelpActions(container, context) {
 
   const note = document.createElement("span");
   note.className = "usage-help-note";
-  note.textContent = "使用例と意味の補足を表示できます。";
+  note.textContent = "使用例を表示できます。";
 
   const usageButton = document.createElement("button");
   usageButton.type = "button";
