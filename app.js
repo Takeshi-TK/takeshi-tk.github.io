@@ -711,84 +711,140 @@ function setAiResult(target, className, text) {
 function buildPracticalWordExample(word, meaning) {
   const lower = word.toLowerCase();
   const exactExamples = {
+    for: {
+      meaningNote: "目的・対象・期間を表す前置詞です。「〜のために」「〜に向けて」「〜の間」など、文によって訳が変わります。",
+      examples: [
+        ["This gift is for you.", "このプレゼントはあなたのためのものです。"],
+        ["I studied for two hours.", "私は2時間勉強しました。"]
+      ],
+      note: "for は日本語1語で固定せず、「誰のため」「何の目的」「どれくらいの期間」かを見て訳します。"
+    },
     hostel: {
-      english: "I stayed at a hostel near the station.",
-      japanese: "駅の近くのホステルに泊まりました。",
-      note: "hotel より安い宿泊先を指すことが多く、旅行会話でよく使います。"
+      meaningNote: "旅行者向けの安い宿泊施設です。相部屋や共用キッチンがあることが多く、hotel よりカジュアルで低価格な宿です。",
+      examples: [
+        ["I stayed at a hostel near the station.", "駅の近くのホステルに泊まりました。"],
+        ["This hostel has a shared kitchen.", "このホステルには共用キッチンがあります。"]
+      ],
+      note: "日本語の「ホステル」だけでは分かりにくいので、「安めの旅行者向け宿」と覚えると実用的です。"
     },
     hotel: {
-      english: "I booked a hotel for two nights.",
-      japanese: "2泊分のホテルを予約しました。",
+      meaningNote: "宿泊施設のホテルです。個室で泊まる一般的な宿を指します。",
+      examples: [
+        ["I booked a hotel for two nights.", "2泊分のホテルを予約しました。"],
+        ["The hotel is close to the airport.", "そのホテルは空港に近いです。"]
+      ],
       note: "book a hotel で「ホテルを予約する」という実用表現です。"
     },
     restaurant: {
-      english: "This restaurant is popular with locals.",
-      japanese: "このレストランは地元の人に人気です。",
+      meaningNote: "食事をする店、飲食店のことです。",
+      examples: [
+        ["This restaurant is popular with locals.", "このレストランは地元の人に人気です。"],
+        ["Let's find a restaurant nearby.", "近くのレストランを探しましょう。"]
+      ],
       note: "食事の場所を説明するときに使いやすい単語です。"
     },
     airport: {
-      english: "I arrived at the airport early.",
-      japanese: "早めに空港に着きました。",
+      meaningNote: "飛行機に乗ったり到着したりする空港です。",
+      examples: [
+        ["I arrived at the airport early.", "早めに空港に着きました。"],
+        ["How do I get to the airport?", "空港へはどう行けばいいですか。"]
+      ],
       note: "at the airport の形でよく使います。"
     },
     station: {
-      english: "Let's meet at the station.",
-      japanese: "駅で会いましょう。",
+      meaningNote: "電車やバスなどの駅・停留所を指します。",
+      examples: [
+        ["Let's meet at the station.", "駅で会いましょう。"],
+        ["The station is crowded today.", "今日は駅が混んでいます。"]
+      ],
       note: "待ち合わせでそのまま使える表現です。"
     },
     ticket: {
-      english: "I bought a train ticket.",
-      japanese: "電車の切符を買いました。",
+      meaningNote: "電車・飛行機・イベントなどのチケット、切符です。",
+      examples: [
+        ["I bought a train ticket.", "電車の切符を買いました。"],
+        ["Do I need a ticket?", "チケットは必要ですか。"]
+      ],
       note: "buy a ticket で「切符を買う」です。"
     },
     reservation: {
-      english: "I have a reservation at seven.",
-      japanese: "7時に予約しています。",
+      meaningNote: "ホテル・レストラン・サービスなどの予約です。",
+      examples: [
+        ["I have a reservation at seven.", "7時に予約しています。"],
+        ["Can I change my reservation?", "予約を変更できますか。"]
+      ],
       note: "ホテルやレストランでよく使います。"
     },
     meeting: {
-      english: "The meeting starts at ten.",
-      japanese: "会議は10時に始まります。",
+      meaningNote: "仕事などで人が集まって話し合う会議・打ち合わせです。",
+      examples: [
+        ["The meeting starts at ten.", "会議は10時に始まります。"],
+        ["I have a meeting this afternoon.", "今日の午後に会議があります。"]
+      ],
       note: "ビジネス英語では頻出です。"
     },
     schedule: {
-      english: "My schedule is full today.",
-      japanese: "今日は予定がいっぱいです。",
+      meaningNote: "予定、日程、スケジュールのことです。",
+      examples: [
+        ["My schedule is full today.", "今日は予定がいっぱいです。"],
+        ["Can we check the schedule?", "スケジュールを確認できますか。"]
+      ],
       note: "予定や日程を話すときに便利です。"
     },
     deadline: {
-      english: "The deadline is tomorrow.",
-      japanese: "締切は明日です。",
+      meaningNote: "提出や完了の期限、締切です。",
+      examples: [
+        ["The deadline is tomorrow.", "締切は明日です。"],
+        ["We need to meet the deadline.", "締切に間に合わせる必要があります。"]
+      ],
       note: "仕事や提出物の期限に使います。"
     },
     password: {
-      english: "I forgot my password.",
-      japanese: "パスワードを忘れました。",
+      meaningNote: "ログインなどに使うパスワードです。",
+      examples: [
+        ["I forgot my password.", "パスワードを忘れました。"],
+        ["Please enter your password.", "パスワードを入力してください。"]
+      ],
       note: "ログインできない場面でよく使います。"
     },
     address: {
-      english: "Please write your address here.",
-      japanese: "ここに住所を書いてください。",
+      meaningNote: "住所、宛先、メールアドレスなどの「アドレス」です。",
+      examples: [
+        ["Please write your address here.", "ここに住所を書いてください。"],
+        ["What is your email address?", "あなたのメールアドレスは何ですか。"]
+      ],
       note: "書類や配送の場面で使います。"
     },
     price: {
-      english: "The price is reasonable.",
-      japanese: "値段は手ごろです。",
+      meaningNote: "物やサービスの値段・価格です。",
+      examples: [
+        ["The price is reasonable.", "値段は手ごろです。"],
+        ["What is the price?", "値段はいくらですか。"]
+      ],
       note: "買い物や交渉で便利です。"
     },
     problem: {
-      english: "There is a problem with my phone.",
-      japanese: "スマホに問題があります。",
+      meaningNote: "困ったこと、問題、トラブルを指します。",
+      examples: [
+        ["There is a problem with my phone.", "スマホに問題があります。"],
+        ["What's the problem?", "何が問題ですか。"]
+      ],
       note: "with をつけると「何に問題があるか」を言えます。"
     },
     question: {
-      english: "I have a question about this.",
-      japanese: "これについて質問があります。",
+      meaningNote: "質問、疑問のことです。",
+      examples: [
+        ["I have a question about this.", "これについて質問があります。"],
+        ["Can I ask a question?", "質問してもいいですか。"]
+      ],
       note: "授業や仕事でそのまま使えます。"
     },
     first: {
-      english: "This is my first time here.",
-      japanese: "ここに来るのは初めてです。",
+      meaningNote: "順番が最初であることを表します。「初めて」「1番目の」という意味で使います。",
+      examples: [
+        ["This is my first time here.", "ここに来るのは初めてです。"],
+        ["She finished first.", "彼女は1位で終えました。"]
+      ],
       note: "first は「最初の」のほか、「初めて」という場面でもよく使います。"
     }
   };
@@ -799,55 +855,76 @@ function buildPracticalWordExample(word, meaning) {
 
   if (/宿|ホテル|ホステル|泊/.test(meaning)) {
     return {
-      english: `I stayed at a ${word} last night.`,
-      japanese: `昨夜、${meaning}に泊まりました。`,
+      meaningNote: `${meaning}は、泊まる場所や宿泊に関係する単語です。`,
+      examples: [
+        [`I stayed at a ${word} last night.`, `昨夜、${meaning}に泊まりました。`],
+        [`Is this ${word} near the station?`, `この${meaning}は駅の近くですか。`]
+      ],
       note: "宿泊先について話すときに使います。"
     };
   }
 
   if (/駅|空港|場所|店|学校|会社|病院|公園|部屋/.test(meaning)) {
     return {
-      english: `Let's meet at the ${word}.`,
-      japanese: `${meaning}で会いましょう。`,
+      meaningNote: `${meaning}は、場所を表す単語です。`,
+      examples: [
+        [`Let's meet at the ${word}.`, `${meaning}で会いましょう。`],
+        [`The ${word} is nearby.`, `${meaning}は近くにあります。`]
+      ],
       note: "場所を表す単語は at the ... の形でよく使います。"
     };
   }
 
   if (/予定|予約|会議|締切|期限|面接/.test(meaning)) {
     return {
-      english: `I need to check the ${word}.`,
-      japanese: `${meaning}を確認する必要があります。`,
+      meaningNote: `${meaning}は、予定や仕事の管理で使う単語です。`,
+      examples: [
+        [`I need to check the ${word}.`, `${meaning}を確認する必要があります。`],
+        [`The ${word} is important.`, `その${meaning}は重要です。`]
+      ],
       note: "予定や仕事の確認で使いやすい形です。"
     };
   }
 
   if (/問題|質問|理由|答え|説明|情報/.test(meaning)) {
     return {
-      english: `I have a ${word} about this.`,
-      japanese: `これについて${meaning}があります。`,
+      meaningNote: `${meaning}は、確認や説明の場面でよく使う単語です。`,
+      examples: [
+        [`I have a ${word} about this.`, `これについて${meaning}があります。`],
+        [`Can you explain the ${word}?`, `その${meaning}を説明してもらえますか。`]
+      ],
       note: "会話で相手に確認したいときに便利です。"
     };
   }
 
   if (/値段|価格|料金|費用|割引|支払い/.test(meaning)) {
     return {
-      english: `What is the ${word}?`,
-      japanese: `${meaning}はいくらですか。`,
+      meaningNote: `${meaning}は、買い物や支払いで使う単語です。`,
+      examples: [
+        [`What is the ${word}?`, `${meaning}はいくらですか。`],
+        [`The ${word} is too high.`, `${meaning}が高すぎます。`]
+      ],
       note: "買い物や支払いの場面で使います。"
     };
   }
 
   if (/必要|重要|簡単|難しい|便利|安全|高い|安い|早い|遅い|新しい|古い/.test(meaning)) {
     return {
-      english: `This is ${word}.`,
-      japanese: `これは${meaning}です。`,
+      meaningNote: `${meaning}は、物事の状態や性質を表す単語です。`,
+      examples: [
+        [`This is ${word}.`, `これは${meaning}です。`],
+        [`It looks ${word}.`, `それは${meaning}に見えます。`]
+      ],
       note: "性質や状態を短く説明するときに使います。"
     };
   }
 
   return {
-    english: `Can you use "${word}" in a short sentence?`,
-    japanese: `「${word}」を短い文で使えますか。`,
+    meaningNote: `${meaning}という意味です。日本語訳だけで覚えにくい場合は、短い英文の中で確認しましょう。`,
+    examples: [
+      [`I saw the word "${word}" today.`, `今日「${word}」という単語を見ました。`],
+      [`Can you explain "${word}"?`, `「${word}」を説明できますか。`]
+    ],
     note: "この単語はまず意味を覚え、次に自分の生活に近い文へ置き換えて練習しましょう。"
   };
 }
@@ -873,8 +950,11 @@ function buildLocalUsageExamples(context, reason = "") {
     ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
     : "";
   const example = buildPracticalWordExample(word, meaning);
+  const exampleLines = example.examples
+    .map(([english, japanese], index) => `例${index + 1}: ${english}\n訳${index + 1}: ${japanese}`)
+    .join("\n");
 
-  return `${prefix}使用例（AI未接続）\n${word} = ${meaning}\nカテゴリ: ${categoryLabel}\n例文: ${example.english}\n訳: ${example.japanese}\n使い方: ${example.note}\n練習: 例文を音読して、主語や場所だけ変えて言い換えてみましょう。${mistakeNote}`;
+  return `${prefix}使用例（AI未接続）\n${word} = ${meaning}\nカテゴリ: ${categoryLabel}\n意味の補足: ${example.meaningNote}\n${exampleLines}\n使い方: ${example.note}\n練習: 例文を音読して、主語や場所だけ変えて言い換えてみましょう。${mistakeNote}`;
 }
 
 async function fetchAiStudyExplanation(context, target, button) {
