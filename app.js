@@ -688,41 +688,56 @@ function buildAiStudyPrompt(context) {
   return lines.join("\n");
 }
 
-async function copyTextToClipboard(text) {
-  if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-    return true;
-  }
+function buildAiRequestPayload(context) {
+  const selectedOption = context.selectedOption || null;
 
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.left = "-9999px";
-  document.body.appendChild(textarea);
-  textarea.select();
-  const copied = document.execCommand("copy");
-  textarea.remove();
-  return copied;
+  return {
+    studyType: state.studyType,
+    category: getCurrentCategory().label,
+    english: context.answer.english,
+    japanese: context.answer.japanese,
+    selectedEnglish: selectedOption?.english || "",
+    selectedJapanese: selectedOption?.japanese || "",
+    prompt: buildAiStudyPrompt(context)
+  };
 }
 
-function openAiStudyTool(provider, prompt) {
-  const url = provider === "gemini"
-    ? "https://gemini.google.com/app"
-    : "https://chatgpt.com/";
+function setAiResult(target, className, text) {
+  target.className = `ai-help-result ${className}`;
+  target.textContent = text;
+  target.classList.remove("hidden");
+}
 
-  copyTextToClipboard(prompt)
-    .then((copied) => {
-      const providerLabel = provider === "gemini" ? "Gemini" : "ChatGPT";
-      const message = copied
-        ? `${providerLabel}を開きます。プロンプトはコピー済みなので、開いた画面で貼り付けて送信してください。`
-        : `${providerLabel}を開きます。コピーできなかった場合は、もう一度ボタンを押してください。`;
-      window.alert(message);
-      window.open(url, "_blank", "noopener,noreferrer");
-    })
-    .catch(() => {
-      window.alert("プロンプトのコピーに失敗しました。ブラウザのコピー許可を確認してください。");
+async function fetchAiStudyExplanation(context, target, button) {
+  button.disabled = true;
+  button.textContent = "AI解説を生成中...";
+  setAiResult(target, "loading", "AIが例文と使い方を作成しています。少しお待ちください。");
+
+  try {
+    const response = await fetch("/api/ai-study", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(buildAiRequestPayload(context))
     });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || "AI解説を取得できませんでした。");
+    }
+
+    setAiResult(target, "ready", data.text || "AI解説を取得できませんでした。");
+  } catch (error) {
+    setAiResult(
+      target,
+      "error",
+      `${error.message} 管理者側でAI APIの設定が完了しているか確認してください。`
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "AIで使用例を見る";
+  }
 }
 
 function renderAiHelpActions(container, context) {
@@ -736,21 +751,19 @@ function renderAiHelpActions(container, context) {
 
   const note = document.createElement("span");
   note.className = "ai-help-note";
-  note.textContent = "例文や使い方をAIで確認できます。";
+  note.textContent = "例文やニュアンスをAIでその場に表示できます。";
 
-  const chatgptButton = document.createElement("button");
-  chatgptButton.type = "button";
-  chatgptButton.className = "ai-help-button";
-  chatgptButton.textContent = "ChatGPTで使用例を見る";
-  chatgptButton.addEventListener("click", () => openAiStudyTool("chatgpt", prompt));
+  const aiButton = document.createElement("button");
+  aiButton.type = "button";
+  aiButton.className = "ai-help-button";
+  aiButton.textContent = "AIで使用例を見る";
 
-  const geminiButton = document.createElement("button");
-  geminiButton.type = "button";
-  geminiButton.className = "ai-help-button secondary-ai-help-button";
-  geminiButton.textContent = "Geminiで見る";
-  geminiButton.addEventListener("click", () => openAiStudyTool("gemini", prompt));
+  const result = document.createElement("span");
+  result.className = "ai-help-result hidden";
 
-  actions.append(note, chatgptButton, geminiButton);
+  aiButton.addEventListener("click", () => fetchAiStudyExplanation(context, result, aiButton));
+
+  actions.append(note, aiButton, result);
   container.appendChild(actions);
 }
 
