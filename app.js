@@ -708,6 +708,150 @@ function setAiResult(target, className, text) {
   target.classList.remove("hidden");
 }
 
+function buildPracticalWordExample(word, meaning) {
+  const lower = word.toLowerCase();
+  const exactExamples = {
+    hostel: {
+      english: "I stayed at a hostel near the station.",
+      japanese: "駅の近くのホステルに泊まりました。",
+      note: "hotel より安い宿泊先を指すことが多く、旅行会話でよく使います。"
+    },
+    hotel: {
+      english: "I booked a hotel for two nights.",
+      japanese: "2泊分のホテルを予約しました。",
+      note: "book a hotel で「ホテルを予約する」という実用表現です。"
+    },
+    restaurant: {
+      english: "This restaurant is popular with locals.",
+      japanese: "このレストランは地元の人に人気です。",
+      note: "食事の場所を説明するときに使いやすい単語です。"
+    },
+    airport: {
+      english: "I arrived at the airport early.",
+      japanese: "早めに空港に着きました。",
+      note: "at the airport の形でよく使います。"
+    },
+    station: {
+      english: "Let's meet at the station.",
+      japanese: "駅で会いましょう。",
+      note: "待ち合わせでそのまま使える表現です。"
+    },
+    ticket: {
+      english: "I bought a train ticket.",
+      japanese: "電車の切符を買いました。",
+      note: "buy a ticket で「切符を買う」です。"
+    },
+    reservation: {
+      english: "I have a reservation at seven.",
+      japanese: "7時に予約しています。",
+      note: "ホテルやレストランでよく使います。"
+    },
+    meeting: {
+      english: "The meeting starts at ten.",
+      japanese: "会議は10時に始まります。",
+      note: "ビジネス英語では頻出です。"
+    },
+    schedule: {
+      english: "My schedule is full today.",
+      japanese: "今日は予定がいっぱいです。",
+      note: "予定や日程を話すときに便利です。"
+    },
+    deadline: {
+      english: "The deadline is tomorrow.",
+      japanese: "締切は明日です。",
+      note: "仕事や提出物の期限に使います。"
+    },
+    password: {
+      english: "I forgot my password.",
+      japanese: "パスワードを忘れました。",
+      note: "ログインできない場面でよく使います。"
+    },
+    address: {
+      english: "Please write your address here.",
+      japanese: "ここに住所を書いてください。",
+      note: "書類や配送の場面で使います。"
+    },
+    price: {
+      english: "The price is reasonable.",
+      japanese: "値段は手ごろです。",
+      note: "買い物や交渉で便利です。"
+    },
+    problem: {
+      english: "There is a problem with my phone.",
+      japanese: "スマホに問題があります。",
+      note: "with をつけると「何に問題があるか」を言えます。"
+    },
+    question: {
+      english: "I have a question about this.",
+      japanese: "これについて質問があります。",
+      note: "授業や仕事でそのまま使えます。"
+    },
+    first: {
+      english: "This is my first time here.",
+      japanese: "ここに来るのは初めてです。",
+      note: "first は「最初の」のほか、「初めて」という場面でもよく使います。"
+    }
+  };
+
+  if (exactExamples[lower]) {
+    return exactExamples[lower];
+  }
+
+  if (/宿|ホテル|ホステル|泊/.test(meaning)) {
+    return {
+      english: `I stayed at a ${word} last night.`,
+      japanese: `昨夜、${meaning}に泊まりました。`,
+      note: "宿泊先について話すときに使います。"
+    };
+  }
+
+  if (/駅|空港|場所|店|学校|会社|病院|公園|部屋/.test(meaning)) {
+    return {
+      english: `Let's meet at the ${word}.`,
+      japanese: `${meaning}で会いましょう。`,
+      note: "場所を表す単語は at the ... の形でよく使います。"
+    };
+  }
+
+  if (/予定|予約|会議|締切|期限|面接/.test(meaning)) {
+    return {
+      english: `I need to check the ${word}.`,
+      japanese: `${meaning}を確認する必要があります。`,
+      note: "予定や仕事の確認で使いやすい形です。"
+    };
+  }
+
+  if (/問題|質問|理由|答え|説明|情報/.test(meaning)) {
+    return {
+      english: `I have a ${word} about this.`,
+      japanese: `これについて${meaning}があります。`,
+      note: "会話で相手に確認したいときに便利です。"
+    };
+  }
+
+  if (/値段|価格|料金|費用|割引|支払い/.test(meaning)) {
+    return {
+      english: `What is the ${word}?`,
+      japanese: `${meaning}はいくらですか。`,
+      note: "買い物や支払いの場面で使います。"
+    };
+  }
+
+  if (/必要|重要|簡単|難しい|便利|安全|高い|安い|早い|遅い|新しい|古い/.test(meaning)) {
+    return {
+      english: `This is ${word}.`,
+      japanese: `これは${meaning}です。`,
+      note: "性質や状態を短く説明するときに使います。"
+    };
+  }
+
+  return {
+    english: `Can you use "${word}" in a short sentence?`,
+    japanese: `「${word}」を短い文で使えますか。`,
+    note: "この単語はまず意味を覚え、次に自分の生活に近い文へ置き換えて練習しましょう。"
+  };
+}
+
 function buildLocalUsageExamples(context, reason = "") {
   const answer = context.answer;
   const selectedOption = context.selectedOption || null;
@@ -728,8 +872,9 @@ function buildLocalUsageExamples(context, reason = "") {
   const mistakeNote = selectedOption && selectedOption.english !== answer.english
     ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
     : "";
+  const example = buildPracticalWordExample(word, meaning);
 
-  return `${prefix}簡易使用例（AI未接続）\n${word} = ${meaning}\nカテゴリ: ${categoryLabel}\n例1: I learned the word "${word}" today.\n例2: How do you use "${word}" in a sentence?\n覚え方: 日本語訳だけでなく、声に出して「${word} = ${meaning}」を数回確認しましょう。${mistakeNote}`;
+  return `${prefix}使用例（AI未接続）\n${word} = ${meaning}\nカテゴリ: ${categoryLabel}\n例文: ${example.english}\n訳: ${example.japanese}\n使い方: ${example.note}\n練習: 例文を音読して、主語や場所だけ変えて言い換えてみましょう。${mistakeNote}`;
 }
 
 async function fetchAiStudyExplanation(context, target, button) {
