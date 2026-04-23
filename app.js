@@ -60,7 +60,9 @@ const sessionProgressBadge = document.querySelector("#sessionProgressBadge");
 const heroCategoryListSummary = document.querySelector("#heroCategoryListSummary");
 const heroCategorySummary = document.querySelector("#heroCategorySummary");
 const heroModeSummary = document.querySelector("#heroModeSummary");
+const questionPromptLabel = document.querySelector("#questionPromptLabel");
 const questionMeaning = document.querySelector("#questionMeaning");
+const questionAudioButton = document.querySelector("#questionAudioButton");
 const questionHint = document.querySelector("#questionHint");
 const choices = document.querySelector("#choices");
 const feedbackMessage = document.querySelector("#feedbackMessage");
@@ -1354,6 +1356,228 @@ function buildPracticalWordExample(word, meaning) {
         ["I was tired yesterday.", "昨日は疲れていました。"],
         ["I bought this yesterday.", "これは昨日買いました。"]
       ]
+    },
+    this: {
+      examples: [
+        ["This is my bag.", "これは私のかばんです。"],
+        ["I want this one.", "私はこれが欲しいです。"]
+      ]
+    },
+    that: {
+      examples: [
+        ["That is my seat.", "あれは私の席です。"],
+        ["I know that place.", "私はあの場所を知っています。"]
+      ]
+    },
+    these: {
+      examples: [
+        ["These are my shoes.", "これらは私の靴です。"],
+        ["These look good.", "これらは良さそうです。"]
+      ]
+    },
+    those: {
+      examples: [
+        ["Those are my books.", "あれらは私の本です。"],
+        ["Who are those people?", "あの人たちは誰ですか。"]
+      ]
+    },
+    here: {
+      examples: [
+        ["Please come here.", "ここに来てください。"],
+        ["You can sit here.", "ここに座れます。"]
+      ]
+    },
+    there: {
+      examples: [
+        ["My bag is over there.", "私のかばんはあそこにあります。"],
+        ["Let's go there tomorrow.", "明日そこへ行きましょう。"]
+      ]
+    },
+    who: {
+      examples: [
+        ["Who is that person?", "あの人は誰ですか。"],
+        ["Who called you?", "誰があなたに電話しましたか。"]
+      ]
+    },
+    what: {
+      examples: [
+        ["What is your name?", "あなたの名前は何ですか。"],
+        ["What do you need?", "何が必要ですか。"]
+      ]
+    },
+    when: {
+      examples: [
+        ["When will you arrive?", "いつ到着しますか。"],
+        ["When is the meeting?", "会議はいつですか。"]
+      ]
+    },
+    where: {
+      examples: [
+        ["Where is the station?", "駅はどこですか。"],
+        ["Where do you work?", "どこで働いていますか。"]
+      ]
+    },
+    why: {
+      examples: [
+        ["Why are you late?", "なぜ遅れたのですか。"],
+        ["Why did you choose this?", "なぜこれを選んだのですか。"]
+      ]
+    },
+    how: {
+      examples: [
+        ["How are you today?", "今日は元気ですか。"],
+        ["How do I use this?", "これはどう使いますか。"]
+      ]
+    },
+    yes: {
+      examples: [
+        ["Yes, I understand.", "はい、分かります。"],
+        ["Yes, that's right.", "はい、その通りです。"]
+      ]
+    },
+    no: {
+      examples: [
+        ["No, thank you.", "いいえ、結構です。"],
+        ["No, I don't need it.", "いいえ、それは必要ありません。"]
+      ]
+    },
+    all: {
+      examples: [
+        ["All the seats are taken.", "席はすべて埋まっています。"],
+        ["I read all the pages.", "私はページを全部読みました。"]
+      ]
+    },
+    some: {
+      examples: [
+        ["I need some time.", "少し時間が必要です。"],
+        ["Would you like some water?", "水を少し飲みますか。"]
+      ]
+    },
+    any: {
+      examples: [
+        ["Do you have any questions?", "何か質問はありますか。"],
+        ["I don't have any cash.", "私は現金を持っていません。"]
+      ]
+    },
+    many: {
+      examples: [
+        ["There are many people here.", "ここにはたくさんの人がいます。"],
+        ["I don't have many bags.", "私はたくさんのかばんを持っていません。"]
+      ]
+    },
+    much: {
+      examples: [
+        ["I don't have much time.", "私はあまり時間がありません。"],
+        ["How much water do you need?", "どれくらい水が必要ですか。"]
+      ]
+    },
+    few: {
+      examples: [
+        ["Only a few seats are open.", "空いている席は少ししかありません。"],
+        ["I know a few people there.", "私はそこに数人知り合いがいます。"]
+      ]
+    },
+    more: {
+      examples: [
+        ["I need more time.", "もっと時間が必要です。"],
+        ["Do you want more coffee?", "もっとコーヒーが欲しいですか。"]
+      ]
+    },
+    most: {
+      examples: [
+        ["Most people use this app.", "ほとんどの人がこのアプリを使います。"],
+        ["This is the most popular menu item.", "これは一番人気のメニューです。"]
+      ]
+    },
+    other: {
+      examples: [
+        ["Do you have any other ideas?", "ほかに案はありますか。"],
+        ["Let's try the other door.", "もう一方のドアを試しましょう。"]
+      ]
+    },
+    another: {
+      examples: [
+        ["Can I have another cup?", "もう1杯もらえますか。"],
+        ["Let's meet another day.", "別の日に会いましょう。"]
+      ]
+    },
+    same: {
+      examples: [
+        ["We chose the same train.", "私たちは同じ電車を選びました。"],
+        ["Please use the same password.", "同じパスワードを使ってください。"]
+      ]
+    },
+    different: {
+      examples: [
+        ["I need a different size.", "違うサイズが必要です。"],
+        ["This looks different now.", "これは今、違って見えます。"]
+      ]
+    },
+    not: {
+      examples: [
+        ["I am not ready yet.", "私はまだ準備ができていません。"],
+        ["This is not mine.", "これは私のものではありません。"]
+      ]
+    },
+    because: {
+      examples: [
+        ["I stayed home because it was raining.", "雨が降っていたので家にいました。"],
+        ["She is absent because she is sick.", "彼女は具合が悪いので欠席しています。"]
+      ]
+    },
+    if: {
+      examples: [
+        ["If you need help, call me.", "助けが必要なら私に電話してください。"],
+        ["If it rains, we will stay inside.", "雨なら中にいます。"]
+      ]
+    },
+    then: {
+      examples: [
+        ["Finish this first, then take a break.", "これを先に終えて、それから休んでください。"],
+        ["I was busy then.", "私はそのとき忙しかったです。"]
+      ]
+    },
+    so: {
+      examples: [
+        ["I was tired, so I went home.", "疲れていたので家に帰りました。"],
+        ["It was cold, so I wore a coat.", "寒かったのでコートを着ました。"]
+      ]
+    },
+    without: {
+      examples: [
+        ["I left without my umbrella.", "傘を持たずに出かけました。"],
+        ["Don't go out without your phone.", "スマホなしで外に出ないでください。"]
+      ]
+    },
+    under: {
+      examples: [
+        ["The bag is under the chair.", "かばんは椅子の下にあります。"],
+        ["There is a cat under the table.", "テーブルの下に猫がいます。"]
+      ]
+    },
+    near: {
+      examples: [
+        ["My office is near the station.", "私の職場は駅の近くです。"],
+        ["Let's meet near the entrance.", "入口の近くで会いましょう。"]
+      ]
+    },
+    between: {
+      examples: [
+        ["The bank is between the cafe and the hotel.", "銀行はカフェとホテルの間にあります。"],
+        ["Please sit between us.", "私たちの間に座ってください。"]
+      ]
+    },
+    before: {
+      examples: [
+        ["Please call me before noon.", "正午前に電話してください。"],
+        ["I eat breakfast before work.", "仕事の前に朝食を食べます。"]
+      ]
+    },
+    after: {
+      examples: [
+        ["Let's talk after lunch.", "昼食後に話しましょう。"],
+        ["I study after dinner.", "私は夕食後に勉強します。"]
+      ]
     }
   });
 
@@ -1372,7 +1596,7 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/駅|空港|場所|店|学校|会社|病院|公園|部屋/.test(meaning)) {
+  if (/駅|空港|場所|店|学校|会社|病院|公園|部屋|地域|カフェ|スーパー|市場|薬局|診療所|銀行|図書館|博物館|都市|町|村|国|職場|ショッピングモール|エスカレーター/.test(meaning)) {
     return {
       meaningNote: `${meaning}は、場所を表す単語です。`,
       examples: [
@@ -1405,7 +1629,7 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/値段|価格|料金|費用|割引|支払い/.test(meaning)) {
+  if (/値段|価格|料金|費用|割引|支払い|セール|現金|おつり|返金|硬貨|税金|クーポン/.test(meaning)) {
     return {
       meaningNote: `${meaning}は、買い物や支払いで使う単語です。`,
       examples: [
@@ -1436,7 +1660,7 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/水|お茶|コーヒー|牛乳|ジュース|飲料|ワイン|ビール|パン|ご飯|麺|スープ|サラダ|食事|料理|りんご|バナナ|肉|魚|卵|チーズ|塩|砂糖|こしょう|ソース/.test(meaning)) {
+  if (/水|お茶|コーヒー|牛乳|ジュース|飲料|ワイン|ビール|パン|ご飯|麺|スープ|サラダ|サンドイッチ|ハンバーガー|ピザ|パスタ|ケーキ|クッキー|デザート|果物|野菜|朝食|昼食|夕食|軽食|食事|料理|メニュー|会計|レシート|りんご|バナナ|オレンジ|ぶどう|いちご|桃|レモン|メロン|パイナップル|トマト|じゃがいも|玉ねぎ|にんじん|キャベツ|レタス|とうもろこし|豆|えび|卵|肉|牛肉|豚肉|鶏肉|魚|チーズ|バター|塩|砂糖|こしょう|ソース/.test(meaning)) {
     return {
       examples: [
         [`I like ${word}.`, `私は${meaning}が好きです。`],
@@ -1445,7 +1669,7 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/人|友だち|家族|母|父|親|子ども|赤ちゃん|男の子|女の子|男性|女性|兄弟|姉妹|息子|娘|夫|妻|先生|生徒|医者|看護師|運転手|店員|スタッフ|上司|同僚|観光客|警察官|技術者|デザイナー|所有者|リーダー|メンバー/.test(meaning)) {
+  if (/人|人々|名前|友だち|家族|母|父|親|子ども|赤ちゃん|男の子|女の子|男性|女性|兄弟|姉妹|息子|娘|夫|妻|祖父|祖母|おじ|おば|いとこ|近所の人|クラスメート|先生|生徒|医者|看護師|運転手|料理人|シェフ|働く人|店員|スタッフ|管理者|上司|同僚|お客|客|観光客|案内人|警察官|消防士|技術者|デザイナー|芸術家|音楽家|選手|所有者|リーダー|メンバー|チーム|グループ|カップル/.test(meaning)) {
     return {
       examples: [
         [`She is a ${word}.`, `彼女は${meaning}です。`],
@@ -1454,7 +1678,7 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/する|使う|作る|取る|置く|欲しい|好き|思う|見る|聞く|話す|たずねる|答える|助ける|見つける|与える|送る|開ける|閉める|始める|終える|待つ|動く|歩く|走る|座る|立つ|旅行する|訪れる|戻る|買う|支払う|売る|食べる|飲む|料理する|洗う|掃除する|切る|注文する|選ぶ|着る|変える|運ぶ|持つ|書く|読む|勉強する|学ぶ|教える|忘れる|会う|確認する|予約する|到着する|出発する|休む|眠る|笑う|泣く|楽しむ|準備する|共有する|借りる|貸す/.test(meaning)) {
+  if (/する|使う|作る|取る|置く|欲しい|好き|思う|見る|聞く|聞こえる|話す|言う|たずねる|答える|助ける|見つける|与える|見せる|持ってくる|送る|開ける|閉める|始める|終える|試す|待つ|保つ|動く|歩く|走る|座る|立つ|曲がる|渡る|乗る|運転する|旅行する|訪れる|滞在する|戻る|買う|支払う|売る|食べる|飲む|料理する|洗う|掃除する|切る|注文する|選ぶ|着る|変える|運ぶ|持つ|書く|読む|勉強する|学ぶ|教える|覚えている|忘れる|会う|ついていく|確認する|予約する|到着する|出発する|休む|眠る|目覚める|ほほえむ|笑う|泣く|楽しむ|願う|準備する|共有する|借りる|貸す/.test(meaning)) {
     return {
       examples: [
         [`I want to ${word}.`, `私は${meaning}ことをしたいです。`],
@@ -1486,6 +1710,195 @@ function buildPracticalWordExample(word, meaning) {
       examples: [
         [`I will go there in ${word}.`, `${meaning}にそこへ行きます。`],
         [`The event is in ${word}.`, `そのイベントは${meaning}です。`]
+      ]
+    };
+  }
+
+  if (/^([0-9]+|[0-9]+番目の)$/.test(meaning)) {
+    return {
+      examples: [
+        [`I need ${word} tickets.`, `${meaning}のチケットが必要です。`],
+        [`There are ${word} people here.`, `ここには${meaning}の人がいます。`]
+      ]
+    };
+  }
+
+  if (/同じ|違う/.test(meaning)) {
+    return {
+      examples: [
+        [`These two bags look ${word}.`, `この2つのかばんは${meaning}見えます。`],
+        [`We chose a ${word} plan.`, `私たちは${meaning}計画を選びました。`]
+      ]
+    };
+  }
+
+  if (/ほかの|もう一つの/.test(meaning)) {
+    return {
+      examples: [
+        [`Do you have ${word} options?`, `${meaning}選択肢はありますか。`],
+        [`I need ${word} ticket.`, `${meaning}切符が必要です。`]
+      ]
+    };
+  }
+
+  if (/すべて|いくつかの|たくさんの|多くの|少しの|より多くの|ほとんどの/.test(meaning)) {
+    return {
+      examples: [
+        [`I have ${word} things to do.`, `私は${meaning}やることがあります。`],
+        [`Do you need ${word} time?`, `${meaning}時間が必要ですか。`]
+      ]
+    };
+  }
+
+  if (/名前|年齢|仕事|職業人生|計画|考え|解決|例|点数|成績|練習|報告|連絡|メッセージ|ニュース|音楽|動画|写真|ゲーム|ページ|ファイル|フォルダー|リンク|ボタン|画面|辞書|本|ノート|紙|地図|ガイドブック|ペン|鉛筆|消しゴム|マーカー|授業|宿題|テスト|試験|メモ|メール|電話|コンピューター|ノートパソコン|タブレット|スマホ|スマートフォン|ブラウザ|アプリ|キーボード|マウス|プリンター|充電器|ケーブル|バッテリー|インターネット|ウェブサイト|アカウント|ユーザー名|電波|Wi-Fi|作業|配達|郵便受け|案内放送|詳細|要約|議題|議事録/.test(meaning)) {
+    return {
+      examples: [
+        [`I checked the ${word}.`, `${meaning}を確認しました。`],
+        [`Can you show me the ${word}?`, `${meaning}を見せてもらえますか。`]
+      ]
+    };
+  }
+
+  if (/家|住宅|アパート|居間|寝室|浴室|トイレ|台所|廊下|階段|エレベーター|ドア|窓|壁|床|天井|屋根|鍵|テーブル|机|椅子|ソファ|ベッド|枕|毛布|シーツ|タオル|鏡|ランプ|明かり|扇風機|エアコン|暖房器具|冷蔵庫|冷凍庫|電子レンジ|オーブン|コンロ|流し台|カップ|グラス|皿|ボウル|フォーク|ナイフ|スプーン|箸|フライパン|鍋|かばん|リュック|財布|小銭入れ|傘|腕時計|時計|カレンダー|電池|箱|びん|缶|贈り物|お土産|包み|サイズ|棚|買い物かご|カート|ボトル|ナプキン|ストロー|ブラシ|くし|ドライヤー|ハンガー|ティッシュ|リモコン|コンセント|レジ|洗濯|洗剤|ごみ/.test(meaning)) {
+    return {
+      examples: [
+        [`Where is my ${word}?`, `私の${meaning}はどこですか。`],
+        [`I use this ${word} every day.`, `私はこの${meaning}を毎日使います。`]
+      ]
+    };
+  }
+
+  if (/バス|電車|地下鉄|タクシー|車|自転車|バイク|飛行機|船|運賃|座席|搭乗口|ターミナル|ホーム|路線|切符|券売機|横断歩道|橋|通り|道路|角|停留所|乗り換え|パスポート|荷物|スーツケース|出発|到着|遅延|交通状況|経路|方向|旅行|旅/.test(meaning)) {
+    return {
+      examples: [
+        [`I took the ${word} this morning.`, `今朝${meaning}を使いました。`],
+        [`Where is the ${word}?`, `${meaning}はどこですか。`]
+      ]
+    };
+  }
+
+  if (/シャツ|Tシャツ|ジャケット|コート|セーター|パーカー|ドレス|スカート|ズボン|ジーンズ|短パン|靴下|靴|ブーツ|帽子|キャップ|めがね|サングラス|指輪|ネックレス|バッグ/.test(meaning)) {
+    return {
+      examples: [
+        [`I bought a new ${word}.`, `新しい${meaning}を買いました。`],
+        [`This ${word} looks good on you.`, `この${meaning}はあなたによく似合います。`]
+      ]
+    };
+  }
+
+  if (/赤|青|緑|黄色|黒|白|灰色|茶色|ピンク|紫|オレンジ色/.test(meaning)) {
+    return {
+      examples: [
+        [`My bag is ${word}.`, `私のかばんは${meaning}です。`],
+        [`I like the ${word} one.`, `私は${meaning}のものが好きです。`]
+      ]
+    };
+  }
+
+  if (/健康的な|具合が悪い|疲れた|お腹がすいた|喉が渇いた|眠い|うれしい|悲しい|怒った|心配した|こわい|わくわくした|忙しい|暇な|安全な|危険な|注意深い|落ち着いた|強い|弱い|より良い|きれいな|汚れた|かわいい|シンプルな|親切な|感じのよい|親しみやすい|可能な|準備ができた|いっぱいの|空の|暑い|暖かい|涼しい|寒い|晴れた|雨の|くもった|風の強い|明るい|暗い|小さい|中くらいの|大きい|驚いた|緊張した|恥ずかしい|ほっとした|興味がある|快適な|自信がある|正直な|丁寧な|長い|短い|低い|正確な|似ている|よくある|一般的な|地元の|公共の|私的な|伝統的な|現代的な|有名な|混んでいる|静かな|利用できる|価値がある/.test(meaning)) {
+    return {
+      examples: [
+        [`I feel ${word} today.`, `今日は${meaning}です。`],
+        [`The room looks ${word}.`, `その部屋は${meaning}ように見えます。`]
+      ]
+    };
+  }
+
+  if (/健康|薬|熱|せき|頭痛|腹痛|痛み|けが|包帯|マスク|石けん|シャンプー|歯ブラシ|歯みがき粉|アレルギー|緊急事態|火事|ばんそうこう/.test(meaning)) {
+    return {
+      examples: [
+        [`I need ${word} right now.`, `今すぐ${meaning}が必要です。`],
+        [`Where can I get ${word}?`, `どこで${meaning}を手に入れられますか。`]
+      ]
+    };
+  }
+
+  if (/注文|知っている|取り消す|温める|凍らせる|ゆでる|焼く|混ぜる|注ぐ|飾る|くつろぐ|伸ばす|繰り返す|謝る|許す|話し合う|励ます|祝う|避ける|示す|見積もる|割り当てる|導き出す|詳しく調べる|組み立てる|明確に言葉で表す|伝える|高める|減らす/.test(meaning)) {
+    return {
+      examples: [
+        [`Please ${word} this.`, `これを${meaning}してください。`],
+        [`I need to ${word} it carefully.`, `それを注意して${meaning}必要があります。`]
+      ]
+    };
+  }
+
+  if (/朝|午後|夕方|夜|真夜中|日|週|月|年|春|夏|秋|冬/.test(meaning)) {
+    return {
+      examples: [
+        [`I am busy in the ${word}.`, `${meaning}は忙しいです。`],
+        [`Let's meet this ${word}.`, `この${meaning}に会いましょう。`]
+      ]
+    };
+  }
+
+  if (/雨|雪|風|雲|太陽|嵐|海辺|海|川|湖|山|森|島/.test(meaning)) {
+    return {
+      examples: [
+        [`I can see the ${word} from here.`, `ここから${meaning}が見えます。`],
+        [`The ${word} is beautiful today.`, `今日は${meaning}がきれいです。`]
+      ]
+    };
+  }
+
+  if (/左|右側|まっすぐ|上へ|下へ|内側に|外側に/.test(meaning)) {
+    return {
+      examples: [
+        [`Please go ${word}.`, `${meaning}進んでください。`],
+        [`Look ${word}.`, `${meaning}見てください。`]
+      ]
+    };
+  }
+
+  if (/今|すぐに|あとで|もう一度|すでに|まだ/.test(meaning)) {
+    return {
+      examples: [
+        [`I will do it ${word}.`, `${meaning}やります。`],
+        [`Can we talk ${word}?`, `${meaning}話せますか。`]
+      ]
+    };
+  }
+
+  if (/いつも|たいてい|ときどき|しばしば|決して〜ない/.test(meaning)) {
+    return {
+      examples: [
+        [`I ${word} walk to work.`, `私は${meaning}歩いて仕事へ行きます。`],
+        [`She ${word} drinks coffee.`, `彼女は${meaning}コーヒーを飲みます。`]
+      ]
+    };
+  }
+
+  if (/一緒に/.test(meaning)) {
+    return {
+      examples: [
+        ["Let's go together.", "一緒に行きましょう。"],
+        ["We studied together.", "私たちは一緒に勉強しました。"]
+      ]
+    };
+  }
+
+  if (/本当に|とても|かなり|ちょうど/.test(meaning)) {
+    return {
+      examples: [
+        [`I am ${word} happy today.`, `今日は${meaning}うれしいです。`],
+        [`This is ${word} useful.`, `これは${meaning}役に立ちます。`]
+      ]
+    };
+  }
+
+  if (/意見|気分|感情|印象|選択|結果|記憶|習慣|経験|技能|知識|文化|関係|状況|環境|会話|話題|文|段落|記事|掲示|警告|許可|招待|視点|証拠|前提|文脈|戦略|やり方|バランス|優先事項|影響|課題|機会|懸念|混乱|明確さ|主張|分析|比較|対比|結論|可能性|確率|利点|欠点|原則|方針|過程|進歩|洞察|判断|決定|代替案|複雑さ|効率|一貫性|柔軟性|解釈|枠組み|基準|変数|要因|傾向|パターン|現象|仮説|合意|論争|異議|根拠|信頼性|妥当性|限界|範囲|制約|不確実性|可能性の高さ|偏り|先入観|偏見|動機|意図|認識|意識|能力|容量|遂行能力|力量|適応力|回復力|安定性|持続可能性|努力|達成/.test(meaning)) {
+    return {
+      examples: [
+        [`What is your ${word}?`, `あなたの${meaning}は何ですか。`],
+        [`The ${word} was better than I expected.`, `${meaning}は思ったより良かったです。`]
+      ]
+    };
+  }
+
+  if (/実は|たぶん|正確に|まさに|特に|代わりに|したがって|しかしながら|その間に|最近|現在|ついに|最後に|突然|静かに|注意深く|幸運にも|残念ながら|ほとんど|もう少しで/.test(meaning)) {
+    return {
+      examples: [
+        [`I will explain it ${word}.`, `${meaning}説明します。`],
+        [`She spoke ${word}.`, `彼女は${meaning}話しました。`]
       ]
     };
   }
@@ -1631,8 +2044,12 @@ function buildSkipFeedback(answer) {
 
 function renderCurrentQuestionUi() {
   const { answer } = state.currentQuestion;
-  questionMeaning.textContent = isWordReverseMode() ? answer.english : answer.japanese;
-  questionHint.textContent = isWordReverseMode()
+  const reverseMode = isWordReverseMode();
+  questionPromptLabel.textContent = reverseMode ? "英単語" : "日本語の意味";
+  questionMeaning.textContent = reverseMode ? answer.english : answer.japanese;
+  questionAudioButton.classList.toggle("hidden", !reverseMode);
+  questionAudioButton.setAttribute("aria-label", `${answer.english} の発音を聞く`);
+  questionHint.textContent = reverseMode
     ? `${getCurrentCategory().description} 日本語として最も合うものを選んでください。`
     : `${getCurrentCategory().description} 英語として最も合うものを選んでください。`;
   feedbackMessage.textContent = "答えを選ぶとここに結果が表示されます。";
@@ -1650,10 +2067,10 @@ function renderCurrentQuestionUi() {
     button.type = "button";
     button.className = "choice-button";
     button.dataset.english = option.english;
-    button.innerHTML = `<span class="choice-text">${isWordReverseMode() ? option.japanese : option.english}</span>`;
+    button.innerHTML = `<span class="choice-text">${reverseMode ? option.japanese : option.english}</span>`;
     button.addEventListener("click", () => submitAnswer(option, button));
 
-    if (!isWordReverseMode()) {
+    if (!reverseMode) {
       const audioButton = document.createElement("button");
       audioButton.type = "button";
       audioButton.className = "choice-audio-button";
@@ -2273,6 +2690,11 @@ wordTypeTab.addEventListener("click", () => setStudyType("word", "jpToEn"));
 wordReverseTypeTab.addEventListener("click", () => setStudyType("word", "enToJp"));
 phraseTypeTab.addEventListener("click", () => setStudyType("phrase"));
 skipButton.addEventListener("click", () => skipCurrentQuestion());
+questionAudioButton.addEventListener("click", () => {
+  if (state.currentQuestion?.answer?.english) {
+    speakNow(state.currentQuestion.answer.english, "en-US", 0.75);
+  }
+});
 nextButton.addEventListener("click", () => createQuestion());
 showPreviousAnswerButton.addEventListener("click", () => restorePreviousQuestion());
 sessionContinueButton.addEventListener("click", () => continueQuizSession());

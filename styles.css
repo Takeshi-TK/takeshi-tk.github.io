@@ -578,6 +578,17 @@ body.dark-mode .hero {
   font-size: clamp(1.5rem, 3vw, 2.1rem);
 }
 
+.prompt-main-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.prompt-main-line h3 {
+  min-width: 0;
+}
+
 .prompt-hint,
 .walk-meaning {
   margin: 8px 0 0;
@@ -816,6 +827,12 @@ body.dark-mode .hero {
   padding: 7px 12px;
   font-size: 0.82rem;
   white-space: nowrap;
+}
+
+.theme-control-row {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .word-bank-toolbar {

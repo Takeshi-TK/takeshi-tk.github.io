@@ -9,7 +9,7 @@
     name="description"
     content="StrideWords は英単語クイズとフレーズ学習、ウォーキング学習をまとめた英語学習サイトです。初級からビジネス、旅行英語まで実用的に学べます。"
   >
-  <link rel="stylesheet" href="./styles.css?v=20260423-feature3">
+  <link rel="stylesheet" href="./styles.css?v=20260424-feature4">
   <script
     async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3121682237695422"
@@ -20,7 +20,6 @@
   <div class="page-shell">
     <nav class="site-nav" aria-label="サイトナビゲーション">
       <a class="nav-brand" href="./index.html">StrideWords</a>
-      <button id="themeToggleButton" class="ghost-button nav-theme-button" type="button">ダークモード</button>
     </nav>
 
     <header class="hero">
@@ -126,8 +125,11 @@
           </div>
 
           <div class="prompt-card">
-            <p class="prompt-label">日本語の意味</p>
-            <h3 id="questionMeaning">読み込み中...</h3>
+            <p id="questionPromptLabel" class="prompt-label">日本語の意味</p>
+            <div class="prompt-main-line">
+              <h3 id="questionMeaning">読み込み中...</h3>
+              <button id="questionAudioButton" class="audio-button hidden" type="button">発音</button>
+            </div>
             <p id="questionHint" class="prompt-hint">表示された意味に合う英語を1つ選んでください。</p>
           </div>
 
@@ -277,6 +279,9 @@
           <div class="progress-wrap" aria-hidden="true">
             <div id="accuracyBar" class="progress-bar"></div>
           </div>
+          <div class="theme-control-row">
+            <button id="themeToggleButton" class="ghost-button nav-theme-button" type="button">ダークモード</button>
+          </div>
         </section>
       </section>
     </main>
@@ -291,6 +296,6 @@
       </div>
     </footer>
   </div>
-  <script type="module" src="./app.js?v=20260423-feature3"></script>
+  <script type="module" src="./app.js?v=20260424-feature4"></script>
 </body>
 </html>
