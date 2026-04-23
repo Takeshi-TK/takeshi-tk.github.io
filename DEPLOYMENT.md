@@ -42,6 +42,23 @@ Cloudflare Pages は静的サイト公開に向いていて、あとからバッ
 3. `robots.txt` と `sitemap.xml` の URL を本番ドメインへ更新
 4. AI 解説を使う場合は `OPENAI_API_KEY` を Variables and Secrets に登録
 
+### AI 解説をサイト内に自動表示する設定
+
+GitHub Pages では `/api/ai-study` を実行できないため、AI 解説は Cloudflare Pages のURLで確認してください。
+
+1. Cloudflare Dashboard で対象の Pages プロジェクトを開く
+2. `Settings > Variables and Secrets` を開く
+3. `Add` を押して、次を `Secret` として登録する
+   - `OPENAI_API_KEY`
+4. 必要に応じて次も登録する
+   - `OPENAI_MODEL`: 例 `gpt-4.1-mini`
+   - `GEMINI_API_KEY`: OpenAI が使えない場合の予備
+   - `GEMINI_MODEL`: 例 `gemini-2.5-flash`
+5. 保存後、もう一度 `Deployments` から再デプロイする
+6. Cloudflare Pages の `*.pages.dev` URLで、回答後の `AIで使用例を見る` を押して確認する
+
+APIキーは `app.js` やGitHub上のファイルには絶対に書かないでください。
+
 ## 公開方法 2: GitHub Pages
 
 GitHub Pages でも静的サイトとしてそのまま公開できます。

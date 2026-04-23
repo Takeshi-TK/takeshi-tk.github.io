@@ -724,6 +724,14 @@ async function fetchAiStudyExplanation(context, target, button) {
 
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("このURLではAI解説APIが動いていません。GitHub Pages版ではなく、Cloudflare Pages版で開くとサイト内に自動表示できます。");
+      }
+
+      if (response.status === 503) {
+        throw new Error(data.error || "Cloudflare側のAI APIキー設定が未完了です。");
+      }
+
       throw new Error(data.error || "AI解説を取得できませんでした。");
     }
 
@@ -732,7 +740,9 @@ async function fetchAiStudyExplanation(context, target, button) {
     setAiResult(
       target,
       "error",
-      `${error.message} 管理者側でAI APIの設定が完了しているか確認してください。`
+      error.message.includes("Cloudflare") || error.message.includes("GitHub Pages")
+        ? error.message
+        : `${error.message} Cloudflare側でAI APIの設定が完了しているか確認してください。`
     );
   } finally {
     button.disabled = false;
