@@ -43,24 +43,6 @@ Cloudflare Pages は静的サイト公開に向いていて、あとからバッ
 1. 発行された `*.pages.dev` URL で表示確認
 2. カスタムドメインを使う場合はドメイン設定を追加
 3. `robots.txt` と `sitemap.xml` の URL を本番ドメインへ更新
-4. AI 解説を使う場合は `OPENAI_API_KEY` を Variables and Secrets に登録
-
-### AI 解説をサイト内に自動表示する設定
-
-GitHub Pages では `/api/ai-study` を実行できないため、AI 解説は Cloudflare Pages のURLで確認してください。
-
-1. Cloudflare Dashboard で対象の Pages プロジェクトを開く
-2. `Settings > Variables and Secrets` を開く
-3. `Add` を押して、次を `Secret` として登録する
-   - `OPENAI_API_KEY`
-4. 必要に応じて次も登録する
-   - `OPENAI_MODEL`: 例 `gpt-4.1-mini`
-   - `GEMINI_API_KEY`: OpenAI が使えない場合の予備
-   - `GEMINI_MODEL`: 例 `gemini-2.5-flash`
-5. 保存後、もう一度 `Deployments` から再デプロイする
-6. Cloudflare Pages の `*.pages.dev` URLで、回答後の `AIで使用例を見る` を押して確認する
-
-APIキーは `app.js` やGitHub上のファイルには絶対に書かないでください。
 
 ### こちら側からデプロイしやすくする設定
 
@@ -88,8 +70,6 @@ GitHub Pages でも静的サイトとしてそのまま公開できます。
 
 `.nojekyll` を入れてあるので、Jekyll の自動処理を避けてそのまま静的ファイルを配信できます。
 
-注意: GitHub Pages 単体では `functions/api/ai-study.js` は実行されません。AI 解説をサイト内表示するには Cloudflare Pages Functions、Cloudflare Workers、Vercel Functions などのバックエンドが必要です。
-
 ## AdSense を有効化する手順
 
 1. 公開後の本番ドメインを AdSense の `Sites` に追加
@@ -112,4 +92,3 @@ window.strideWordsAdsense = {
 - 今の `ID + password` と `管理者メニュー` はブラウザ内保存ベースです
 - 本番公開で本当に安全な認証にするなら、バックエンド移行が必要です
 - 本番では `Supabase Auth` などの認証基盤を使う方が安全です
-- AI API キーは `app.js` などブラウザへ配信されるファイルに書かないでください

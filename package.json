@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check app.js && node --check functions/api/ai-study.js",
+    "check": "node --check app.js",
     "dev": "wrangler pages dev .",
     "deploy:cloudflare": "wrangler pages deploy . --project-name=stridewords --branch=main"
   },
