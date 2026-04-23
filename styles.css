@@ -250,6 +250,18 @@ select {
   padding-bottom: 16px;
 }
 
+.content-ad-card {
+  display: grid;
+  gap: 10px;
+  min-height: 156px;
+}
+
+.responsive-ad-slot {
+  width: 100%;
+  min-height: 96px;
+  overflow: hidden;
+}
+
 .profile-top {
   display: flex;
   justify-content: space-between;
@@ -749,6 +761,19 @@ select {
     gap: 16px;
   }
 
+  .quiz-panel,
+  #walkPanel {
+    order: 1;
+  }
+
+  .content-ad-card {
+    order: 2;
+  }
+
+  .compact-card {
+    order: 3;
+  }
+
   .compact-card .snapshot-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -766,6 +791,10 @@ select {
 
   .content-area {
     order: 2;
+  }
+
+  .content-ad-card {
+    order: -1;
   }
 
   .hero-stats,
