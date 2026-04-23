@@ -563,6 +563,41 @@ select {
   gap: 2px;
 }
 
+.ai-help-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.ai-help-note {
+  width: 100%;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.ai-help-button {
+  border: 1px solid rgba(31, 42, 55, 0.1);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #1f2a37;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.84rem;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.ai-help-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(31, 42, 55, 0.14);
+}
+
+.secondary-ai-help-button {
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--ink);
+}
+
 .review-card {
   margin-top: 14px;
   padding: 16px;

@@ -650,11 +650,108 @@ function showPreviousAnswer() {
 
   previousAnswerBody.innerHTML = state.lastAnswer.html;
   previousAnswerBody.className = `feedback ${state.lastAnswer.className}`;
+  renderAiHelpActions(previousAnswerBody, state.lastAnswer.aiContext);
   previousAnswerCard.classList.toggle("hidden");
 }
 
 function buildItemExplanation(item) {
   return item.explanation || "";
+}
+
+function buildAiStudyPrompt(context) {
+  if (!context?.answer) {
+    return "";
+  }
+
+  const itemType = state.studyType === "phrase" ? "英語フレーズ" : "英単語";
+  const categoryLabel = getCurrentCategory().label;
+  const lines = [
+    `英語学習者向けに、次の${itemType}を日本語でわかりやすく解説してください。`,
+    `レベル/カテゴリ: ${categoryLabel}`,
+    `英語: ${context.answer.english}`,
+    `日本語の意味: ${context.answer.japanese}`
+  ];
+
+  if (context.selectedOption && context.selectedOption.english !== context.answer.english) {
+    lines.push(`学習者が間違えて選んだ答え: ${context.selectedOption.english} = ${context.selectedOption.japanese}`);
+  }
+
+  lines.push(
+    "",
+    "次の形式で短く答えてください。",
+    "1. 自然な意味とニュアンス",
+    "2. よく使う例文を3つ（英語 + 日本語訳）",
+    "3. 似た意味の語や間違えやすい点",
+    "4. 覚え方のコツ"
+  );
+
+  return lines.join("\n");
+}
+
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  return copied;
+}
+
+function openAiStudyTool(provider, prompt) {
+  const url = provider === "gemini"
+    ? "https://gemini.google.com/app"
+    : "https://chatgpt.com/";
+
+  copyTextToClipboard(prompt)
+    .then((copied) => {
+      const providerLabel = provider === "gemini" ? "Gemini" : "ChatGPT";
+      const message = copied
+        ? `${providerLabel}を開きます。プロンプトはコピー済みなので、開いた画面で貼り付けて送信してください。`
+        : `${providerLabel}を開きます。コピーできなかった場合は、もう一度ボタンを押してください。`;
+      window.alert(message);
+      window.open(url, "_blank", "noopener,noreferrer");
+    })
+    .catch(() => {
+      window.alert("プロンプトのコピーに失敗しました。ブラウザのコピー許可を確認してください。");
+    });
+}
+
+function renderAiHelpActions(container, context) {
+  const prompt = buildAiStudyPrompt(context);
+  if (!prompt) {
+    return;
+  }
+
+  const actions = document.createElement("span");
+  actions.className = "ai-help-actions";
+
+  const note = document.createElement("span");
+  note.className = "ai-help-note";
+  note.textContent = "例文や使い方をAIで確認できます。";
+
+  const chatgptButton = document.createElement("button");
+  chatgptButton.type = "button";
+  chatgptButton.className = "ai-help-button";
+  chatgptButton.textContent = "ChatGPTで使用例を見る";
+  chatgptButton.addEventListener("click", () => openAiStudyTool("chatgpt", prompt));
+
+  const geminiButton = document.createElement("button");
+  geminiButton.type = "button";
+  geminiButton.className = "ai-help-button secondary-ai-help-button";
+  geminiButton.textContent = "Geminiで見る";
+  geminiButton.addEventListener("click", () => openAiStudyTool("gemini", prompt));
+
+  actions.append(note, chatgptButton, geminiButton);
+  container.appendChild(actions);
 }
 
 function buildCorrectFeedback(answer) {
@@ -851,8 +948,10 @@ function submitAnswer(option, selectedButton) {
     feedbackMessage.className = "feedback correct";
     state.lastAnswer = {
       html: correctFeedback,
-      className: "correct"
+      className: "correct",
+      aiContext: { answer }
     };
+    renderAiHelpActions(feedbackMessage, state.lastAnswer.aiContext);
     completeQuizSessionItem("correct");
   } else {
     answerRecord.wrong += 1;
@@ -862,8 +961,10 @@ function submitAnswer(option, selectedButton) {
     feedbackMessage.className = "feedback wrong";
     state.lastAnswer = {
       html: wrongFeedback,
-      className: "wrong"
+      className: "wrong",
+      aiContext: { answer, selectedOption: option }
     };
+    renderAiHelpActions(feedbackMessage, state.lastAnswer.aiContext);
     completeQuizSessionItem("wrong");
   }
 
@@ -886,7 +987,8 @@ function skipCurrentQuestion() {
   const skipFeedback = buildSkipFeedback(answer);
   state.lastAnswer = {
     html: skipFeedback,
-    className: "neutral"
+    className: "neutral",
+    aiContext: { answer }
   };
   renderPreviousAnswerState();
   completeQuizSessionItem("skip");
