@@ -748,35 +748,19 @@ async function fetchAiStudyExplanation(context, target, button) {
 
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      if (response.status === 404) {
-        setAiResult(
-          target,
-          "ready",
-          buildLocalUsageExamples(context, "このURLではAI解説APIが動いていないため、サイト内の簡易使用例を表示します。Cloudflare Pages版ではAI解説に切り替わります。")
-        );
-        return;
-      }
-
-      if (response.status === 503) {
-        setAiResult(
-          target,
-          "ready",
-          buildLocalUsageExamples(context, data.error || "Cloudflare側のAI APIキー設定が未完了のため、簡易使用例を表示します。")
-        );
-        return;
-      }
-
-      throw new Error(data.error || "AI解説を取得できませんでした。");
+      const reason = response.status === 503
+        ? data.error || "Cloudflare側のAI APIキー設定が未完了のため、簡易使用例を表示します。"
+        : "AI解説APIに接続できないため、サイト内の簡易使用例を表示します。Cloudflare Pages版ではAI解説に切り替わります。";
+      setAiResult(target, "ready", buildLocalUsageExamples(context, reason));
+      return;
     }
 
     setAiResult(target, "ready", data.text || "AI解説を取得できませんでした。");
   } catch (error) {
     setAiResult(
       target,
-      "error",
-      error.message.includes("Cloudflare") || error.message.includes("GitHub Pages")
-        ? error.message
-        : `${error.message} Cloudflare側でAI APIの設定が完了しているか確認してください。`
+      "ready",
+      buildLocalUsageExamples(context, `${error.message} 簡易使用例を表示します。`)
     );
   } finally {
     button.disabled = false;
