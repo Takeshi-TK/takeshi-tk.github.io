@@ -650,11 +650,121 @@ function showPreviousAnswer() {
 
   previousAnswerBody.innerHTML = state.lastAnswer.html;
   previousAnswerBody.className = `feedback ${state.lastAnswer.className}`;
+  renderAiHelpActions(previousAnswerBody, state.lastAnswer.aiContext);
   previousAnswerCard.classList.toggle("hidden");
 }
 
 function buildItemExplanation(item) {
   return item.explanation || "";
+}
+
+function buildAiStudyPrompt(context) {
+  if (!context?.answer) {
+    return "";
+  }
+
+  const itemType = state.studyType === "phrase" ? "英語フレーズ" : "英単語";
+  const categoryLabel = getCurrentCategory().label;
+  const lines = [
+    `英語学習者向けに、次の${itemType}を日本語でわかりやすく解説してください。`,
+    `レベル/カテゴリ: ${categoryLabel}`,
+    `英語: ${context.answer.english}`,
+    `日本語の意味: ${context.answer.japanese}`
+  ];
+
+  if (context.selectedOption && context.selectedOption.english !== context.answer.english) {
+    lines.push(`学習者が間違えて選んだ答え: ${context.selectedOption.english} = ${context.selectedOption.japanese}`);
+  }
+
+  lines.push(
+    "",
+    "次の形式で短く答えてください。",
+    "1. 自然な意味とニュアンス",
+    "2. よく使う例文を3つ（英語 + 日本語訳）",
+    "3. 似た意味の語や間違えやすい点",
+    "4. 覚え方のコツ"
+  );
+
+  return lines.join("\n");
+}
+
+function buildAiRequestPayload(context) {
+  const selectedOption = context.selectedOption || null;
+
+  return {
+    studyType: state.studyType,
+    category: getCurrentCategory().label,
+    english: context.answer.english,
+    japanese: context.answer.japanese,
+    selectedEnglish: selectedOption?.english || "",
+    selectedJapanese: selectedOption?.japanese || "",
+    prompt: buildAiStudyPrompt(context)
+  };
+}
+
+function setAiResult(target, className, text) {
+  target.className = `ai-help-result ${className}`;
+  target.textContent = text;
+  target.classList.remove("hidden");
+}
+
+async function fetchAiStudyExplanation(context, target, button) {
+  button.disabled = true;
+  button.textContent = "AI解説を生成中...";
+  setAiResult(target, "loading", "AIが例文と使い方を作成しています。少しお待ちください。");
+
+  try {
+    const response = await fetch("/api/ai-study", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(buildAiRequestPayload(context))
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || "AI解説を取得できませんでした。");
+    }
+
+    setAiResult(target, "ready", data.text || "AI解説を取得できませんでした。");
+  } catch (error) {
+    setAiResult(
+      target,
+      "error",
+      `${error.message} 管理者側でAI APIの設定が完了しているか確認してください。`
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "AIで使用例を見る";
+  }
+}
+
+function renderAiHelpActions(container, context) {
+  const prompt = buildAiStudyPrompt(context);
+  if (!prompt) {
+    return;
+  }
+
+  const actions = document.createElement("span");
+  actions.className = "ai-help-actions";
+
+  const note = document.createElement("span");
+  note.className = "ai-help-note";
+  note.textContent = "例文やニュアンスをAIでその場に表示できます。";
+
+  const aiButton = document.createElement("button");
+  aiButton.type = "button";
+  aiButton.className = "ai-help-button";
+  aiButton.textContent = "AIで使用例を見る";
+
+  const result = document.createElement("span");
+  result.className = "ai-help-result hidden";
+
+  aiButton.addEventListener("click", () => fetchAiStudyExplanation(context, result, aiButton));
+
+  actions.append(note, aiButton, result);
+  container.appendChild(actions);
 }
 
 function buildCorrectFeedback(answer) {
@@ -851,8 +961,10 @@ function submitAnswer(option, selectedButton) {
     feedbackMessage.className = "feedback correct";
     state.lastAnswer = {
       html: correctFeedback,
-      className: "correct"
+      className: "correct",
+      aiContext: { answer }
     };
+    renderAiHelpActions(feedbackMessage, state.lastAnswer.aiContext);
     completeQuizSessionItem("correct");
   } else {
     answerRecord.wrong += 1;
@@ -862,8 +974,10 @@ function submitAnswer(option, selectedButton) {
     feedbackMessage.className = "feedback wrong";
     state.lastAnswer = {
       html: wrongFeedback,
-      className: "wrong"
+      className: "wrong",
+      aiContext: { answer, selectedOption: option }
     };
+    renderAiHelpActions(feedbackMessage, state.lastAnswer.aiContext);
     completeQuizSessionItem("wrong");
   }
 
@@ -886,7 +1000,8 @@ function skipCurrentQuestion() {
   const skipFeedback = buildSkipFeedback(answer);
   state.lastAnswer = {
     html: skipFeedback,
-    className: "neutral"
+    className: "neutral",
+    aiContext: { answer }
   };
   renderPreviousAnswerState();
   completeQuizSessionItem("skip");
