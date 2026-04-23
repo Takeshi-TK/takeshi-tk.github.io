@@ -708,10 +708,34 @@ function setAiResult(target, className, text) {
   target.classList.remove("hidden");
 }
 
+function buildLocalUsageExamples(context, reason = "") {
+  const answer = context.answer;
+  const selectedOption = context.selectedOption || null;
+  const categoryLabel = getCurrentCategory().label;
+  const prefix = reason ? `${reason}\n\n` : "";
+
+  if (state.studyType === "phrase") {
+    const mistakeNote = selectedOption && selectedOption.english !== answer.english
+      ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
+      : "";
+    const explanation = answer.explanation ? `\n使いどころ: ${answer.explanation}` : "";
+
+    return `${prefix}簡易使用例（AI未接続）\n${answer.english}\n意味: ${answer.japanese}${explanation}\n例: 会話ではこの表現をそのまま1文として使えます。まず音読して、次に自分の状況に置き換えて練習しましょう。${mistakeNote}`;
+  }
+
+  const word = answer.english;
+  const meaning = answer.japanese;
+  const mistakeNote = selectedOption && selectedOption.english !== answer.english
+    ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
+    : "";
+
+  return `${prefix}簡易使用例（AI未接続）\n${word} = ${meaning}\nカテゴリ: ${categoryLabel}\n例1: I learned the word "${word}" today.\n例2: How do you use "${word}" in a sentence?\n覚え方: 日本語訳だけでなく、声に出して「${word} = ${meaning}」を数回確認しましょう。${mistakeNote}`;
+}
+
 async function fetchAiStudyExplanation(context, target, button) {
   button.disabled = true;
-  button.textContent = "AI解説を生成中...";
-  setAiResult(target, "loading", "AIが例文と使い方を作成しています。少しお待ちください。");
+  button.textContent = "使用例を確認中...";
+  setAiResult(target, "loading", "使用例を準備しています。Cloudflare版ではAI解説を生成します。");
 
   try {
     const response = await fetch("/api/ai-study", {
@@ -725,11 +749,21 @@ async function fetchAiStudyExplanation(context, target, button) {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error("このURLではAI解説APIが動いていません。GitHub Pages版ではなく、Cloudflare Pages版で開くとサイト内に自動表示できます。");
+        setAiResult(
+          target,
+          "ready",
+          buildLocalUsageExamples(context, "このURLではAI解説APIが動いていないため、サイト内の簡易使用例を表示します。Cloudflare Pages版ではAI解説に切り替わります。")
+        );
+        return;
       }
 
       if (response.status === 503) {
-        throw new Error(data.error || "Cloudflare側のAI APIキー設定が未完了です。");
+        setAiResult(
+          target,
+          "ready",
+          buildLocalUsageExamples(context, data.error || "Cloudflare側のAI APIキー設定が未完了のため、簡易使用例を表示します。")
+        );
+        return;
       }
 
       throw new Error(data.error || "AI解説を取得できませんでした。");
@@ -746,7 +780,7 @@ async function fetchAiStudyExplanation(context, target, button) {
     );
   } finally {
     button.disabled = false;
-    button.textContent = "AIで使用例を見る";
+    button.textContent = "使用例を見る";
   }
 }
 
@@ -761,12 +795,12 @@ function renderAiHelpActions(container, context) {
 
   const note = document.createElement("span");
   note.className = "ai-help-note";
-  note.textContent = "例文やニュアンスをAIでその場に表示できます。";
+  note.textContent = "使用例をその場に表示できます。Cloudflare版ではAIでより詳しく表示します。";
 
   const aiButton = document.createElement("button");
   aiButton.type = "button";
   aiButton.className = "ai-help-button";
-  aiButton.textContent = "AIで使用例を見る";
+  aiButton.textContent = "使用例を見る";
 
   const result = document.createElement("span");
   result.className = "ai-help-result hidden";
