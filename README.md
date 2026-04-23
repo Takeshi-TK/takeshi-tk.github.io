@@ -27,6 +27,7 @@
    例: GitHub Pages / Cloudflare Pages
 4. 詳細手順は `DEPLOYMENT.md` を参照する
 5. Cloudflare Pages を使う場合は `CLOUDFLARE_PAGES_CHECKLIST.md` も確認する
+6. Cloudflareをこちら側から操作しやすくする場合は `CLOUDFLARE_CONTROL.md` も確認する
 
 ## AdSense 準備
 
@@ -48,6 +49,19 @@ AdSense の publisher ID は設定済みです。
 - `GEMINI_MODEL`: 任意。未設定時は `gemini-2.5-flash`
 
 API キーはブラウザ側に置かず、Cloudflare Pages の Variables and Secrets に登録してください。
+
+## 開発・デプロイ補助
+
+Cloudflare Pages向けに `wrangler.toml` と `package.json` を追加しています。
+
+```powershell
+npm install
+npm run check
+npm run dev
+npm run deploy:cloudflare
+```
+
+`dev.vars.example` はローカル開発用の見本です。実際のAPIキーは `.dev.vars` に入れ、GitHubへpushしないでください。
 
 ## 補足
 
