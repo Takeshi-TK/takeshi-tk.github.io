@@ -9,7 +9,7 @@
     name="description"
     content="StrideWords は英単語クイズとフレーズ学習、ウォーキング学習をまとめた英語学習サイトです。初級からビジネス、旅行英語まで実用的に学べます。"
   >
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=20260424-feature4">
   <script
     async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3121682237695422"
@@ -44,21 +44,18 @@
               <strong id="activeProfileName" class="profile-name">guest</strong>
             </div>
             <p class="profile-note">
-              登録なしでもすぐに学習できます。アカウント登録をすると勉強内容を保存して、あとで続きから再開できます。
+              登録なしでもすぐに学習できます。ID登録をすると、正解数・復習対象・ウォーキング再生回数などを保存して、あとで続きから再開できます。
+              ID とパスワードはどちらも6文字以上なら自由に設定できます。
             </p>
 
             <label class="field-block">
               <span>ID を新規登録 / ログイン</span>
-              <input id="profileIdInput" type="text" placeholder="例: hanako-01!">
+              <input id="profileIdInput" type="text" placeholder="例: hanako01">
             </label>
             <label class="field-block">
               <span>Password</span>
               <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード">
             </label>
-            <p class="field-help">
-              ID は英字・数字・記号をすべて含む 6 文字以上、パスワードも 6 文字以上で設定してください。
-            </p>
-
             <div class="inline-actions">
               <button id="registerProfileButton" class="primary-button" type="button">新規登録</button>
               <button id="resumeProfileButton" class="ghost-button" type="button">ログイン</button>
@@ -77,7 +74,8 @@
             <strong id="heroModeSummary">単語 / 4択クイズ</strong>
             <div class="hero-switch-stack">
               <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習内容">
-                <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語</button>
+                <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語 日→英</button>
+                <button id="wordReverseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">単語 英→日</button>
                 <button id="phraseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ</button>
               </div>
               <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習モード">
@@ -85,12 +83,6 @@
                 <button id="walkTab" class="mode-button" type="button" role="tab" aria-selected="false">ウォーキング</button>
               </div>
             </div>
-          </div>
-          <div class="stat-card emphasis-card">
-            <span class="stat-label">学習ガイド</span>
-            <strong class="emphasis-title">登録なしでもすぐ使えます</strong>
-            <p class="emphasis-text">まずはそのまま単語・フレーズ学習を始められます。</p>
-            <p class="emphasis-text emphasis-subtext">学習記録を登録すると進捗を保存して続きから再開できます。</p>
           </div>
         </div>
 
@@ -126,14 +118,18 @@
             <div class="header-actions">
               <span id="quizPoolBadge" class="status-badge">出題対象 0件</span>
               <span id="sessionProgressBadge" class="status-badge">10問区切り 0 / 10</span>
-              <button id="showPreviousAnswerButton" class="ghost-button" type="button">前回の答えを見る</button>
+              <button id="reviewMistakesButton" class="ghost-button" type="button">苦手を復習</button>
+              <button id="showPreviousAnswerButton" class="ghost-button" type="button">前の問題に戻る</button>
               <button id="skipButton" class="ghost-button" type="button">この問題をスキップ</button>
             </div>
           </div>
 
           <div class="prompt-card">
-            <p class="prompt-label">日本語の意味</p>
-            <h3 id="questionMeaning">読み込み中...</h3>
+            <p id="questionPromptLabel" class="prompt-label">日本語の意味</p>
+            <div class="prompt-main-line">
+              <h3 id="questionMeaning">読み込み中...</h3>
+              <button id="questionAudioButton" class="audio-button hidden" type="button">発音</button>
+            </div>
             <p id="questionHint" class="prompt-hint">表示された意味に合う英語を1つ選んでください。</p>
           </div>
 
@@ -170,13 +166,14 @@
             </div>
             <div class="inline-actions session-summary-actions">
               <button id="sessionContinueButton" class="primary-button" type="button">次の10問へ進む</button>
+              <button id="sessionReviewWrongButton" class="ghost-button" type="button">間違えた問題を復習</button>
               <button id="sessionStopButton" class="ghost-button" type="button">ここで一区切り</button>
             </div>
           </div>
 
           <div id="previousAnswerCard" class="review-card hidden">
-            <p class="section-label">Previous Answer</p>
-            <div id="previousAnswerBody" class="feedback neutral">前回の答えはまだありません。</div>
+            <p class="section-label">前の問題</p>
+            <div id="previousAnswerBody" class="feedback neutral">前の問題はまだありません。</div>
           </div>
         </section>
 
@@ -208,11 +205,9 @@
             <label class="control-block">
               <span>再生スピード</span>
               <select id="speedSelect">
-                <option value="1.0">1.0x</option>
-                <option value="1.1">1.1x</option>
-                <option value="1.2">1.2x</option>
-                <option value="1.3">1.3x</option>
-                <option value="1.4">1.4x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1.25">1.25x</option>
                 <option value="1.5">1.5x</option>
               </select>
             </label>
@@ -285,20 +280,23 @@
               <strong id="accuracyRate">0%</strong>
             </div>
             <div>
-              <span class="snapshot-label">出題対象</span>
-              <strong id="activeWordCount">0</strong>
+              <span class="snapshot-label">今日の学習数</span>
+              <strong id="todayStudyCount">0</strong>
             </div>
             <div>
-              <span class="snapshot-label">習得済み</span>
-              <strong id="masteredWordCount">0</strong>
+              <span class="snapshot-label">合計再生回数</span>
+              <strong id="totalPlayCount">0</strong>
             </div>
             <div>
-              <span class="snapshot-label">総数</span>
-              <strong id="wordCount">0</strong>
+              <span class="snapshot-label">連続学習日数</span>
+              <strong id="learningStreakCount">0</strong>
             </div>
           </div>
           <div class="progress-wrap" aria-hidden="true">
             <div id="accuracyBar" class="progress-bar"></div>
+          </div>
+          <div class="theme-control-row">
+            <button id="themeToggleButton" class="ghost-button nav-theme-button" type="button">ダークモード</button>
           </div>
         </section>
       </section>
@@ -314,6 +312,6 @@
       </div>
     </footer>
   </div>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js?v=20260424-feature4"></script>
 </body>
 </html>

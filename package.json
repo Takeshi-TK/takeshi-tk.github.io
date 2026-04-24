@@ -1,0 +1,14 @@
+{
+  "name": "stridewords",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check app.js",
+    "dev": "wrangler pages dev .",
+    "deploy:cloudflare": "wrangler pages deploy . --project-name=stridewords --branch=main"
+  },
+  "devDependencies": {
+    "wrangler": "^4.13.2"
+  }
+}

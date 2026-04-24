@@ -1,0 +1,8 @@
+.git
+.github
+node_modules
+server.log
+server-error.log
+gh-auth-*.txt
+.dev.vars
+.dev.vars.*

@@ -29,11 +29,14 @@ Cloudflare Pages は静的サイト公開に向いていて、あとからバッ
 2. Cloudflare Dashboard で `Pages` を開く
 3. `Connect to Git` を選ぶ
 4. 対象のリポジトリを選ぶ
-5. Build settings は次のようにする
+5. Project name は `stridewords` にする
+6. Build settings は次のようにする
    - Framework preset: `None`
    - Build command: 空欄
    - Build output directory: `/`
-6. Deploy を実行する
+7. Deploy を実行する
+
+`wrangler.toml` も `stridewords` で設定してあります。別名のCloudflare Pagesプロジェクトにした場合は、`wrangler.toml` の `name` も同じ名前へ変更してください。
 
 ### 公開後にやること
 
@@ -41,6 +44,17 @@ Cloudflare Pages は静的サイト公開に向いていて、あとからバッ
 2. カスタムドメインを使う場合はドメイン設定を追加
 3. `robots.txt` と `sitemap.xml` の URL を本番ドメインへ更新
 4. AI 解説を使う場合は `OPENAI_API_KEY` を Variables and Secrets に登録
+
+### こちら側からデプロイしやすくする設定
+
+GitHub Actions 用の `.github/workflows/cloudflare-pages.yml` を用意しています。
+
+1. GitHub の `Settings > Secrets and variables > Actions` を開く
+2. `Variables` に `CLOUDFLARE_PAGES_ENABLED=true` を追加する
+3. `Secrets` に `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を追加する
+4. 以降は `main` へpushするとCloudflare Pagesへデプロイできます
+
+この設定をしておくと、こちらでGitHubへ反映した修正がCloudflare側にも反映されやすくなります。
 
 ## 公開方法 2: GitHub Pages
 

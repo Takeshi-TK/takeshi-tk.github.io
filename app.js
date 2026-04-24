@@ -5,7 +5,7 @@ const PROFILES_KEY = "stridewords-profiles-v4";
 const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";
 const ACTIVE_ROLE_KEY = "stridewords-active-role-v4";
 const SETTINGS_KEY = "stridewords-settings-v4";
-const PROFILE_ID_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,40}$/;
+const PROFILE_ID_PATTERN = /^\S{6,40}$/;
 const ADMIN_ID = "TsubasaP";
 const ADMIN_ID_HASH = "6fd48e59450c59af0cb7e49a23244523486f335f7b301076568646e87414548b";
 const ADMIN_PASSWORD_HASH = "2b3a1f35eb496440d6db24f06e857668c3b8b51d6cebee9eda439eb422ed8668";
@@ -33,9 +33,9 @@ const correctCount = document.querySelector("#correctCount");
 const attemptCount = document.querySelector("#attemptCount");
 const accuracyRate = document.querySelector("#accuracyRate");
 const accuracyBar = document.querySelector("#accuracyBar");
-const activeWordCount = document.querySelector("#activeWordCount");
-const masteredWordCount = document.querySelector("#masteredWordCount");
-const wordCount = document.querySelector("#wordCount");
+const todayStudyCount = document.querySelector("#todayStudyCount");
+const totalPlayCount = document.querySelector("#totalPlayCount");
+const learningStreakCount = document.querySelector("#learningStreakCount");
 const activeProfileName = document.querySelector("#activeProfileName");
 const profileIdInput = document.querySelector("#profileIdInput");
 const profilePasswordInput = document.querySelector("#profilePasswordInput");
@@ -49,7 +49,9 @@ const deleteAccountButton = document.querySelector("#deleteAccountButton");
 const quizTab = document.querySelector("#quizTab");
 const walkTab = document.querySelector("#walkTab");
 const wordTypeTab = document.querySelector("#wordTypeTab");
+const wordReverseTypeTab = document.querySelector("#wordReverseTypeTab");
 const phraseTypeTab = document.querySelector("#phraseTypeTab");
+const themeToggleButton = document.querySelector("#themeToggleButton");
 const quizPanel = document.querySelector("#quizPanel");
 const walkPanel = document.querySelector("#walkPanel");
 const quizHeading = document.querySelector("#quizHeading");
@@ -58,13 +60,16 @@ const sessionProgressBadge = document.querySelector("#sessionProgressBadge");
 const heroCategoryListSummary = document.querySelector("#heroCategoryListSummary");
 const heroCategorySummary = document.querySelector("#heroCategorySummary");
 const heroModeSummary = document.querySelector("#heroModeSummary");
+const questionPromptLabel = document.querySelector("#questionPromptLabel");
 const questionMeaning = document.querySelector("#questionMeaning");
+const questionAudioButton = document.querySelector("#questionAudioButton");
 const questionHint = document.querySelector("#questionHint");
 const choices = document.querySelector("#choices");
 const feedbackMessage = document.querySelector("#feedbackMessage");
 const nextButton = document.querySelector("#nextButton");
 const skipButton = document.querySelector("#skipButton");
 const showPreviousAnswerButton = document.querySelector("#showPreviousAnswerButton");
+const reviewMistakesButton = document.querySelector("#reviewMistakesButton");
 const previousAnswerCard = document.querySelector("#previousAnswerCard");
 const previousAnswerBody = document.querySelector("#previousAnswerBody");
 const sessionSummaryCard = document.querySelector("#sessionSummaryCard");
@@ -75,6 +80,7 @@ const sessionAttemptCount = document.querySelector("#sessionAttemptCount");
 const sessionSkipCount = document.querySelector("#sessionSkipCount");
 const sessionAccuracyRate = document.querySelector("#sessionAccuracyRate");
 const sessionContinueButton = document.querySelector("#sessionContinueButton");
+const sessionReviewWrongButton = document.querySelector("#sessionReviewWrongButton");
 const sessionStopButton = document.querySelector("#sessionStopButton");
 const walkBadge = document.querySelector("#walkBadge");
 const walkWord = document.querySelector("#walkWord");
@@ -93,16 +99,19 @@ const walkReplayButton = document.querySelector("#walkReplayButton");
 
 const state = {
   studyType: "word",
+  answerMode: "jpToEn",
   category: "beginner",
   mode: "quiz",
   currentQuestion: null,
   lastAnswer: null,
+  previousQuestion: null,
   answered: false,
   exposureCounter: 1,
   profiles: loadProfiles(),
   activeProfileId: loadActiveProfileId(),
   role: loadActiveRole(),
   settings: loadSettings(),
+  reviewMode: null,
   wakeLock: {
     sentinel: null,
     supported: "wakeLock" in navigator
@@ -113,6 +122,7 @@ const state = {
     correct: 0,
     attempts: 0,
     skipped: 0,
+    wrongItems: [],
     breakPending: false,
     stopped: false
   },
@@ -142,7 +152,14 @@ function createEmptyProfile(id) {
     passwordHash: null,
     role: "user",
     categories,
-    words: {}
+    words: {},
+    stats: {
+      todayDate: getTodayKey(),
+      todayStudyCount: 0,
+      totalPlayCount: 0,
+      learningStreak: 0,
+      lastStudyDate: ""
+    }
   };
 }
 
@@ -176,14 +193,17 @@ function saveActiveRole() {
 }
 
 function loadSettings() {
-  const fallback = { speed: 1.0, gap: 2, walkStrategy: "weak" };
+  const fallback = { speed: 0.75, gap: 2, walkStrategy: "weak", theme: "light" };
+  const allowedSpeeds = [0.5, 0.75, 1.25, 1.5];
 
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    const speed = Number(saved?.speed ?? fallback.speed);
     return {
-      speed: Number(saved?.speed ?? fallback.speed),
+      speed: allowedSpeeds.includes(speed) ? speed : fallback.speed,
       gap: Number(saved?.gap ?? fallback.gap),
-      walkStrategy: String(saved?.walkStrategy ?? fallback.walkStrategy)
+      walkStrategy: String(saved?.walkStrategy ?? fallback.walkStrategy),
+      theme: saved?.theme === "dark" ? "dark" : "light"
     };
   } catch {
     return fallback;
@@ -192,6 +212,54 @@ function loadSettings() {
 
 function saveSettings() {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+}
+
+function getTodayKey(date = new Date()) {
+  return date.toISOString().slice(0, 10);
+}
+
+function getDateDiffDays(leftKey, rightKey) {
+  if (!leftKey || !rightKey) {
+    return null;
+  }
+
+  const left = new Date(`${leftKey}T00:00:00`);
+  const right = new Date(`${rightKey}T00:00:00`);
+  return Math.round((right - left) / 86400000);
+}
+
+function ensureProfileStats(profile) {
+  if (!profile.stats) {
+    profile.stats = {};
+  }
+
+  profile.stats.todayDate ||= getTodayKey();
+  profile.stats.todayStudyCount = Number(profile.stats.todayStudyCount || 0);
+  profile.stats.totalPlayCount = Number(profile.stats.totalPlayCount || 0);
+  profile.stats.learningStreak = Number(profile.stats.learningStreak || 0);
+  profile.stats.lastStudyDate ||= "";
+}
+
+function recordStudyActivity(kind = "quiz") {
+  const profile = getActiveProfile();
+  ensureProfileStats(profile);
+  const today = getTodayKey();
+
+  if (profile.stats.todayDate !== today) {
+    profile.stats.todayDate = today;
+    profile.stats.todayStudyCount = 0;
+  }
+
+  if (profile.stats.lastStudyDate !== today) {
+    const diff = getDateDiffDays(profile.stats.lastStudyDate, today);
+    profile.stats.learningStreak = diff === 1 ? profile.stats.learningStreak + 1 : 1;
+    profile.stats.lastStudyDate = today;
+  }
+
+  profile.stats.todayStudyCount += 1;
+  if (kind === "play") {
+    profile.stats.totalPlayCount += 1;
+  }
 }
 
 function normalizeProfileId(value) {
@@ -220,6 +288,7 @@ function ensureActiveProfile() {
   }
 
   const profile = state.profiles[state.activeProfileId];
+  ensureProfileStats(profile);
 
   for (const [type, collection] of Object.entries(datasets)) {
     for (const key of Object.keys(collection)) {
@@ -298,9 +367,14 @@ function getWordRecord(word, category = state.category, studyType = state.studyT
       correct: 0,
       wrong: 0,
       streak: 0,
-      lastSeen: 0
+      lastSeen: 0,
+      reviewDue: false,
+      reviewStreak: 0
     };
   }
+
+  profile.words[key].reviewDue ||= false;
+  profile.words[key].reviewStreak = Number(profile.words[key].reviewStreak || 0);
 
   return profile.words[key];
 }
@@ -311,6 +385,39 @@ function isMastered(word, category = state.category, studyType = state.studyType
 
 function getStudyItems(category = state.category, studyType = state.studyType) {
   return datasets[studyType][category].words.filter((word) => !isMastered(word, category, studyType));
+}
+
+function getReviewDueItems(category = state.category, studyType = state.studyType) {
+  return datasets[studyType][category].words.filter((word) => {
+    const record = getWordRecord(word, category, studyType);
+    return record.reviewDue && record.reviewStreak < 3;
+  });
+}
+
+function getSessionWrongItems() {
+  return state.quizSession.wrongItems
+    .map((key) => getCurrentItems().find((item) => getWordKey(item) === key))
+    .filter(Boolean)
+    .filter((item) => {
+      const record = getWordRecord(item);
+      return record.reviewDue && record.reviewStreak < 3;
+    });
+}
+
+function getQuestionPool() {
+  if (state.reviewMode === "session") {
+    return getSessionWrongItems();
+  }
+
+  if (state.reviewMode === "mistakes") {
+    return getReviewDueItems();
+  }
+
+  return getStudyItems();
+}
+
+function isWordReverseMode() {
+  return state.studyType === "word" && state.answerMode === "enToJp";
 }
 
 function getWordPriority(word) {
@@ -335,6 +442,10 @@ function getWordWeight(word) {
   }
 
   let weight = 1;
+
+  if (record.reviewDue) {
+    weight += 8;
+  }
 
   if (!record.attempts) {
     weight += 4;
@@ -407,6 +518,7 @@ function resetQuizSession() {
   state.quizSession.correct = 0;
   state.quizSession.attempts = 0;
   state.quizSession.skipped = 0;
+  state.quizSession.wrongItems = [];
   state.quizSession.breakPending = false;
   state.quizSession.stopped = false;
 }
@@ -415,6 +527,7 @@ function resetLearningFlow() {
   resetQuizSession();
   state.lastAnswer = null;
   state.currentQuestion = null;
+  state.previousQuestion = null;
   state.answered = false;
   previousAnswerCard.classList.add("hidden");
   hideSessionSummary();
@@ -445,7 +558,9 @@ function updateHeroSummary() {
   const categoryLabels = Object.values(getCurrentCollection())
     .map((category) => category.label)
     .join(" / ");
-  const studyLabel = studyTypeMeta[state.studyType].label;
+  const studyLabel = state.studyType === "word"
+    ? `単語 ${state.answerMode === "enToJp" ? "英→日" : "日→英"}`
+    : studyTypeMeta[state.studyType].label;
   const modeLabel = state.mode === "walk" ? "ウォーキング" : "4択クイズ";
 
   heroCategoryListSummary.textContent = categoryLabels;
@@ -468,6 +583,7 @@ function renderSessionSummary() {
   sessionAttemptCount.textContent = String(state.quizSession.attempts);
   sessionSkipCount.textContent = String(state.quizSession.skipped);
   sessionAccuracyRate.textContent = `${accuracy}%`;
+  sessionReviewWrongButton.disabled = getSessionWrongItems().length === 0;
   sessionSummaryCard.classList.remove("hidden");
 }
 
@@ -491,6 +607,35 @@ function completeQuizSessionItem(result) {
 }
 
 function continueQuizSession() {
+  state.reviewMode = null;
+  resetQuizSession();
+  hideSessionSummary();
+  createQuestion();
+}
+
+function startSessionWrongReview() {
+  if (!getSessionWrongItems().length) {
+    window.alert("この10問で復習対象になる間違いはありません。");
+    return;
+  }
+
+  state.reviewMode = "session";
+  const wrongItems = [...state.quizSession.wrongItems];
+  resetQuizSession();
+  state.quizSession.wrongItems = wrongItems;
+  state.quizSession.breakPending = false;
+  state.quizSession.stopped = false;
+  hideSessionSummary();
+  createQuestion();
+}
+
+function startMistakesReview() {
+  if (!getReviewDueItems().length) {
+    window.alert("現在、復習対象の単語・フレーズはありません。");
+    return;
+  }
+
+  state.reviewMode = "mistakes";
   resetQuizSession();
   hideSessionSummary();
   createQuestion();
@@ -545,11 +690,15 @@ function renderAdminPanel() {
 }
 
 function renderStudyTypeTabs() {
-  const isWord = state.studyType === "word";
-  wordTypeTab.classList.toggle("active", isWord);
-  phraseTypeTab.classList.toggle("active", !isWord);
-  wordTypeTab.setAttribute("aria-selected", String(isWord));
-  phraseTypeTab.setAttribute("aria-selected", String(!isWord));
+  const isWordJpToEn = state.studyType === "word" && state.answerMode === "jpToEn";
+  const isWordEnToJp = state.studyType === "word" && state.answerMode === "enToJp";
+  const isPhrase = state.studyType === "phrase";
+  wordTypeTab.classList.toggle("active", isWordJpToEn);
+  wordReverseTypeTab.classList.toggle("active", isWordEnToJp);
+  phraseTypeTab.classList.toggle("active", isPhrase);
+  wordTypeTab.setAttribute("aria-selected", String(isWordJpToEn));
+  wordReverseTypeTab.setAttribute("aria-selected", String(isWordEnToJp));
+  phraseTypeTab.setAttribute("aria-selected", String(isPhrase));
 }
 
 function renderCategories() {
@@ -573,6 +722,7 @@ function renderCategories() {
 
       stopWalking(true);
       state.category = key;
+      state.reviewMode = null;
       resetLearningFlow();
       rebuildWalkingQueue();
       renderAll();
@@ -589,18 +739,23 @@ function updateSnapshot() {
   const accuracy = attempts ? Math.round((progress.correct / attempts) * 100) : 0;
   const activeWords = getStudyItems().length;
   const totalWords = category.words.length;
-  const masteredWords = totalWords - activeWords;
   const studyMeta = studyTypeMeta[state.studyType];
+  const profile = getActiveProfile();
+  ensureProfileStats(profile);
 
   correctCount.textContent = String(progress.correct);
   attemptCount.textContent = String(attempts);
   accuracyRate.textContent = `${accuracy}%`;
   accuracyBar.style.width = `${accuracy}%`;
-  activeWordCount.textContent = String(activeWords);
-  masteredWordCount.textContent = String(masteredWords);
-  wordCount.textContent = String(totalWords);
+  todayStudyCount.textContent = String(profile.stats.todayStudyCount);
+  totalPlayCount.textContent = String(profile.stats.totalPlayCount);
+  learningStreakCount.textContent = `${profile.stats.learningStreak}日`;
+  reviewMistakesButton.disabled = getReviewDueItems().length === 0;
 
-  quizHeading.textContent = `${category.label} ${studyMeta.label}クイズ`;
+  const directionLabel = state.studyType === "word" && state.answerMode === "enToJp" ? "英→日" : "日→英";
+  quizHeading.textContent = state.studyType === "word"
+    ? `${category.label} 単語${directionLabel}クイズ`
+    : `${category.label} ${studyMeta.label}クイズ`;
   quizPoolBadge.textContent = activeWords
     ? `出題対象 ${activeWords}${studyMeta.countLabel}`
     : "出題対象なし";
@@ -609,7 +764,9 @@ function updateSnapshot() {
   walkLevelCount.textContent = activeWords
     ? `${activeWords}${studyMeta.countLabel}`
     : "完了";
-  quizPoolBadge.textContent = `出題対象 ${activeWords}${studyMeta.countLabel} / 全体 ${totalWords}${studyMeta.countLabel}`;
+  quizPoolBadge.textContent = state.reviewMode
+    ? `復習中 ${getQuestionPool().length}${studyMeta.countLabel}`
+    : `出題対象 ${activeWords}${studyMeta.countLabel} / 全体 ${totalWords}${studyMeta.countLabel}`;
   walkLevelCount.textContent = `${activeWords} / ${totalWords}${studyMeta.countLabel}`;
   walkPriorityText.textContent = activeWords
     ? getWalkingStrategyLabel()
@@ -635,135 +792,1186 @@ function renderQuizCompletion() {
 }
 
 function renderPreviousAnswerState() {
-  showPreviousAnswerButton.disabled = !state.lastAnswer;
+  showPreviousAnswerButton.disabled = !state.previousQuestion;
 
-  if (!state.lastAnswer) {
-    previousAnswerBody.textContent = "前回の回答はまだありません。";
+  if (!state.previousQuestion) {
+    previousAnswerBody.textContent = "前の問題はまだありません。";
     previousAnswerBody.className = "feedback neutral";
   }
 }
 
-function showPreviousAnswer() {
-  if (!state.lastAnswer) {
+function restorePreviousQuestion() {
+  if (!state.previousQuestion) {
     return;
   }
 
-  previousAnswerBody.innerHTML = state.lastAnswer.html;
-  previousAnswerBody.className = `feedback ${state.lastAnswer.className}`;
-  renderAiHelpActions(previousAnswerBody, state.lastAnswer.aiContext);
-  previousAnswerCard.classList.toggle("hidden");
+  hideSessionSummary();
+  state.currentQuestion = {
+    answer: state.previousQuestion.answer,
+    options: state.previousQuestion.options
+  };
+  state.answered = false;
+  previousAnswerCard.classList.add("hidden");
+  renderCurrentQuestionUi();
 }
 
 function buildItemExplanation(item) {
   return item.explanation || "";
 }
 
-function buildAiStudyPrompt(context) {
-  if (!context?.answer) {
-    return "";
-  }
-
-  const itemType = state.studyType === "phrase" ? "英語フレーズ" : "英単語";
-  const categoryLabel = getCurrentCategory().label;
-  const lines = [
-    `英語学習者向けに、次の${itemType}を日本語でわかりやすく解説してください。`,
-    `レベル/カテゴリ: ${categoryLabel}`,
-    `英語: ${context.answer.english}`,
-    `日本語の意味: ${context.answer.japanese}`
-  ];
-
-  if (context.selectedOption && context.selectedOption.english !== context.answer.english) {
-    lines.push(`学習者が間違えて選んだ答え: ${context.selectedOption.english} = ${context.selectedOption.japanese}`);
-  }
-
-  lines.push(
-    "",
-    "次の形式で短く答えてください。",
-    "1. 自然な意味とニュアンス",
-    "2. よく使う例文を3つ（英語 + 日本語訳）",
-    "3. 似た意味の語や間違えやすい点",
-    "4. 覚え方のコツ"
-  );
-
-  return lines.join("\n");
-}
-
-function buildAiRequestPayload(context) {
-  const selectedOption = context.selectedOption || null;
-
-  return {
-    studyType: state.studyType,
-    category: getCurrentCategory().label,
-    english: context.answer.english,
-    japanese: context.answer.japanese,
-    selectedEnglish: selectedOption?.english || "",
-    selectedJapanese: selectedOption?.japanese || "",
-    prompt: buildAiStudyPrompt(context)
-  };
-}
-
-function setAiResult(target, className, text) {
-  target.className = `ai-help-result ${className}`;
+function setUsageResult(target, className, text) {
+  target.className = `usage-help-result ${className}`;
   target.textContent = text;
   target.classList.remove("hidden");
 }
 
-async function fetchAiStudyExplanation(context, target, button) {
-  button.disabled = true;
-  button.textContent = "AI解説を生成中...";
-  setAiResult(target, "loading", "AIが例文と使い方を作成しています。少しお待ちください。");
-
-  try {
-    const response = await fetch("/api/ai-study", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(buildAiRequestPayload(context))
-    });
-
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(data.error || "AI解説を取得できませんでした。");
+function buildPracticalWordExample(word, meaning) {
+  const lower = word.toLowerCase();
+  const exactExamples = {
+    for: {
+      meaningNote: "目的・対象・期間を表す前置詞です。「〜のために」「〜に向けて」「〜の間」など、文によって訳が変わります。",
+      examples: [
+        ["This gift is for you.", "このプレゼントはあなたのためのものです。"],
+        ["I studied for two hours.", "私は2時間勉強しました。"]
+      ],
+      note: "for は日本語1語で固定せず、「誰のため」「何の目的」「どれくらいの期間」かを見て訳します。"
+    },
+    to: {
+      meaningNote: "方向・到達点・相手を表す前置詞です。「〜へ」「〜に」と訳すことが多いです。",
+      examples: [
+        ["I go to school by train.", "私は電車で学校へ行きます。"],
+        ["Please send this to me.", "これを私に送ってください。"]
+      ],
+      note: "to は「向かう先」を表す感覚で覚えると使いやすいです。"
+    },
+    in: {
+      meaningNote: "場所や時間の中にあることを表す前置詞です。「〜の中に」「〜で」「〜に」と訳します。",
+      examples: [
+        ["She is in the room.", "彼女は部屋の中にいます。"],
+        ["I was born in April.", "私は4月に生まれました。"]
+      ],
+      note: "in は「中に入っている」イメージです。"
+    },
+    on: {
+      meaningNote: "何かの上に接していること、または曜日・日付を表す前置詞です。",
+      examples: [
+        ["The book is on the table.", "本はテーブルの上にあります。"],
+        ["I have a meeting on Monday.", "月曜日に会議があります。"]
+      ],
+      note: "on は「接している」「特定の日」のイメージで使います。"
+    },
+    at: {
+      meaningNote: "具体的な場所や時刻の一点を表す前置詞です。「〜で」「〜に」と訳します。",
+      examples: [
+        ["Let's meet at the station.", "駅で会いましょう。"],
+        ["The class starts at nine.", "授業は9時に始まります。"]
+      ],
+      note: "at はピンポイントの場所や時刻に使います。"
+    },
+    of: {
+      meaningNote: "所属・一部・関係を表す前置詞です。「〜の」と訳すことが多いです。",
+      examples: [
+        ["This is a map of Japan.", "これは日本の地図です。"],
+        ["I drank a cup of coffee.", "私はコーヒーを1杯飲みました。"]
+      ],
+      note: "of は2つのものの関係をつなぐ単語です。"
+    },
+    with: {
+      meaningNote: "一緒にいる相手、使う道具、伴う状態を表します。「〜と一緒に」「〜で」と訳します。",
+      examples: [
+        ["I went there with my friend.", "友だちと一緒にそこへ行きました。"],
+        ["Please write with this pen.", "このペンで書いてください。"]
+      ],
+      note: "with は「一緒」「道具」のイメージで使います。"
+    },
+    from: {
+      meaningNote: "出発点・起点・送った人を表します。「〜から」と訳すことが多いです。",
+      examples: [
+        ["I am from Japan.", "私は日本出身です。"],
+        ["This email is from my boss.", "このメールは上司からです。"]
+      ],
+      note: "from は「どこから来たか」を表します。"
+    },
+    about: {
+      meaningNote: "話題や内容を表します。「〜について」と訳します。",
+      examples: [
+        ["I want to talk about this.", "これについて話したいです。"],
+        ["This book is about travel.", "この本は旅行についての本です。"]
+      ],
+      note: "about は会話や説明のテーマを示すときに便利です。"
+    },
+    the: {
+      meaningNote: "聞き手も分かる特定のものを指す冠詞です。日本語では訳さないことも多いです。",
+      examples: [
+        ["Please close the door.", "そのドアを閉めてください。"],
+        ["The station is near here.", "その駅はこの近くです。"]
+      ],
+      note: "the は「どれのことか相手も分かる」ときに使います。"
+    },
+    a: {
+      meaningNote: "初めて出てくる1つのもの、または特定しない1つのものにつける冠詞です。",
+      examples: [
+        ["I need a pen.", "ペンが1本必要です。"],
+        ["She has a dog.", "彼女は犬を1匹飼っています。"]
+      ],
+      note: "a は数えられる単数名詞の前でよく使います。"
+    },
+    an: {
+      meaningNote: "a と同じく1つのものを表す冠詞です。母音で始まる音の前で使います。",
+      examples: [
+        ["I ate an apple.", "私はリンゴを1つ食べました。"],
+        ["He is an engineer.", "彼はエンジニアです。"]
+      ],
+      note: "an は発音が母音で始まる単語の前に置きます。"
+    },
+    and: {
+      meaningNote: "単語や文をつなぐ接続詞です。「そして」「〜と」と訳します。",
+      examples: [
+        ["I like coffee and tea.", "私はコーヒーと紅茶が好きです。"],
+        ["She opened the door and smiled.", "彼女はドアを開けて微笑みました。"]
+      ],
+      note: "and は同じ種類の情報を足すときに使います。"
+    },
+    but: {
+      meaningNote: "前の内容と反対・対比になる内容をつなぐ接続詞です。「しかし」「でも」と訳します。",
+      examples: [
+        ["I am tired, but I will go.", "疲れていますが、行きます。"],
+        ["This is small but useful.", "これは小さいですが役に立ちます。"]
+      ],
+      note: "but の後には、前と少し逆の内容が来ます。"
+    },
+    or: {
+      meaningNote: "選択肢を表す接続詞です。「または」「それとも」と訳します。",
+      examples: [
+        ["Do you want tea or coffee?", "紅茶かコーヒーが欲しいですか。"],
+        ["We can go today or tomorrow.", "今日か明日に行けます。"]
+      ],
+      note: "or は選択肢を並べるときに使います。"
+    },
+    hostel: {
+      meaningNote: "旅行者向けの安い宿泊施設です。相部屋や共用キッチンがあることが多く、hotel よりカジュアルで低価格な宿です。",
+      examples: [
+        ["I stayed at a hostel near the station.", "駅の近くのホステルに泊まりました。"],
+        ["This hostel has a shared kitchen.", "このホステルには共用キッチンがあります。"]
+      ],
+      note: "日本語の「ホステル」だけでは分かりにくいので、「安めの旅行者向け宿」と覚えると実用的です。"
+    },
+    hotel: {
+      meaningNote: "宿泊施設のホテルです。個室で泊まる一般的な宿を指します。",
+      examples: [
+        ["I booked a hotel for two nights.", "2泊分のホテルを予約しました。"],
+        ["The hotel is close to the airport.", "そのホテルは空港に近いです。"]
+      ],
+      note: "book a hotel で「ホテルを予約する」という実用表現です。"
+    },
+    restaurant: {
+      meaningNote: "食事をする店、飲食店のことです。",
+      examples: [
+        ["This restaurant is popular with locals.", "このレストランは地元の人に人気です。"],
+        ["Let's find a restaurant nearby.", "近くのレストランを探しましょう。"]
+      ],
+      note: "食事の場所を説明するときに使いやすい単語です。"
+    },
+    airport: {
+      meaningNote: "飛行機に乗ったり到着したりする空港です。",
+      examples: [
+        ["I arrived at the airport early.", "早めに空港に着きました。"],
+        ["How do I get to the airport?", "空港へはどう行けばいいですか。"]
+      ],
+      note: "at the airport の形でよく使います。"
+    },
+    station: {
+      meaningNote: "電車やバスなどの駅・停留所を指します。",
+      examples: [
+        ["Let's meet at the station.", "駅で会いましょう。"],
+        ["The station is crowded today.", "今日は駅が混んでいます。"]
+      ],
+      note: "待ち合わせでそのまま使える表現です。"
+    },
+    ticket: {
+      meaningNote: "電車・飛行機・イベントなどのチケット、切符です。",
+      examples: [
+        ["I bought a train ticket.", "電車の切符を買いました。"],
+        ["Do I need a ticket?", "チケットは必要ですか。"]
+      ],
+      note: "buy a ticket で「切符を買う」です。"
+    },
+    reservation: {
+      meaningNote: "ホテル・レストラン・サービスなどの予約です。",
+      examples: [
+        ["I have a reservation at seven.", "7時に予約しています。"],
+        ["Can I change my reservation?", "予約を変更できますか。"]
+      ],
+      note: "ホテルやレストランでよく使います。"
+    },
+    meeting: {
+      meaningNote: "仕事などで人が集まって話し合う会議・打ち合わせです。",
+      examples: [
+        ["The meeting starts at ten.", "会議は10時に始まります。"],
+        ["I have a meeting this afternoon.", "今日の午後に会議があります。"]
+      ],
+      note: "ビジネス英語では頻出です。"
+    },
+    schedule: {
+      meaningNote: "予定、日程、スケジュールのことです。",
+      examples: [
+        ["My schedule is full today.", "今日は予定がいっぱいです。"],
+        ["Can we check the schedule?", "スケジュールを確認できますか。"]
+      ],
+      note: "予定や日程を話すときに便利です。"
+    },
+    deadline: {
+      meaningNote: "提出や完了の期限、締切です。",
+      examples: [
+        ["The deadline is tomorrow.", "締切は明日です。"],
+        ["We need to meet the deadline.", "締切に間に合わせる必要があります。"]
+      ],
+      note: "仕事や提出物の期限に使います。"
+    },
+    password: {
+      meaningNote: "ログインなどに使うパスワードです。",
+      examples: [
+        ["I forgot my password.", "パスワードを忘れました。"],
+        ["Please enter your password.", "パスワードを入力してください。"]
+      ],
+      note: "ログインできない場面でよく使います。"
+    },
+    address: {
+      meaningNote: "住所、宛先、メールアドレスなどの「アドレス」です。",
+      examples: [
+        ["Please write your address here.", "ここに住所を書いてください。"],
+        ["What is your email address?", "あなたのメールアドレスは何ですか。"]
+      ],
+      note: "書類や配送の場面で使います。"
+    },
+    price: {
+      meaningNote: "物やサービスの値段・価格です。",
+      examples: [
+        ["The price is reasonable.", "値段は手ごろです。"],
+        ["What is the price?", "値段はいくらですか。"]
+      ],
+      note: "買い物や交渉で便利です。"
+    },
+    problem: {
+      meaningNote: "困ったこと、問題、トラブルを指します。",
+      examples: [
+        ["There is a problem with my phone.", "スマホに問題があります。"],
+        ["What's the problem?", "何が問題ですか。"]
+      ],
+      note: "with をつけると「何に問題があるか」を言えます。"
+    },
+    question: {
+      meaningNote: "質問、疑問のことです。",
+      examples: [
+        ["I have a question about this.", "これについて質問があります。"],
+        ["Can I ask a question?", "質問してもいいですか。"]
+      ],
+      note: "授業や仕事でそのまま使えます。"
+    },
+    first: {
+      meaningNote: "順番が最初であることを表します。「初めて」「1番目の」という意味で使います。",
+      examples: [
+        ["This is my first time here.", "ここに来るのは初めてです。"],
+        ["She finished first.", "彼女は1位で終えました。"]
+      ],
+      note: "first は「最初の」のほか、「初めて」という場面でもよく使います。"
+    },
+    building: {
+      meaningNote: "人が住んだり、働いたり、店や施設として使ったりする建物です。house より広く、ビル・学校・病院などにも使えます。",
+      examples: [
+        ["There is a tall building next to the station.", "駅の隣に高い建物があります。"],
+        ["My office is in this building.", "私の会社はこの建物の中にあります。"]
+      ],
+      note: "building は「建物」全般です。会社のビルだけでなく、学校や施設にも使えます。"
     }
+  };
 
-    setAiResult(target, "ready", data.text || "AI解説を取得できませんでした。");
-  } catch (error) {
-    setAiResult(
-      target,
-      "error",
-      `${error.message} 管理者側でAI APIの設定が完了しているか確認してください。`
-    );
-  } finally {
-    button.disabled = false;
-    button.textContent = "AIで使用例を見る";
+  Object.assign(exactExamples, {
+    i: {
+      examples: [
+        ["I live in Japan.", "私は日本に住んでいます。"],
+        ["I need some help.", "私は少し助けが必要です。"]
+      ]
+    },
+    you: {
+      examples: [
+        ["You are welcome.", "どういたしまして。"],
+        ["Do you have a minute?", "少し時間がありますか。"]
+      ]
+    },
+    he: {
+      examples: [
+        ["He works near here.", "彼はこの近くで働いています。"],
+        ["He is my friend.", "彼は私の友だちです。"]
+      ]
+    },
+    she: {
+      examples: [
+        ["She speaks English well.", "彼女は英語を上手に話します。"],
+        ["She is at home now.", "彼女は今、家にいます。"]
+      ]
+    },
+    it: {
+      examples: [
+        ["It is very useful.", "それはとても役に立ちます。"],
+        ["I found it yesterday.", "私は昨日それを見つけました。"]
+      ]
+    },
+    we: {
+      examples: [
+        ["We can start now.", "私たちは今始められます。"],
+        ["We went there together.", "私たちは一緒にそこへ行きました。"]
+      ]
+    },
+    they: {
+      examples: [
+        ["They are waiting outside.", "彼らは外で待っています。"],
+        ["They helped me yesterday.", "彼らは昨日私を助けてくれました。"]
+      ]
+    },
+    finger: {
+      examples: [
+        ["This is my finger.", "これは私の指です。"],
+        ["I hurt my finger.", "指をけがしました。"]
+      ]
+    },
+    hand: {
+      examples: [
+        ["Please raise your hand.", "手を上げてください。"],
+        ["I washed my hands.", "手を洗いました。"]
+      ]
+    },
+    head: {
+      examples: [
+        ["My head hurts.", "頭が痛いです。"],
+        ["Please keep your head up.", "顔を上げてください。"]
+      ]
+    },
+    face: {
+      examples: [
+        ["Please wash your face.", "顔を洗ってください。"],
+        ["She has a kind face.", "彼女は優しい顔をしています。"]
+      ]
+    },
+    eye: {
+      examples: [
+        ["My eye hurts.", "目が痛いです。"],
+        ["Please close your eyes.", "目を閉じてください。"]
+      ]
+    },
+    ear: {
+      examples: [
+        ["My ear hurts.", "耳が痛いです。"],
+        ["I heard it with my own ears.", "私はそれを自分の耳で聞きました。"]
+      ]
+    },
+    nose: {
+      examples: [
+        ["My nose is running.", "鼻水が出ています。"],
+        ["He touched his nose.", "彼は鼻を触りました。"]
+      ]
+    },
+    mouth: {
+      examples: [
+        ["Please open your mouth.", "口を開けてください。"],
+        ["My mouth is dry.", "口が渇いています。"]
+      ]
+    },
+    tooth: {
+      examples: [
+        ["My tooth hurts.", "歯が痛いです。"],
+        ["I brush my teeth every morning.", "私は毎朝歯を磨きます。"]
+      ]
+    },
+    foot: {
+      examples: [
+        ["My foot hurts.", "足が痛いです。"],
+        ["Please wipe your feet.", "足を拭いてください。"]
+      ]
+    },
+    toe: {
+      examples: [
+        ["I hurt my toe.", "足の指をけがしました。"],
+        ["My toe hurts.", "足の指が痛いです。"]
+      ]
+    },
+    body: {
+      examples: [
+        ["My body feels tired.", "体が疲れている感じがします。"],
+        ["Exercise is good for your body.", "運動は体に良いです。"]
+      ]
+    },
+    water: {
+      examples: [
+        ["Can I have some water?", "水をもらえますか。"],
+        ["I drink water every morning.", "私は毎朝水を飲みます。"]
+      ]
+    },
+    coffee: {
+      examples: [
+        ["I drink coffee every morning.", "私は毎朝コーヒーを飲みます。"],
+        ["Can I have a coffee?", "コーヒーを1杯もらえますか。"]
+      ]
+    },
+    tea: {
+      examples: [
+        ["Would you like some tea?", "お茶はいかがですか。"],
+        ["I drink tea after dinner.", "私は夕食後にお茶を飲みます。"]
+      ]
+    },
+    bread: {
+      examples: [
+        ["I ate bread for breakfast.", "朝食にパンを食べました。"],
+        ["This bread is fresh.", "このパンは新鮮です。"]
+      ]
+    },
+    rice: {
+      examples: [
+        ["I eat rice every day.", "私は毎日ご飯を食べます。"],
+        ["The rice is ready.", "ご飯ができました。"]
+      ]
+    },
+    go: {
+      examples: [
+        ["I go to work by train.", "私は電車で仕事へ行きます。"],
+        ["Let's go together.", "一緒に行きましょう。"]
+      ]
+    },
+    come: {
+      examples: [
+        ["Please come here.", "ここに来てください。"],
+        ["I will come back tomorrow.", "明日戻ってきます。"]
+      ]
+    },
+    have: {
+      examples: [
+        ["I have a question.", "質問があります。"],
+        ["Do you have time?", "時間はありますか。"]
+      ]
+    },
+    be: {
+      examples: [
+        ["Please be careful.", "気をつけてください。"],
+        ["I want to be ready.", "準備ができている状態でいたいです。"]
+      ]
+    },
+    do: {
+      examples: [
+        ["I do my homework at night.", "私は夜に宿題をします。"],
+        ["What should I do?", "私は何をすればいいですか。"]
+      ]
+    },
+    make: {
+      examples: [
+        ["I make breakfast every morning.", "私は毎朝朝食を作ります。"],
+        ["Can you make a reservation?", "予約を取れますか。"]
+      ]
+    },
+    get: {
+      examples: [
+        ["I got a message from him.", "彼からメッセージを受け取りました。"],
+        ["Can I get a ticket?", "チケットをもらえますか。"]
+      ]
+    },
+    take: {
+      examples: [
+        ["Please take this seat.", "この席に座ってください。"],
+        ["I take the bus to school.", "私は学校へバスで行きます。"]
+      ]
+    },
+    use: {
+      examples: [
+        ["Can I use this pen?", "このペンを使ってもいいですか。"],
+        ["I use this app every day.", "私はこのアプリを毎日使います。"]
+      ]
+    },
+    need: {
+      examples: [
+        ["I need your help.", "あなたの助けが必要です。"],
+        ["Do you need anything?", "何か必要ですか。"]
+      ]
+    },
+    want: {
+      examples: [
+        ["I want some water.", "水が欲しいです。"],
+        ["What do you want to do?", "何をしたいですか。"]
+      ]
+    },
+    like: {
+      examples: [
+        ["I like this song.", "私はこの歌が好きです。"],
+        ["Do you like coffee?", "コーヒーは好きですか。"]
+      ]
+    },
+    eat: {
+      examples: [
+        ["I eat breakfast at seven.", "私は7時に朝食を食べます。"],
+        ["Let's eat together.", "一緒に食べましょう。"]
+      ]
+    },
+    drink: {
+      examples: [
+        ["I drink water after exercise.", "運動後に水を飲みます。"],
+        ["Do you drink coffee?", "コーヒーを飲みますか。"]
+      ]
+    },
+    buy: {
+      examples: [
+        ["I want to buy this.", "これを買いたいです。"],
+        ["Where can I buy a ticket?", "どこで切符を買えますか。"]
+      ]
+    },
+    pay: {
+      examples: [
+        ["Can I pay by card?", "カードで支払えますか。"],
+        ["I paid for lunch.", "昼食代を支払いました。"]
+      ]
+    },
+    read: {
+      examples: [
+        ["I read a book before bed.", "寝る前に本を読みます。"],
+        ["Can you read this message?", "このメッセージを読めますか。"]
+      ]
+    },
+    write: {
+      examples: [
+        ["Please write your name here.", "ここに名前を書いてください。"],
+        ["I wrote an email.", "メールを書きました。"]
+      ]
+    },
+    today: {
+      examples: [
+        ["I am busy today.", "今日は忙しいです。"],
+        ["Let's start today.", "今日始めましょう。"]
+      ]
+    },
+    tomorrow: {
+      examples: [
+        ["See you tomorrow.", "また明日会いましょう。"],
+        ["I will call you tomorrow.", "明日電話します。"]
+      ]
+    },
+    yesterday: {
+      examples: [
+        ["I was tired yesterday.", "昨日は疲れていました。"],
+        ["I bought this yesterday.", "これは昨日買いました。"]
+      ]
+    },
+    this: {
+      examples: [
+        ["This is my bag.", "これは私のかばんです。"],
+        ["I want this one.", "私はこれが欲しいです。"]
+      ]
+    },
+    that: {
+      examples: [
+        ["That is my seat.", "あれは私の席です。"],
+        ["I know that place.", "私はあの場所を知っています。"]
+      ]
+    },
+    these: {
+      examples: [
+        ["These are my shoes.", "これらは私の靴です。"],
+        ["These look good.", "これらは良さそうです。"]
+      ]
+    },
+    those: {
+      examples: [
+        ["Those are my books.", "あれらは私の本です。"],
+        ["Who are those people?", "あの人たちは誰ですか。"]
+      ]
+    },
+    here: {
+      examples: [
+        ["Please come here.", "ここに来てください。"],
+        ["You can sit here.", "ここに座れます。"]
+      ]
+    },
+    there: {
+      examples: [
+        ["My bag is over there.", "私のかばんはあそこにあります。"],
+        ["Let's go there tomorrow.", "明日そこへ行きましょう。"]
+      ]
+    },
+    who: {
+      examples: [
+        ["Who is that person?", "あの人は誰ですか。"],
+        ["Who called you?", "誰があなたに電話しましたか。"]
+      ]
+    },
+    what: {
+      examples: [
+        ["What is your name?", "あなたの名前は何ですか。"],
+        ["What do you need?", "何が必要ですか。"]
+      ]
+    },
+    when: {
+      examples: [
+        ["When will you arrive?", "いつ到着しますか。"],
+        ["When is the meeting?", "会議はいつですか。"]
+      ]
+    },
+    where: {
+      examples: [
+        ["Where is the station?", "駅はどこですか。"],
+        ["Where do you work?", "どこで働いていますか。"]
+      ]
+    },
+    why: {
+      examples: [
+        ["Why are you late?", "なぜ遅れたのですか。"],
+        ["Why did you choose this?", "なぜこれを選んだのですか。"]
+      ]
+    },
+    how: {
+      examples: [
+        ["How are you today?", "今日は元気ですか。"],
+        ["How do I use this?", "これはどう使いますか。"]
+      ]
+    },
+    yes: {
+      examples: [
+        ["Yes, I understand.", "はい、分かります。"],
+        ["Yes, that's right.", "はい、その通りです。"]
+      ]
+    },
+    no: {
+      examples: [
+        ["No, thank you.", "いいえ、結構です。"],
+        ["No, I don't need it.", "いいえ、それは必要ありません。"]
+      ]
+    },
+    all: {
+      examples: [
+        ["All the seats are taken.", "席はすべて埋まっています。"],
+        ["I read all the pages.", "私はページを全部読みました。"]
+      ]
+    },
+    some: {
+      examples: [
+        ["I need some time.", "少し時間が必要です。"],
+        ["Would you like some water?", "水を少し飲みますか。"]
+      ]
+    },
+    any: {
+      examples: [
+        ["Do you have any questions?", "何か質問はありますか。"],
+        ["I don't have any cash.", "私は現金を持っていません。"]
+      ]
+    },
+    many: {
+      examples: [
+        ["There are many people here.", "ここにはたくさんの人がいます。"],
+        ["I don't have many bags.", "私はたくさんのかばんを持っていません。"]
+      ]
+    },
+    much: {
+      examples: [
+        ["I don't have much time.", "私はあまり時間がありません。"],
+        ["How much water do you need?", "どれくらい水が必要ですか。"]
+      ]
+    },
+    few: {
+      examples: [
+        ["Only a few seats are open.", "空いている席は少ししかありません。"],
+        ["I know a few people there.", "私はそこに数人知り合いがいます。"]
+      ]
+    },
+    more: {
+      examples: [
+        ["I need more time.", "もっと時間が必要です。"],
+        ["Do you want more coffee?", "もっとコーヒーが欲しいですか。"]
+      ]
+    },
+    most: {
+      examples: [
+        ["Most people use this app.", "ほとんどの人がこのアプリを使います。"],
+        ["This is the most popular menu item.", "これは一番人気のメニューです。"]
+      ]
+    },
+    other: {
+      examples: [
+        ["Do you have any other ideas?", "ほかに案はありますか。"],
+        ["Let's try the other door.", "もう一方のドアを試しましょう。"]
+      ]
+    },
+    another: {
+      examples: [
+        ["Can I have another cup?", "もう1杯もらえますか。"],
+        ["Let's meet another day.", "別の日に会いましょう。"]
+      ]
+    },
+    same: {
+      examples: [
+        ["We chose the same train.", "私たちは同じ電車を選びました。"],
+        ["Please use the same password.", "同じパスワードを使ってください。"]
+      ]
+    },
+    different: {
+      examples: [
+        ["I need a different size.", "違うサイズが必要です。"],
+        ["This looks different now.", "これは今、違って見えます。"]
+      ]
+    },
+    not: {
+      examples: [
+        ["I am not ready yet.", "私はまだ準備ができていません。"],
+        ["This is not mine.", "これは私のものではありません。"]
+      ]
+    },
+    because: {
+      examples: [
+        ["I stayed home because it was raining.", "雨が降っていたので家にいました。"],
+        ["She is absent because she is sick.", "彼女は具合が悪いので欠席しています。"]
+      ]
+    },
+    if: {
+      examples: [
+        ["If you need help, call me.", "助けが必要なら私に電話してください。"],
+        ["If it rains, we will stay inside.", "雨なら中にいます。"]
+      ]
+    },
+    then: {
+      examples: [
+        ["Finish this first, then take a break.", "これを先に終えて、それから休んでください。"],
+        ["I was busy then.", "私はそのとき忙しかったです。"]
+      ]
+    },
+    so: {
+      examples: [
+        ["I was tired, so I went home.", "疲れていたので家に帰りました。"],
+        ["It was cold, so I wore a coat.", "寒かったのでコートを着ました。"]
+      ]
+    },
+    without: {
+      examples: [
+        ["I left without my umbrella.", "傘を持たずに出かけました。"],
+        ["Don't go out without your phone.", "スマホなしで外に出ないでください。"]
+      ]
+    },
+    under: {
+      examples: [
+        ["The bag is under the chair.", "かばんは椅子の下にあります。"],
+        ["There is a cat under the table.", "テーブルの下に猫がいます。"]
+      ]
+    },
+    near: {
+      examples: [
+        ["My office is near the station.", "私の職場は駅の近くです。"],
+        ["Let's meet near the entrance.", "入口の近くで会いましょう。"]
+      ]
+    },
+    between: {
+      examples: [
+        ["The bank is between the cafe and the hotel.", "銀行はカフェとホテルの間にあります。"],
+        ["Please sit between us.", "私たちの間に座ってください。"]
+      ]
+    },
+    before: {
+      examples: [
+        ["Please call me before noon.", "正午前に電話してください。"],
+        ["I eat breakfast before work.", "仕事の前に朝食を食べます。"]
+      ]
+    },
+    after: {
+      examples: [
+        ["Let's talk after lunch.", "昼食後に話しましょう。"],
+        ["I study after dinner.", "私は夕食後に勉強します。"]
+      ]
+    }
+  });
+
+  if (exactExamples[lower]) {
+    return exactExamples[lower];
   }
+
+  if (/宿|ホテル|ホステル|泊/.test(meaning)) {
+    return {
+      meaningNote: `${meaning}は、泊まる場所や宿泊に関係する単語です。`,
+      examples: [
+        [`I stayed at a ${word} last night.`, `昨夜、${meaning}に泊まりました。`],
+        [`Is this ${word} near the station?`, `この${meaning}は駅の近くですか。`]
+      ],
+      note: "宿泊先について話すときに使います。"
+    };
+  }
+
+  if (/駅|空港|場所|店|学校|会社|病院|公園|部屋|地域|カフェ|スーパー|市場|薬局|診療所|銀行|図書館|博物館|都市|町|村|国|職場|ショッピングモール|エスカレーター/.test(meaning)) {
+    return {
+      meaningNote: `${meaning}は、場所を表す単語です。`,
+      examples: [
+        [`Let's meet at the ${word}.`, `${meaning}で会いましょう。`],
+        [`The ${word} is nearby.`, `${meaning}は近くにあります。`]
+      ],
+      note: "場所を表す単語は at the ... の形でよく使います。"
+    };
+  }
+
+  if (/予定|予約|会議|締切|期限|面接/.test(meaning)) {
+    return {
+      meaningNote: `${meaning}は、予定や仕事の管理で使う単語です。`,
+      examples: [
+        [`I need to check the ${word}.`, `${meaning}を確認する必要があります。`],
+        [`The ${word} is important.`, `その${meaning}は重要です。`]
+      ],
+      note: "予定や仕事の確認で使いやすい形です。"
+    };
+  }
+
+  if (/問題|質問|理由|答え|説明|情報/.test(meaning)) {
+    return {
+      meaningNote: `${meaning}は、確認や説明の場面でよく使う単語です。`,
+      examples: [
+        [`I have a ${word} about this.`, `これについて${meaning}があります。`],
+        [`Can you explain the ${word}?`, `その${meaning}を説明してもらえますか。`]
+      ],
+      note: "会話で相手に確認したいときに便利です。"
+    };
+  }
+
+  if (/値段|価格|料金|費用|割引|支払い|セール|現金|おつり|返金|硬貨|税金|クーポン/.test(meaning)) {
+    return {
+      meaningNote: `${meaning}は、買い物や支払いで使う単語です。`,
+      examples: [
+        [`What is the ${word}?`, `${meaning}はいくらですか。`],
+        [`The ${word} is too high.`, `${meaning}が高すぎます。`]
+      ],
+      note: "買い物や支払いの場面で使います。"
+    };
+  }
+
+  if (/必要|重要|簡単|難しい|便利|安全|高い|安い|早い|遅い|新しい|古い/.test(meaning)) {
+    return {
+      meaningNote: `${meaning}は、物事の状態や性質を表す単語です。`,
+      examples: [
+        [`This is ${word}.`, `これは${meaning}です。`],
+        [`It looks ${word}.`, `それは${meaning}に見えます。`]
+      ],
+      note: "性質や状態を短く説明するときに使います。"
+    };
+  }
+
+  if (/頭|顔|髪|目|耳|鼻|口|歯|首|肩|腕|手|指|背中|お腹|脚|ひざ|足|心臓|体/.test(meaning)) {
+    return {
+      examples: [
+        [`My ${word} hurts.`, `${meaning}が痛いです。`],
+        [`Please be careful with your ${word}.`, `${meaning}を大事にしてください。`]
+      ]
+    };
+  }
+
+  if (/水|お茶|コーヒー|牛乳|ジュース|飲料|ワイン|ビール|パン|ご飯|麺|スープ|サラダ|サンドイッチ|ハンバーガー|ピザ|パスタ|ケーキ|クッキー|デザート|果物|野菜|朝食|昼食|夕食|軽食|食事|料理|メニュー|会計|レシート|りんご|バナナ|オレンジ|ぶどう|いちご|桃|レモン|メロン|パイナップル|トマト|じゃがいも|玉ねぎ|にんじん|キャベツ|レタス|とうもろこし|豆|えび|卵|肉|牛肉|豚肉|鶏肉|魚|チーズ|バター|塩|砂糖|こしょう|ソース/.test(meaning)) {
+    return {
+      examples: [
+        [`I like ${word}.`, `私は${meaning}が好きです。`],
+        [`Can I have some ${word}?`, `${meaning}を少しもらえますか。`]
+      ]
+    };
+  }
+
+  if (/人|人々|名前|友だち|家族|母|父|親|子ども|赤ちゃん|男の子|女の子|男性|女性|兄弟|姉妹|息子|娘|夫|妻|祖父|祖母|おじ|おば|いとこ|近所の人|クラスメート|先生|生徒|医者|看護師|運転手|料理人|シェフ|働く人|店員|スタッフ|管理者|上司|同僚|お客|客|観光客|案内人|警察官|消防士|技術者|デザイナー|芸術家|音楽家|選手|所有者|リーダー|メンバー|チーム|グループ|カップル/.test(meaning)) {
+    return {
+      examples: [
+        [`She is a ${word}.`, `彼女は${meaning}です。`],
+        [`I talked to the ${word}.`, `その${meaning}と話しました。`]
+      ]
+    };
+  }
+
+  if (/する|使う|作る|取る|置く|欲しい|好き|思う|見る|聞く|聞こえる|話す|言う|たずねる|答える|助ける|見つける|与える|見せる|持ってくる|送る|開ける|閉める|始める|終える|試す|待つ|保つ|動く|歩く|走る|座る|立つ|曲がる|渡る|乗る|運転する|旅行する|訪れる|滞在する|戻る|買う|支払う|売る|食べる|飲む|料理する|洗う|掃除する|切る|注文する|選ぶ|着る|変える|運ぶ|持つ|書く|読む|勉強する|学ぶ|教える|覚えている|忘れる|会う|ついていく|確認する|予約する|到着する|出発する|休む|眠る|目覚める|ほほえむ|笑う|泣く|楽しむ|願う|準備する|共有する|借りる|貸す/.test(meaning)) {
+    return {
+      examples: [
+        [`I want to ${word}.`, `私は${meaning}ことをしたいです。`],
+        [`Please ${word} it.`, `それを${meaning}してください。`]
+      ]
+    };
+  }
+
+  if (/今日|明日|昨日|朝|午後|夕方|夜|週末|休日|休暇/.test(meaning)) {
+    return {
+      examples: [
+        [`I am busy ${word}.`, `${meaning}は忙しいです。`],
+        [`Let's talk ${word}.`, `${meaning}話しましょう。`]
+      ]
+    };
+  }
+
+  if (/月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日/.test(meaning)) {
+    return {
+      examples: [
+        [`I have a meeting on ${word}.`, `${meaning}に会議があります。`],
+        [`See you on ${word}.`, `${meaning}に会いましょう。`]
+      ]
+    };
+  }
+
+  if (/1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月/.test(meaning)) {
+    return {
+      examples: [
+        [`I will go there in ${word}.`, `${meaning}にそこへ行きます。`],
+        [`The event is in ${word}.`, `そのイベントは${meaning}です。`]
+      ]
+    };
+  }
+
+  if (/^([0-9]+|[0-9]+番目の)$/.test(meaning)) {
+    return {
+      examples: [
+        [`I need ${word} tickets.`, `${meaning}のチケットが必要です。`],
+        [`There are ${word} people here.`, `ここには${meaning}の人がいます。`]
+      ]
+    };
+  }
+
+  if (/同じ|違う/.test(meaning)) {
+    return {
+      examples: [
+        [`These two bags look ${word}.`, `この2つのかばんは${meaning}見えます。`],
+        [`We chose a ${word} plan.`, `私たちは${meaning}計画を選びました。`]
+      ]
+    };
+  }
+
+  if (/ほかの|もう一つの/.test(meaning)) {
+    return {
+      examples: [
+        [`Do you have ${word} options?`, `${meaning}選択肢はありますか。`],
+        [`I need ${word} ticket.`, `${meaning}切符が必要です。`]
+      ]
+    };
+  }
+
+  if (/すべて|いくつかの|たくさんの|多くの|少しの|より多くの|ほとんどの/.test(meaning)) {
+    return {
+      examples: [
+        [`I have ${word} things to do.`, `私は${meaning}やることがあります。`],
+        [`Do you need ${word} time?`, `${meaning}時間が必要ですか。`]
+      ]
+    };
+  }
+
+  if (/名前|年齢|仕事|職業人生|計画|考え|解決|例|点数|成績|練習|報告|連絡|メッセージ|ニュース|音楽|動画|写真|ゲーム|ページ|ファイル|フォルダー|リンク|ボタン|画面|辞書|本|ノート|紙|地図|ガイドブック|ペン|鉛筆|消しゴム|マーカー|授業|宿題|テスト|試験|メモ|メール|電話|コンピューター|ノートパソコン|タブレット|スマホ|スマートフォン|ブラウザ|アプリ|キーボード|マウス|プリンター|充電器|ケーブル|バッテリー|インターネット|ウェブサイト|アカウント|ユーザー名|電波|Wi-Fi|作業|配達|郵便受け|案内放送|詳細|要約|議題|議事録/.test(meaning)) {
+    return {
+      examples: [
+        [`I checked the ${word}.`, `${meaning}を確認しました。`],
+        [`Can you show me the ${word}?`, `${meaning}を見せてもらえますか。`]
+      ]
+    };
+  }
+
+  if (/家|住宅|アパート|居間|寝室|浴室|トイレ|台所|廊下|階段|エレベーター|ドア|窓|壁|床|天井|屋根|鍵|テーブル|机|椅子|ソファ|ベッド|枕|毛布|シーツ|タオル|鏡|ランプ|明かり|扇風機|エアコン|暖房器具|冷蔵庫|冷凍庫|電子レンジ|オーブン|コンロ|流し台|カップ|グラス|皿|ボウル|フォーク|ナイフ|スプーン|箸|フライパン|鍋|かばん|リュック|財布|小銭入れ|傘|腕時計|時計|カレンダー|電池|箱|びん|缶|贈り物|お土産|包み|サイズ|棚|買い物かご|カート|ボトル|ナプキン|ストロー|ブラシ|くし|ドライヤー|ハンガー|ティッシュ|リモコン|コンセント|レジ|洗濯|洗剤|ごみ/.test(meaning)) {
+    return {
+      examples: [
+        [`Where is my ${word}?`, `私の${meaning}はどこですか。`],
+        [`I use this ${word} every day.`, `私はこの${meaning}を毎日使います。`]
+      ]
+    };
+  }
+
+  if (/バス|電車|地下鉄|タクシー|車|自転車|バイク|飛行機|船|運賃|座席|搭乗口|ターミナル|ホーム|路線|切符|券売機|横断歩道|橋|通り|道路|角|停留所|乗り換え|パスポート|荷物|スーツケース|出発|到着|遅延|交通状況|経路|方向|旅行|旅/.test(meaning)) {
+    return {
+      examples: [
+        [`I took the ${word} this morning.`, `今朝${meaning}を使いました。`],
+        [`Where is the ${word}?`, `${meaning}はどこですか。`]
+      ]
+    };
+  }
+
+  if (/シャツ|Tシャツ|ジャケット|コート|セーター|パーカー|ドレス|スカート|ズボン|ジーンズ|短パン|靴下|靴|ブーツ|帽子|キャップ|めがね|サングラス|指輪|ネックレス|バッグ/.test(meaning)) {
+    return {
+      examples: [
+        [`I bought a new ${word}.`, `新しい${meaning}を買いました。`],
+        [`This ${word} looks good on you.`, `この${meaning}はあなたによく似合います。`]
+      ]
+    };
+  }
+
+  if (/赤|青|緑|黄色|黒|白|灰色|茶色|ピンク|紫|オレンジ色/.test(meaning)) {
+    return {
+      examples: [
+        [`My bag is ${word}.`, `私のかばんは${meaning}です。`],
+        [`I like the ${word} one.`, `私は${meaning}のものが好きです。`]
+      ]
+    };
+  }
+
+  if (/健康的な|具合が悪い|疲れた|お腹がすいた|喉が渇いた|眠い|うれしい|悲しい|怒った|心配した|こわい|わくわくした|忙しい|暇な|安全な|危険な|注意深い|落ち着いた|強い|弱い|より良い|きれいな|汚れた|かわいい|シンプルな|親切な|感じのよい|親しみやすい|可能な|準備ができた|いっぱいの|空の|暑い|暖かい|涼しい|寒い|晴れた|雨の|くもった|風の強い|明るい|暗い|小さい|中くらいの|大きい|驚いた|緊張した|恥ずかしい|ほっとした|興味がある|快適な|自信がある|正直な|丁寧な|長い|短い|低い|正確な|似ている|よくある|一般的な|地元の|公共の|私的な|伝統的な|現代的な|有名な|混んでいる|静かな|利用できる|価値がある/.test(meaning)) {
+    return {
+      examples: [
+        [`I feel ${word} today.`, `今日は${meaning}です。`],
+        [`The room looks ${word}.`, `その部屋は${meaning}ように見えます。`]
+      ]
+    };
+  }
+
+  if (/健康|薬|熱|せき|頭痛|腹痛|痛み|けが|包帯|マスク|石けん|シャンプー|歯ブラシ|歯みがき粉|アレルギー|緊急事態|火事|ばんそうこう/.test(meaning)) {
+    return {
+      examples: [
+        [`I need ${word} right now.`, `今すぐ${meaning}が必要です。`],
+        [`Where can I get ${word}?`, `どこで${meaning}を手に入れられますか。`]
+      ]
+    };
+  }
+
+  if (/注文|知っている|取り消す|温める|凍らせる|ゆでる|焼く|混ぜる|注ぐ|飾る|くつろぐ|伸ばす|繰り返す|謝る|許す|話し合う|励ます|祝う|避ける|示す|見積もる|割り当てる|導き出す|詳しく調べる|組み立てる|明確に言葉で表す|伝える|高める|減らす/.test(meaning)) {
+    return {
+      examples: [
+        [`Please ${word} this.`, `これを${meaning}してください。`],
+        [`I need to ${word} it carefully.`, `それを注意して${meaning}必要があります。`]
+      ]
+    };
+  }
+
+  if (/朝|午後|夕方|夜|真夜中|日|週|月|年|春|夏|秋|冬/.test(meaning)) {
+    return {
+      examples: [
+        [`I am busy in the ${word}.`, `${meaning}は忙しいです。`],
+        [`Let's meet this ${word}.`, `この${meaning}に会いましょう。`]
+      ]
+    };
+  }
+
+  if (/雨|雪|風|雲|太陽|嵐|海辺|海|川|湖|山|森|島/.test(meaning)) {
+    return {
+      examples: [
+        [`I can see the ${word} from here.`, `ここから${meaning}が見えます。`],
+        [`The ${word} is beautiful today.`, `今日は${meaning}がきれいです。`]
+      ]
+    };
+  }
+
+  if (/左|右側|まっすぐ|上へ|下へ|内側に|外側に/.test(meaning)) {
+    return {
+      examples: [
+        [`Please go ${word}.`, `${meaning}進んでください。`],
+        [`Look ${word}.`, `${meaning}見てください。`]
+      ]
+    };
+  }
+
+  if (/今|すぐに|あとで|もう一度|すでに|まだ/.test(meaning)) {
+    return {
+      examples: [
+        [`I will do it ${word}.`, `${meaning}やります。`],
+        [`Can we talk ${word}?`, `${meaning}話せますか。`]
+      ]
+    };
+  }
+
+  if (/いつも|たいてい|ときどき|しばしば|決して〜ない/.test(meaning)) {
+    return {
+      examples: [
+        [`I ${word} walk to work.`, `私は${meaning}歩いて仕事へ行きます。`],
+        [`She ${word} drinks coffee.`, `彼女は${meaning}コーヒーを飲みます。`]
+      ]
+    };
+  }
+
+  if (/一緒に/.test(meaning)) {
+    return {
+      examples: [
+        ["Let's go together.", "一緒に行きましょう。"],
+        ["We studied together.", "私たちは一緒に勉強しました。"]
+      ]
+    };
+  }
+
+  if (/本当に|とても|かなり|ちょうど/.test(meaning)) {
+    return {
+      examples: [
+        [`I am ${word} happy today.`, `今日は${meaning}うれしいです。`],
+        [`This is ${word} useful.`, `これは${meaning}役に立ちます。`]
+      ]
+    };
+  }
+
+  if (/意見|気分|感情|印象|選択|結果|記憶|習慣|経験|技能|知識|文化|関係|状況|環境|会話|話題|文|段落|記事|掲示|警告|許可|招待|視点|証拠|前提|文脈|戦略|やり方|バランス|優先事項|影響|課題|機会|懸念|混乱|明確さ|主張|分析|比較|対比|結論|可能性|確率|利点|欠点|原則|方針|過程|進歩|洞察|判断|決定|代替案|複雑さ|効率|一貫性|柔軟性|解釈|枠組み|基準|変数|要因|傾向|パターン|現象|仮説|合意|論争|異議|根拠|信頼性|妥当性|限界|範囲|制約|不確実性|可能性の高さ|偏り|先入観|偏見|動機|意図|認識|意識|能力|容量|遂行能力|力量|適応力|回復力|安定性|持続可能性|努力|達成/.test(meaning)) {
+    return {
+      examples: [
+        [`What is your ${word}?`, `あなたの${meaning}は何ですか。`],
+        [`The ${word} was better than I expected.`, `${meaning}は思ったより良かったです。`]
+      ]
+    };
+  }
+
+  if (/実は|たぶん|正確に|まさに|特に|代わりに|したがって|しかしながら|その間に|最近|現在|ついに|最後に|突然|静かに|注意深く|幸運にも|残念ながら|ほとんど|もう少しで/.test(meaning)) {
+    return {
+      examples: [
+        [`I will explain it ${word}.`, `${meaning}説明します。`],
+        [`She spoke ${word}.`, `彼女は${meaning}話しました。`]
+      ]
+    };
+  }
+
+  if (/\s/.test(word)) {
+    return {
+      examples: [
+        [`I need to check the ${word}.`, `${meaning}を確認する必要があります。`],
+        [`Where is the ${word}?`, `${meaning}はどこですか。`]
+      ]
+    };
+  }
+
+  return {
+    examples: [
+      [`This is a ${word}.`, `これは${meaning}です。`],
+      [`Where is the ${word}?`, `${meaning}はどこですか。`]
+    ]
+  };
 }
 
-function renderAiHelpActions(container, context) {
-  const prompt = buildAiStudyPrompt(context);
-  if (!prompt) {
+function buildLocalUsageExamples(context, reason = "") {
+  const answer = context.answer;
+  const selectedOption = context.selectedOption || null;
+  const prefix = reason ? `${reason}\n\n` : "";
+
+  if (state.studyType === "phrase") {
+    const mistakeNote = selectedOption && selectedOption.english !== answer.english
+      ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
+      : "";
+    const cleanPhrase = answer.english.replace(/[.!?。！？]+$/, "");
+
+    return `${prefix}使用例\n例1: ${answer.english}\n訳1: ${answer.japanese}\n例2: I said, "${cleanPhrase}."\n訳2: 私は「${answer.japanese}」と言いました。${mistakeNote}`;
+  }
+
+  const word = answer.english;
+  const meaning = answer.japanese;
+  const mistakeNote = selectedOption && selectedOption.english !== answer.english
+    ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
+    : "";
+  const example = buildPracticalWordExample(word, meaning);
+  const exampleLines = example.examples
+    .map(([english, japanese], index) => `例${index + 1}: ${english}\n訳${index + 1}: ${japanese}`)
+    .join("\n");
+
+  return `${prefix}使用例\n${exampleLines}${mistakeNote}`;
+}
+
+function renderUsageHelpActions(container, context) {
+  if (!context?.answer) {
     return;
   }
 
   const actions = document.createElement("span");
-  actions.className = "ai-help-actions";
+  actions.className = "usage-help-actions";
 
   const note = document.createElement("span");
-  note.className = "ai-help-note";
-  note.textContent = "例文やニュアンスをAIでその場に表示できます。";
+  note.className = "usage-help-note";
+  note.textContent = "使用例を表示できます。";
 
-  const aiButton = document.createElement("button");
-  aiButton.type = "button";
-  aiButton.className = "ai-help-button";
-  aiButton.textContent = "AIで使用例を見る";
+  const usageButton = document.createElement("button");
+  usageButton.type = "button";
+  usageButton.className = "usage-help-button";
+  usageButton.textContent = "使用例を見る";
 
   const result = document.createElement("span");
-  result.className = "ai-help-result hidden";
+  result.className = "usage-help-result hidden";
 
-  aiButton.addEventListener("click", () => fetchAiStudyExplanation(context, result, aiButton));
+  usageButton.addEventListener("click", () => {
+    setUsageResult(result, "ready", buildLocalUsageExamples(context));
+  });
 
-  actions.append(note, aiButton, result);
+  actions.append(note, usageButton, result);
   container.appendChild(actions);
 }
 
@@ -834,6 +2042,53 @@ function buildSkipFeedback(answer) {
   `;
 }
 
+function renderCurrentQuestionUi() {
+  const { answer } = state.currentQuestion;
+  const reverseMode = isWordReverseMode();
+  questionPromptLabel.textContent = reverseMode ? "英単語" : "日本語の意味";
+  questionMeaning.textContent = reverseMode ? answer.english : answer.japanese;
+  questionAudioButton.classList.toggle("hidden", !reverseMode);
+  questionAudioButton.setAttribute("aria-label", `${answer.english} の発音を聞く`);
+  questionHint.textContent = reverseMode
+    ? `${getCurrentCategory().description} 日本語として最も合うものを選んでください。`
+    : `${getCurrentCategory().description} 英語として最も合うものを選んでください。`;
+  feedbackMessage.textContent = "答えを選ぶとここに結果が表示されます。";
+  feedbackMessage.className = "feedback neutral";
+  nextButton.textContent = "次の問題へ";
+  nextButton.classList.add("hidden");
+  skipButton.disabled = false;
+  choices.innerHTML = "";
+
+  for (const option of state.currentQuestion.options) {
+    const card = document.createElement("article");
+    card.className = "choice-card";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "choice-button";
+    button.dataset.english = option.english;
+    button.innerHTML = `<span class="choice-text">${reverseMode ? option.japanese : option.english}</span>`;
+    button.addEventListener("click", () => submitAnswer(option, button));
+
+    if (!reverseMode) {
+      const audioButton = document.createElement("button");
+      audioButton.type = "button";
+      audioButton.className = "choice-audio-button";
+      audioButton.textContent = "発音";
+      audioButton.setAttribute("aria-label", `${option.english} の発音を聞く`);
+      audioButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        speakNow(option.english, "en-US", 0.75);
+      });
+
+      card.append(button, audioButton);
+    } else {
+      card.append(button);
+    }
+    choices.appendChild(card);
+  }
+}
+
 function createQuestion() {
   previousAnswerCard.classList.add("hidden");
 
@@ -853,8 +2108,13 @@ function createQuestion() {
 
   hideSessionSummary();
 
-  const studyWords = getStudyItems();
+  const studyWords = getQuestionPool();
   if (!studyWords.length) {
+    if (state.reviewMode) {
+      state.reviewMode = null;
+      feedbackMessage.textContent = "復習対象は完了しました。通常学習に戻ります。";
+      feedbackMessage.className = "feedback correct";
+    }
     renderQuizCompletion();
     return;
   }
@@ -873,39 +2133,7 @@ function createQuestion() {
   };
   state.answered = false;
 
-  questionMeaning.textContent = answer.japanese;
-  questionHint.textContent = `${getCurrentCategory().description} 英語として最も合うものを選んでください。`;
-  feedbackMessage.textContent = "答えを選ぶとここに結果が表示されます。";
-  feedbackMessage.className = "feedback neutral";
-  nextButton.textContent = "次の問題へ";
-  nextButton.classList.add("hidden");
-  skipButton.disabled = false;
-  choices.innerHTML = "";
-
-  for (const option of state.currentQuestion.options) {
-    const card = document.createElement("article");
-    card.className = "choice-card";
-
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "choice-button";
-    button.dataset.english = option.english;
-    button.innerHTML = `<span class="choice-text">${option.english}</span>`;
-    button.addEventListener("click", () => submitAnswer(option, button));
-
-    const audioButton = document.createElement("button");
-    audioButton.type = "button";
-    audioButton.className = "choice-audio-button";
-    audioButton.textContent = "発音";
-    audioButton.setAttribute("aria-label", `${option.english} の発音を聞く`);
-    audioButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-      speakNow(option.english, "en-US");
-    });
-
-    card.append(button, audioButton);
-    choices.appendChild(card);
-  }
+  renderCurrentQuestionUi();
 }
 
 function setMode(mode) {
@@ -938,9 +2166,14 @@ function submitAnswer(option, selectedButton) {
   const answer = state.currentQuestion.answer;
   const answerRecord = getWordRecord(answer);
   const isCorrect = option.english === answer.english;
+  state.previousQuestion = {
+    answer,
+    options: state.currentQuestion.options
+  };
 
   progress.attempts += 1;
   answerRecord.attempts += 1;
+  recordStudyActivity("quiz");
 
   for (const button of choices.querySelectorAll(".choice-button")) {
     button.disabled = true;
@@ -956,28 +2189,40 @@ function submitAnswer(option, selectedButton) {
     progress.correct += 1;
     answerRecord.correct += 1;
     answerRecord.streak += 1;
+    if (answerRecord.reviewDue) {
+      answerRecord.reviewStreak += 1;
+      if (answerRecord.reviewStreak >= 3) {
+        answerRecord.reviewDue = false;
+      }
+    }
     const correctFeedback = buildCorrectFeedback(answer);
     feedbackMessage.innerHTML = correctFeedback;
     feedbackMessage.className = "feedback correct";
     state.lastAnswer = {
       html: correctFeedback,
       className: "correct",
-      aiContext: { answer }
+      usageContext: { answer }
     };
-    renderAiHelpActions(feedbackMessage, state.lastAnswer.aiContext);
+    renderUsageHelpActions(feedbackMessage, state.lastAnswer.usageContext);
     completeQuizSessionItem("correct");
   } else {
     answerRecord.wrong += 1;
     answerRecord.streak = 0;
+    answerRecord.reviewDue = true;
+    answerRecord.reviewStreak = 0;
+    const wrongKey = getWordKey(answer);
+    if (!state.quizSession.wrongItems.includes(wrongKey)) {
+      state.quizSession.wrongItems.push(wrongKey);
+    }
     const wrongFeedback = buildWrongFeedback(option, state.currentQuestion.options, answer);
     feedbackMessage.innerHTML = wrongFeedback;
     feedbackMessage.className = "feedback wrong";
     state.lastAnswer = {
       html: wrongFeedback,
       className: "wrong",
-      aiContext: { answer, selectedOption: option }
+      usageContext: { answer, selectedOption: option }
     };
-    renderAiHelpActions(feedbackMessage, state.lastAnswer.aiContext);
+    renderUsageHelpActions(feedbackMessage, state.lastAnswer.usageContext);
     completeQuizSessionItem("wrong");
   }
 
@@ -1001,7 +2246,7 @@ function skipCurrentQuestion() {
   state.lastAnswer = {
     html: skipFeedback,
     className: "neutral",
-    aiContext: { answer }
+    usageContext: { answer }
   };
   renderPreviousAnswerState();
   completeQuizSessionItem("skip");
@@ -1081,7 +2326,7 @@ function speak(text, lang, rate) {
   });
 }
 
-function speakNow(text, lang = "en-US") {
+function speakNow(text, lang = "en-US", rate = state.settings.speed) {
   if (!("speechSynthesis" in window)) {
     window.alert("このブラウザでは読み上げ機能が使えません。");
     return;
@@ -1095,8 +2340,11 @@ function speakNow(text, lang = "en-US") {
   speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang;
-  utterance.rate = state.settings.speed;
+  utterance.rate = rate;
   speechSynthesis.speak(utterance);
+  recordStudyActivity("play");
+  saveProfiles();
+  updateSnapshot();
 }
 
 function wait(ms) {
@@ -1188,6 +2436,9 @@ async function runWalking(token) {
 
     await wait(state.settings.gap * 1000);
     state.walking.position += 1;
+    recordStudyActivity("play");
+    saveProfiles();
+    updateSnapshot();
   }
 
   if (!state.walking.active) {
@@ -1237,18 +2488,33 @@ function resetWalking() {
 
 function syncControls() {
   walkStrategySelect.value = state.settings.walkStrategy;
-  speedSelect.value = state.settings.speed.toFixed(1);
+  speedSelect.value = String(state.settings.speed);
   gapRange.value = String(state.settings.gap);
   gapValue.textContent = `${state.settings.gap}秒`;
+  applyTheme();
 }
 
-function setStudyType(studyType) {
-  if (state.studyType === studyType) {
+function applyTheme() {
+  const isDark = state.settings.theme === "dark";
+  document.body.classList.toggle("dark-mode", isDark);
+  themeToggleButton.textContent = isDark ? "ライトモード" : "ダークモード";
+}
+
+function toggleTheme() {
+  state.settings.theme = state.settings.theme === "dark" ? "light" : "dark";
+  saveSettings();
+  applyTheme();
+}
+
+function setStudyType(studyType, answerMode = "jpToEn") {
+  if (state.studyType === studyType && state.answerMode === answerMode) {
     return;
   }
 
   stopWalking(true);
   state.studyType = studyType;
+  state.answerMode = studyType === "word" ? answerMode : "jpToEn";
+  state.reviewMode = null;
   state.category = Object.keys(getCurrentCollection())[0];
   resetLearningFlow();
   renderAll();
@@ -1268,7 +2534,7 @@ async function registerProfile(id, password) {
   }
 
   if (!isValidProfileId(normalized)) {
-    window.alert("ID は英字・数字・記号をすべて含む 6 文字以上で入力してください。");
+    window.alert("ID は6文字以上で入力してください。英字だけ、数字だけ、記号入りでも使えます。");
     return false;
   }
 
@@ -1420,13 +2686,22 @@ function renderAll() {
 
 quizTab.addEventListener("click", () => setMode("quiz"));
 walkTab.addEventListener("click", () => setMode("walk"));
-wordTypeTab.addEventListener("click", () => setStudyType("word"));
+wordTypeTab.addEventListener("click", () => setStudyType("word", "jpToEn"));
+wordReverseTypeTab.addEventListener("click", () => setStudyType("word", "enToJp"));
 phraseTypeTab.addEventListener("click", () => setStudyType("phrase"));
 skipButton.addEventListener("click", () => skipCurrentQuestion());
+questionAudioButton.addEventListener("click", () => {
+  if (state.currentQuestion?.answer?.english) {
+    speakNow(state.currentQuestion.answer.english, "en-US", 0.75);
+  }
+});
 nextButton.addEventListener("click", () => createQuestion());
-showPreviousAnswerButton.addEventListener("click", () => showPreviousAnswer());
+showPreviousAnswerButton.addEventListener("click", () => restorePreviousQuestion());
 sessionContinueButton.addEventListener("click", () => continueQuizSession());
+sessionReviewWrongButton.addEventListener("click", () => startSessionWrongReview());
 sessionStopButton.addEventListener("click", () => stopQuizSessionBreak());
+reviewMistakesButton.addEventListener("click", () => startMistakesReview());
+themeToggleButton.addEventListener("click", () => toggleTheme());
 
 registerProfileButton.addEventListener("click", async () => {
   if (await registerProfile(profileIdInput.value, profilePasswordInput.value)) {

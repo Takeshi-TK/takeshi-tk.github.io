@@ -11,7 +11,7 @@
 - 学習結果の簡易保存（`localStorage`）
 - プライバシーポリシー / 利用規約 / お問い合わせページ
 - AdSense 導入用の設定ファイル
-- 回答後にAIで例文・使い方を表示する補助機能
+- 回答後にサイト内で用意した使用例・意味補足を表示する補助機能
 
 ## 使い方
 
@@ -38,16 +38,16 @@ AdSense の publisher ID は設定済みです。
 
 公開ドメインを AdSense のサイト一覧に追加して、審査完了後に表示される想定です。
 
-## AI 解説機能
+## 開発・デプロイ補助
 
-`functions/api/ai-study.js` は Cloudflare Pages Functions 用です。
+Cloudflare Pages向けに `wrangler.toml` と `package.json` を追加しています。
 
-- `OPENAI_API_KEY`: OpenAI API キー
-- `OPENAI_MODEL`: 任意。未設定時は `gpt-4.1-mini`
-- `GEMINI_API_KEY`: 任意。OpenAI が使えない場合のフォールバック
-- `GEMINI_MODEL`: 任意。未設定時は `gemini-2.5-flash`
-
-API キーはブラウザ側に置かず、Cloudflare Pages の Variables and Secrets に登録してください。
+```powershell
+npm install
+npm run check
+npm run dev
+npm run deploy:cloudflare
+```
 
 ## 補足
 
