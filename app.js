@@ -1,5 +1,22 @@
-import { vocabulary } from "./vocabulary.js?v=20260424-feature18";
-import { phrases } from "./phrases.js?v=20260424-feature18";
+import { vocabulary } from "./vocabulary.js?v=20260424-feature19";
+import { phrases } from "./phrases.js?v=20260424-feature19";
+
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
+function scrollPageToTopNow() {
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+}
+
+scrollPageToTopNow();
+window.addEventListener("load", () => {
+  scrollPageToTopNow();
+  window.setTimeout(scrollPageToTopNow, 120);
+}, { once: true });
+window.addEventListener("pageshow", () => {
+  window.setTimeout(scrollPageToTopNow, 0);
+}, { once: true });
 
 const PROFILES_KEY = "stridewords-profiles-v4";
 const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";

@@ -363,6 +363,12 @@ body.dark-mode .hero {
   min-height: 156px;
 }
 
+.control-ad-card {
+  display: grid;
+  gap: 10px;
+  min-height: 128px;
+}
+
 .responsive-ad-slot {
   width: 100%;
   min-height: 96px;
@@ -498,6 +504,15 @@ body.dark-mode .hero {
   box-shadow: 0 14px 24px rgba(157, 67, 34, 0.22);
 }
 
+body.dark-mode .category-button.active,
+body.dark-mode .mode-button.active {
+  background: linear-gradient(135deg, #f59e5b, #fb923c);
+  color: #111827;
+  border-color: rgba(255, 209, 173, 0.9);
+  box-shadow: 0 0 0 2px rgba(255, 209, 173, 0.28), 0 16px 28px rgba(0, 0, 0, 0.34);
+  font-weight: 800;
+}
+
 .snapshot-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -547,6 +562,18 @@ body.dark-mode .hero {
 .mode-button.active {
   background: #1f2a37;
   color: white;
+}
+
+body.dark-mode .choice-button.correct {
+  background: rgba(125, 211, 168, 0.2);
+  border-color: rgba(125, 211, 168, 0.72);
+  color: var(--ink);
+}
+
+body.dark-mode .choice-button.wrong {
+  background: rgba(252, 165, 165, 0.18);
+  border-color: rgba(252, 165, 165, 0.66);
+  color: var(--ink);
 }
 
 .panel-note {
