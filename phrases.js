@@ -882,9 +882,101 @@ const travelPhraseExpansion = [
   ], "お金、通信、充電まわりで役立つ旅行フレーズです。現地で困りやすい支払いとネット接続の場面をまとめて練習できます。")
 ];
 
+const practicalPhraseBoost = {
+  basic: [
+    ["Can you help me for a minute?", "ちょっと手伝ってもらえますか", "短い時間だけ手伝ってほしいときの自然な頼み方です。help は「助ける」だけでなく、日常では「手伝う」の意味でよく使います。"],
+    ["I need some help with this.", "これをちょっと手伝ってほしいです", "困っている内容を this で指しながら、相手に手伝いをお願いする表現です。"],
+    ["Do you have a minute?", "少し時間ありますか", "相手に短く話す時間があるか確認する表現です。minute は文字通り1分だけでなく「少しの時間」の意味でも使います。"],
+    ["Just a minute, please.", "少しだけ待ってください", "相手を待たせるときの短い一言です。電話や店頭、作業中の返事として使いやすいです。"],
+    ["Can I ask you something?", "少し聞いてもいいですか", "質問に入る前のやわらかい前置きです。いきなり質問するより自然に聞こえます。"],
+    ["Could you say that again slowly?", "もう一度ゆっくり言ってもらえますか", "聞き取れなかったときに、速度も落としてほしいと伝えられる表現です。"],
+    ["What should I do next?", "次に何をすればいいですか", "手順が分からないときに次の行動を確認できます。仕事、学校、旅行先でも便利です。"],
+    ["I made a mistake.", "間違えました", "自分のミスを短く伝える基本表現です。続けて Can I try again? と言うと自然です。"],
+    ["Can I try again?", "もう一度やってもいいですか", "失敗したあとに再挑戦したいときの表現です。練習や手続きで使いやすいです。"],
+    ["Please show me one more time.", "もう一度見せてください", "説明を見本で確認したいときの表現です。show me は「見せながら教える」場面にも合います。"],
+    ["I'm not sure yet.", "まだはっきり分かりません", "即答できないときに、断定を避けて自然に返せる一言です。"],
+    ["That helps a lot.", "とても助かります", "相手の説明や手助けに感謝を伝える表現です。Thank you. に続けると自然です。"],
+    ["I have a small problem.", "少し困っています", "大きなトラブルではないけれど助けが必要なときに使えます。"],
+    ["Can you check this for me?", "これを確認してもらえますか", "書類、画面、答えなどを相手に見てもらいたいときの表現です。"],
+    ["I don't understand this part.", "この部分が分かりません", "分からない場所を this part で絞って伝える実用表現です。"],
+    ["Where should I put this?", "これはどこに置けばいいですか", "片付けや荷物の受け渡しで使いやすい質問です。"],
+    ["Can I have a little more?", "もう少しもらえますか", "飲み物、時間、説明などを少し追加してほしいときに応用できます。"],
+    ["This is enough for now.", "今はこれで十分です", "追加が不要なことをやわらかく伝えられる表現です。"],
+    ["Let's do it together.", "一緒にやりましょう", "相手と一緒に行動したいときの前向きな表現です。"],
+    ["I'll try my best.", "できるだけ頑張ります", "完璧を約束せず、前向きに取り組む気持ちを伝えられます。"]
+  ],
+  practical: [
+    ["Could you help me figure this out?", "これを一緒に考えてもらえますか", "答えがすぐ出ない問題について、相手に相談したいときの自然な表現です。"],
+    ["I need to think about it for a minute.", "少し考えさせてください", "即答を避けて短い時間をもらいたいときに使えます。for a minute は「少しの間」の意味です。"],
+    ["Let me check one thing first.", "先に一つ確認させてください", "話を進める前に重要な点を確認したいときの表現です。"],
+    ["Could you be more specific?", "もう少し具体的に言ってもらえますか", "説明が広すぎるときに、内容を絞ってもらうための実用表現です。"],
+    ["What exactly do you mean?", "具体的にはどういう意味ですか", "相手の意図をもう少し正確に確認したいときの表現です。"],
+    ["That sounds a bit different from what I expected.", "思っていたものと少し違うようです", "期待と違うことを強く否定せずに伝えられます。"],
+    ["Can we look at another option?", "別の選択肢も見られますか", "一つの案に決めず、他の可能性を確認したいときに使えます。"],
+    ["I'm leaning toward this one.", "どちらかというとこちらにしたいです", "完全には決めていないが、気持ちが傾いていることを表せます。"],
+    ["Let's compare the pros and cons.", "良い点と悪い点を比べましょう", "判断材料を整理したいときの定番表現です。"],
+    ["I want to avoid any confusion.", "誤解がないようにしたいです", "確認や言い直しを丁寧に行いたいときに使えます。"],
+    ["Could you explain the difference?", "違いを説明してもらえますか", "似ている選択肢や単語の違いを知りたいときに便利です。"],
+    ["That makes sense now.", "今ので納得できました", "説明を聞いて理解できたことを自然に伝えられます。"],
+    ["I may have misunderstood.", "私が誤解していたかもしれません", "相手を責めずに、自分側の理解違いとして修正できます。"],
+    ["Can we start with the basics?", "基本から始めてもいいですか", "難しい話に入る前に土台から確認したいときの表現です。"],
+    ["I want to practice this out loud.", "これを声に出して練習したいです", "英語学習や発音練習でそのまま使える一言です。"],
+    ["Could you correct my sentence?", "私の文を直してもらえますか", "英作文や会話練習で、相手に添削を頼む表現です。"],
+    ["Is this phrase natural?", "この表現は自然ですか", "直訳っぽくないか確認したいときに非常に実用的です。"],
+    ["What's a more casual way to say this?", "もっとカジュアルな言い方はありますか", "硬い表現を自然な会話表現に変えたいときに使えます。"],
+    ["Can you give me a real-life example?", "実際の場面での例を出してもらえますか", "机上の説明ではなく、日常で使う形を知りたいときの表現です。"],
+    ["Let's use a simpler sentence.", "もっと簡単な文を使いましょう", "複雑な文を避けて分かりやすく伝えたいときに便利です。"]
+  ],
+  business: [
+    ["Could you give me a brief update?", "簡単に進捗を教えてもらえますか", "長い説明ではなく、要点だけを確認したいときのビジネス表現です。"],
+    ["Let's handle this case by case.", "これは一件ずつ対応しましょう", "状況によって対応が変わるときに、まとめて決めない方針を伝えます。"],
+    ["Please keep me in the loop.", "私にも情報共有をお願いします", "進捗や変更があったときに自分も共有先に入れてほしいと伝える表現です。"],
+    ["Can we make the next step clear?", "次にやることを明確にできますか", "会議後に行動が曖昧にならないよう確認する表現です。"],
+    ["Who is responsible for this task?", "この作業の担当者は誰ですか", "責任者や担当を明確にしたいときの実務表現です。"],
+    ["Let's confirm the scope before we start.", "始める前に対応範囲を確認しましょう", "作業の範囲違いを防ぐために使える表現です。"],
+    ["Could you share the latest version?", "最新版を共有してもらえますか", "資料やファイルの更新版を確認したいときに使います。"],
+    ["I'll send a short recap after this.", "このあと簡単なまとめを送ります", "会議や相談の内容を後で整理して共有すると伝える表現です。"],
+    ["Let's not decide this too quickly.", "これは急いで決めすぎないようにしましょう", "重要な判断を慎重に進めたいときのやわらかい表現です。"],
+    ["Could you flag any concerns?", "懸念点があれば共有してもらえますか", "問題になりそうな点を事前に出してほしいときに使えます。"],
+    ["We need to align on the details.", "詳細の認識をそろえる必要があります", "細かな条件のずれを防ぐためのビジネス頻出表現です。"],
+    ["Let's keep the message simple.", "伝える内容はシンプルにしましょう", "説明や資料を分かりやすくまとめたいときに使えます。"],
+    ["Could you review this before noon?", "正午までにこれを確認してもらえますか", "期限つきで確認を依頼する実用的な表現です。"],
+    ["I need approval before moving forward.", "進める前に承認が必要です", "勝手に進められない理由を自然に説明できます。"],
+    ["Let's prepare a backup plan.", "代替案を用意しましょう", "予定通りに進まない場合に備える表現です。"],
+    ["Can we reduce the risk here?", "ここのリスクを下げられますか", "懸念点に対して改善策を考えたいときに使えます。"],
+    ["The main issue is the timing.", "主な問題はタイミングです", "論点を絞って説明するときに便利な表現です。"],
+    ["Let's revisit this once we have more data.", "もう少しデータがそろってから再検討しましょう", "判断材料が不足しているため保留にしたいときに使えます。"],
+    ["Could you summarize the decision?", "決定事項をまとめてもらえますか", "会議の最後に合意内容を確認する表現です。"],
+    ["I'll follow up if anything changes.", "変更があれば追加で連絡します", "状況が動いたときに連絡すると伝える締めの表現です。"]
+  ],
+  travel: [
+    ["Could you help me read this sign?", "この表示を読むのを手伝ってもらえますか", "標識や案内表示が分からないときに使える旅行向けの頼み方です。"],
+    ["Do I have a few minutes before boarding?", "搭乗まで少し時間はありますか", "出発前に余裕があるか確認したいときの表現です。"],
+    ["Where can I find the taxi stand?", "タクシー乗り場はどこですか", "空港や駅で移動手段を探すときに使えます。"],
+    ["Is this the right platform?", "このホームで合っていますか", "電車に乗る前に場所を確認したいときの表現です。"],
+    ["Could you tell me when to get off?", "どこで降りればいいか教えてもらえますか", "バスや電車で降車場所が不安なときに役立ちます。"],
+    ["Can I pay with this card?", "このカードで支払えますか", "手持ちのカードが使えるか確認する短い表現です。"],
+    ["Do you have a smaller bag?", "小さめの袋はありますか", "買い物で包装や袋の大きさを調整したいときに使えます。"],
+    ["Could you pack this separately?", "これは別に包んでもらえますか", "お土産や壊れやすい物を分けて入れてほしいときに便利です。"],
+    ["Is this area safe at night?", "このあたりは夜でも安全ですか", "宿泊先や移動先の治安を確認したいときの表現です。"],
+    ["Where can I get a local map?", "現地の地図はどこでもらえますか", "観光案内所やホテルで地図を探すときに使えます。"],
+    ["Could you mark it on the map?", "地図に印をつけてもらえますか", "場所を視覚的に確認したいときの定番表現です。"],
+    ["Is there an extra charge?", "追加料金はかかりますか", "サービスや変更に費用が発生するか確認できます。"],
+    ["Can I change the date of my ticket?", "チケットの日付を変更できますか", "予約や乗車券の日程変更を相談する表現です。"],
+    ["Where can I make a reservation?", "どこで予約できますか", "施設、ツアー、レストランなどの予約方法を聞くときに使えます。"],
+    ["Could you call this number for me?", "この番号に電話してもらえますか", "電話が難しい場面で相手に手伝いを頼む実用表現です。"],
+    ["I lost my way.", "道に迷いました", "迷ったことを短く伝える旅行必須フレーズです。"],
+    ["I'm looking for this address.", "この住所を探しています", "住所を見せながら目的地を探していることを伝えられます。"],
+    ["Can I leave and come back later?", "一度出てあとで戻れますか", "施設や店で再入場や一時退出が可能か確認する表現です。"],
+    ["Do you have a seat by the aisle?", "通路側の席はありますか", "飛行機や劇場、レストランで座席の希望を伝える表現です。"],
+    ["Could you take a quick photo of us?", "私たちの写真を一枚撮ってもらえますか", "旅行先で写真撮影をお願いする自然な一言です。"]
+  ]
+};
+
 const basicPhraseWords = dedupeEntries([
   ...legacyPhrases.beginner.words,
   ...buildEntries(basicPhraseExpansion),
+  ...buildEntries(practicalPhraseBoost.basic),
   ...buildEntries([
     ["See you tomorrow.", "また明日ね", "別れ際に次の日また会う予定があるときの自然な一言です。See you later よりも日時がはっきりしています。"],
     ["What time is it now?", "今何時ですか", "時刻をたずねる基本表現です。now を入れることで、今の時刻を知りたい意図がより明確になります。"],
@@ -916,6 +1008,7 @@ const practicalPhraseWords = dedupeEntries([
   ...legacyPhrases.intermediate.words,
   ...legacyPhrases.advanced.words,
   ...buildEntries(practicalPhraseExpansion),
+  ...buildEntries(practicalPhraseBoost.practical),
   ...buildEntries([
     ["Could you write it down for me?", "書いてもらえますか", "聞き取りにくい単語や住所、番号などを文字で確認したいときの表現です。口頭だけでは不安な場面で役立ちます。"],
     ["I need a little more time.", "もう少し時間が必要です", "その場ですぐに決められないときや、準備に少し時間が欲しいときに使える表現です。丁寧で使い回しやすい一言です。"],
@@ -946,6 +1039,7 @@ const practicalPhraseWords = dedupeEntries([
 const businessPhraseWords = dedupeEntries([
   ...legacyPhrases.business.words,
   ...buildEntries(businessPhraseExpansion),
+  ...buildEntries(practicalPhraseBoost.business),
   ...buildEntries([
     ["Could you share the file with the team?", "そのファイルをチームに共有してもらえますか", "社内の共有作業でよく使う表現です。share A with B で「AをBに共有する」という形になります。"],
     ["Let's confirm the deadline once again.", "締切をもう一度確認しましょう", "日程トラブルを防ぐために、あらためて確認するときの言い方です。once again を入れると再確認の意図が明確です。"],
@@ -977,6 +1071,7 @@ const businessPhraseWords = dedupeEntries([
 const travelPhraseWords = dedupeEntries([
   ...legacyPhrases.travel.words,
   ...buildEntries(travelPhraseExpansion),
+  ...buildEntries(practicalPhraseBoost.travel),
   ...buildEntries([
     ["Is this seat taken?", "この席は空いていますか", "電車、バス、待合室などで座ってよいか確認する基本表現です。taken は「使われている、埋まっている」という意味です。"],
     ["Could I have a non-smoking room?", "禁煙の部屋をお願いできますか", "ホテルで部屋の希望を伝える定番表現です。smoking room と対で覚えると便利です。"],

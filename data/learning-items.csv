@@ -1,5 +1,5 @@
 ﻿type,part_of_speech,source_section,line,english,japanese,explanation,example_1_en,example_1_ja,example_2_en,example_2_ja,review_status
-word,function,beginnerWords,23,I,私,,I live in Japan.,私は日本に住んでいます。,I need some help.,私は少し助けが必要です。,reviewed
+word,function,beginnerWords,23,I,私,,I live in Japan.,私は日本に住んでいます。,I need some help.,ちょっと手伝ってほしいです。,reviewed
 word,function,beginnerWords,24,you,あなた,,You are welcome.,どういたしまして。,Do you have a minute?,少し時間がありますか。,reviewed
 word,function,beginnerWords,25,he,彼,,He works near here.,彼はこの近くで働いています。,He is my friend.,彼は私の友だちです。,reviewed
 word,function,beginnerWords,26,she,彼女,,She speaks English well.,彼女は英語を上手に話します。,She is at home now.,彼女は今、家にいます。,reviewed
@@ -197,6 +197,7 @@ word,noun,beginnerWords,221,purse,小銭入れ,,,,,,noun_no_example
 word,noun,beginnerWords,222,umbrella,傘,,,,,,noun_no_example
 word,noun,beginnerWords,223,watch,腕時計,,,,,,noun_no_example
 word,noun,beginnerWords,224,clock,時計,,,,,,noun_no_example
+word,noun,beginnerWords,224.5,minute,1分 / 少しの時間,,Do you have a minute?,少し時間ありますか。,I'll be back in a minute.,すぐ戻ります。,reviewed
 word,noun,beginnerWords,225,calendar,カレンダー,,,,,,noun_no_example
 word,noun,beginnerWords,226,battery,電池,,,,,,noun_no_example
 word,noun,beginnerWords,229,water,水,,,,,,noun_no_example
@@ -523,7 +524,7 @@ word,verb,beginnerWords,561,talk,話す,,,,,,needs_example_review
 word,noun,beginnerWords,562,ask,たずねる,,,,,,noun_no_example
 word,noun,beginnerWords,563,answer,答える,,,,,,noun_no_example
 word,verb,beginnerWords,564,call,電話する,,,,,,needs_example_review
-word,noun,beginnerWords,565,help,助ける,,,,,,noun_no_example
+word,verb,beginnerWords,565,help,手伝う / 助ける,,Can you help me with this?,これをちょっと手伝ってもらえますか。,I need some help.,ちょっと手伝ってほしいです。,reviewed
 word,noun,beginnerWords,566,find,見つける,,,,,,noun_no_example
 word,noun,beginnerWords,567,give,与える,,,,,,noun_no_example
 word,noun,beginnerWords,568,show,見せる,,,,,,noun_no_example

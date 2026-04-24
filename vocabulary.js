@@ -222,6 +222,7 @@ const beginnerWords = dedupeEntries(
     ["umbrella", "傘"],
     ["watch", "腕時計"],
     ["clock", "時計"],
+    ["minute", "1分 / 少しの時間"],
     ["calendar", "カレンダー"],
     ["battery", "電池"]
   ]))
@@ -562,7 +563,7 @@ const beginnerWords = dedupeEntries(
     ["ask", "たずねる"],
     ["answer", "答える"],
     ["call", "電話する"],
-    ["help", "助ける"],
+    ["help", "手伝う / 助ける"],
     ["find", "見つける"],
     ["give", "与える"],
     ["show", "見せる"],

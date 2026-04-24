@@ -31,7 +31,7 @@ ADJECTIVE_WORDS = {
 }
 
 VERB_WORDS = {
-    "watch", "look", "listen", "talk", "call", "ride", "drive", "travel", "visit",
+    "watch", "look", "listen", "talk", "call", "help", "ride", "drive", "travel", "visit",
     "stay", "return", "sell", "cook", "clean", "carry", "study", "learn", "teach",
     "meet", "check", "reserve", "book", "arrive", "leave", "sleep", "wake", "hope",
     "plan", "prepare", "try on", "exchange", "download", "upload", "click", "tap",
@@ -54,6 +54,14 @@ VERB_SUFFIXES = (
 ADJECTIVE_SUFFIXES = ("な", "い", "の", "た")
 
 CUSTOM_EXAMPLES = {
+    "help": [
+        ("Can you help me with this?", "これをちょっと手伝ってもらえますか。"),
+        ("I need some help.", "ちょっと手伝ってほしいです。"),
+    ],
+    "minute": [
+        ("Do you have a minute?", "少し時間ありますか。"),
+        ("I'll be back in a minute.", "すぐ戻ります。"),
+    ],
     "free": [
         ("Are you free this afternoon?", "今日の午後は空いていますか。"),
         ("I'm free after three.", "3時以降は暇です。"),
@@ -272,14 +280,6 @@ def main():
         row["part_of_speech"] = pos
         key = row["english"].strip().lower()
 
-        if row["type"] == "word" and pos == "noun":
-            row["example_1_en"] = ""
-            row["example_1_ja"] = ""
-            row["example_2_en"] = ""
-            row["example_2_ja"] = ""
-            row["review_status"] = "noun_no_example"
-            continue
-
         if row["type"] == "word" and key in CUSTOM_EXAMPLES:
             (example_1_en, example_1_ja), (example_2_en, example_2_ja) = CUSTOM_EXAMPLES[key]
             row["example_1_en"] = example_1_en
@@ -287,6 +287,14 @@ def main():
             row["example_2_en"] = example_2_en
             row["example_2_ja"] = example_2_ja
             row["review_status"] = "reviewed"
+            continue
+
+        if row["type"] == "word" and pos == "noun":
+            row["example_1_en"] = ""
+            row["example_1_ja"] = ""
+            row["example_2_en"] = ""
+            row["example_2_ja"] = ""
+            row["review_status"] = "noun_no_example"
             continue
 
         if row["type"] == "word" and row.get("review_status") != "reviewed":

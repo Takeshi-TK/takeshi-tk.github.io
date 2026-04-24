@@ -1,5 +1,5 @@
-import { vocabulary } from "./vocabulary.js";
-import { phrases } from "./phrases.js";
+import { vocabulary } from "./vocabulary.js?v=20260424-feature16";
+import { phrases } from "./phrases.js?v=20260424-feature16";
 
 const PROFILES_KEY = "stridewords-profiles-v4";
 const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";
@@ -1252,6 +1252,18 @@ function buildPracticalWordExample(word, meaning) {
         ["My office is in this building.", "私の会社はこの建物の中にあります。"]
       ],
       note: "building は「建物」全般です。会社のビルだけでなく、学校や施設にも使えます。"
+    },
+    help: {
+      examples: [
+        ["Can you help me with this?", "これをちょっと手伝ってもらえますか。"],
+        ["I need some help.", "ちょっと手伝ってほしいです。"]
+      ]
+    },
+    minute: {
+      examples: [
+        ["Do you have a minute?", "少し時間ありますか。"],
+        ["I'll be back in a minute.", "すぐ戻ります。"]
+      ]
     }
   };
 
