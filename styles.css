@@ -960,11 +960,11 @@ body.dark-mode .hero {
   }
 
   .content-ad-card {
-    order: 2;
+    order: 3;
   }
 
   .compact-card {
-    order: 3;
+    order: 2;
   }
 
   .compact-card .snapshot-grid {
@@ -984,10 +984,6 @@ body.dark-mode .hero {
 
   .content-area {
     order: 2;
-  }
-
-  .content-ad-card {
-    order: -1;
   }
 
   .hero-stats,

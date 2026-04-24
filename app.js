@@ -1,5 +1,5 @@
-import { vocabulary } from "./vocabulary.js?v=20260424-feature16";
-import { phrases } from "./phrases.js?v=20260424-feature16";
+import { vocabulary } from "./vocabulary.js?v=20260424-feature17";
+import { phrases } from "./phrases.js?v=20260424-feature17";
 
 const PROFILES_KEY = "stridewords-profiles-v4";
 const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";
@@ -661,6 +661,7 @@ function continueQuizSession() {
   resetQuizSession();
   hideSessionSummary();
   createQuestion();
+  scrollToQuestionStart();
 }
 
 function startSessionWrongReview() {
@@ -677,6 +678,7 @@ function startSessionWrongReview() {
   state.quizSession.stopped = false;
   hideSessionSummary();
   createQuestion();
+  scrollToQuestionStart();
 }
 
 function startMistakesReview() {
@@ -689,6 +691,7 @@ function startMistakesReview() {
   resetQuizSession();
   hideSessionSummary();
   createQuestion();
+  scrollToQuestionStart();
 }
 
 function stopQuizSessionBreak() {
@@ -884,6 +887,23 @@ function hideUsageExampleCard() {
   usageExampleCard.classList.add("hidden");
   usageExampleBody.textContent = "";
   usageExampleBody.className = "usage-help-result ready";
+}
+
+function scrollToElement(element, block = "start") {
+  if (!element) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    element.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block
+    });
+  });
+}
+
+function scrollToQuestionStart() {
+  scrollToElement(document.querySelector(".quiz-panel .prompt-card"), "start");
 }
 
 function makeUsageExampleKey(english, japanese) {
@@ -1329,6 +1349,7 @@ function renderUsageHelpActions(container, context) {
     if (usageExampleCard && usageExampleBody) {
       setUsageResult(usageExampleBody, "ready", usageText);
       usageExampleCard.classList.remove("hidden");
+      scrollToElement(usageExampleCard, "center");
       return;
     }
   });
@@ -2121,7 +2142,14 @@ questionAudioButton.addEventListener("click", () => {
     speakNow(state.currentQuestion.answer.english, "en-US", 0.75);
   }
 });
-nextButton.addEventListener("click", () => createQuestion());
+nextButton.addEventListener("click", () => {
+  createQuestion();
+  if (sessionSummaryCard.classList.contains("hidden")) {
+    scrollToQuestionStart();
+  } else {
+    scrollToElement(sessionSummaryCard, "nearest");
+  }
+});
 showPreviousAnswerButton.addEventListener("click", () => restorePreviousQuestion());
 sessionContinueButton.addEventListener("click", () => continueQuizSession());
 sessionReviewWrongButton.addEventListener("click", () => startSessionWrongReview());
