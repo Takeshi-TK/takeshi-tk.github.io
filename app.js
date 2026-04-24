@@ -72,6 +72,8 @@ const showPreviousAnswerButton = document.querySelector("#showPreviousAnswerButt
 const reviewMistakesButton = document.querySelector("#reviewMistakesButton");
 const previousAnswerCard = document.querySelector("#previousAnswerCard");
 const previousAnswerBody = document.querySelector("#previousAnswerBody");
+const usageExampleCard = document.querySelector("#usageExampleCard");
+const usageExampleBody = document.querySelector("#usageExampleBody");
 const sessionSummaryCard = document.querySelector("#sessionSummaryCard");
 const sessionSummaryHeading = document.querySelector("#sessionSummaryHeading");
 const sessionSummaryText = document.querySelector("#sessionSummaryText");
@@ -778,6 +780,7 @@ function updateSnapshot() {
 function renderQuizCompletion() {
   state.currentQuestion = null;
   state.answered = true;
+  hideUsageExampleCard();
   hideSessionSummary();
   questionMeaning.textContent = "このレベルは3連続正解で学習完了です";
   questionHint.textContent = "次のレベルに切り替えるか、このIDの学習記録をリセットしてもう一度取り組めます。";
@@ -823,6 +826,16 @@ function setUsageResult(target, className, text) {
   target.className = `usage-help-result ${className}`;
   target.textContent = text;
   target.classList.remove("hidden");
+}
+
+function hideUsageExampleCard() {
+  if (!usageExampleCard || !usageExampleBody) {
+    return;
+  }
+
+  usageExampleCard.classList.add("hidden");
+  usageExampleBody.textContent = "";
+  usageExampleBody.className = "usage-help-result ready";
 }
 
 function buildPracticalWordExample(word, meaning) {
@@ -1229,6 +1242,18 @@ function buildPracticalWordExample(word, meaning) {
       examples: [
         ["I eat rice every day.", "私は毎日ご飯を食べます。"],
         ["The rice is ready.", "ご飯ができました。"]
+      ]
+    },
+    receipt: {
+      examples: [
+        ["Can I have the receipt, please?", "レシートをいただけますか。"],
+        ["I kept the receipt in my wallet.", "レシートを財布に入れておきました。"]
+      ]
+    },
+    name: {
+      examples: [
+        ["What is your name?", "あなたの名前は何ですか。"],
+        ["Please write your name here.", "ここに名前を書いてください。"]
       ]
     },
     go: {
@@ -1660,7 +1685,7 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/水|お茶|コーヒー|牛乳|ジュース|飲料|ワイン|ビール|パン|ご飯|麺|スープ|サラダ|サンドイッチ|ハンバーガー|ピザ|パスタ|ケーキ|クッキー|デザート|果物|野菜|朝食|昼食|夕食|軽食|食事|料理|メニュー|会計|レシート|りんご|バナナ|オレンジ|ぶどう|いちご|桃|レモン|メロン|パイナップル|トマト|じゃがいも|玉ねぎ|にんじん|キャベツ|レタス|とうもろこし|豆|えび|卵|肉|牛肉|豚肉|鶏肉|魚|チーズ|バター|塩|砂糖|こしょう|ソース/.test(meaning)) {
+  if (/水|お茶|コーヒー|牛乳|ジュース|飲料|ワイン|ビール|パン|ご飯|麺|スープ|サラダ|サンドイッチ|ハンバーガー|ピザ|パスタ|ケーキ|クッキー|デザート|果物|野菜|朝食|昼食|夕食|軽食|食事|料理|メニュー|会計|りんご|バナナ|オレンジ|ぶどう|いちご|桃|レモン|メロン|パイナップル|トマト|じゃがいも|玉ねぎ|にんじん|キャベツ|レタス|とうもろこし|豆|えび|卵|肉|牛肉|豚肉|鶏肉|魚|チーズ|バター|塩|砂糖|こしょう|ソース/.test(meaning)) {
     return {
       examples: [
         [`I like ${word}.`, `私は${meaning}が好きです。`],
@@ -1669,7 +1694,7 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/人|人々|名前|友だち|家族|母|父|親|子ども|赤ちゃん|男の子|女の子|男性|女性|兄弟|姉妹|息子|娘|夫|妻|祖父|祖母|おじ|おば|いとこ|近所の人|クラスメート|先生|生徒|医者|看護師|運転手|料理人|シェフ|働く人|店員|スタッフ|管理者|上司|同僚|お客|客|観光客|案内人|警察官|消防士|技術者|デザイナー|芸術家|音楽家|選手|所有者|リーダー|メンバー|チーム|グループ|カップル/.test(meaning)) {
+  if (/人|人々|友だち|家族|母|父|親|子ども|赤ちゃん|男の子|女の子|男性|女性|兄弟|姉妹|息子|娘|夫|妻|祖父|祖母|おじ|おば|いとこ|近所の人|クラスメート|先生|生徒|医者|看護師|運転手|料理人|シェフ|働く人|店員|スタッフ|管理者|上司|同僚|お客|客|観光客|案内人|警察官|消防士|技術者|デザイナー|芸術家|音楽家|選手|所有者|リーダー|メンバー|チーム|グループ|カップル/.test(meaning)) {
     return {
       examples: [
         [`She is a ${word}.`, `彼女は${meaning}です。`],
@@ -1957,21 +1982,26 @@ function renderUsageHelpActions(container, context) {
 
   const note = document.createElement("span");
   note.className = "usage-help-note";
-  note.textContent = "使用例を表示できます。";
+  note.textContent = usageExampleCard
+    ? "使用例を下に表示できます。"
+    : "使用例を表示できます。";
 
   const usageButton = document.createElement("button");
   usageButton.type = "button";
   usageButton.className = "usage-help-button";
   usageButton.textContent = "使用例を見る";
 
-  const result = document.createElement("span");
-  result.className = "usage-help-result hidden";
-
   usageButton.addEventListener("click", () => {
-    setUsageResult(result, "ready", buildLocalUsageExamples(context));
+    const usageText = buildLocalUsageExamples(context);
+
+    if (usageExampleCard && usageExampleBody) {
+      setUsageResult(usageExampleBody, "ready", usageText);
+      usageExampleCard.classList.remove("hidden");
+      return;
+    }
   });
 
-  actions.append(note, usageButton, result);
+  actions.append(note, usageButton);
   container.appendChild(actions);
 }
 
@@ -2045,6 +2075,7 @@ function buildSkipFeedback(answer) {
 function renderCurrentQuestionUi() {
   const { answer } = state.currentQuestion;
   const reverseMode = isWordReverseMode();
+  hideUsageExampleCard();
   questionPromptLabel.textContent = reverseMode ? "英単語" : "日本語の意味";
   questionMeaning.textContent = reverseMode ? answer.english : answer.japanese;
   questionAudioButton.classList.toggle("hidden", !reverseMode);
@@ -2091,6 +2122,7 @@ function renderCurrentQuestionUi() {
 
 function createQuestion() {
   previousAnswerCard.classList.add("hidden");
+  hideUsageExampleCard();
 
   if (state.quizSession.breakPending || state.quizSession.stopped) {
     renderSessionSummary();
