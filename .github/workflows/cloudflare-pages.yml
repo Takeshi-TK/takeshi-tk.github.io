@@ -25,6 +25,7 @@ jobs:
           node tools/audit_multilingual_content.mjs
           node tools/audit_word_label_quality.mjs
           node tools/audit_word_mode_strict.mjs
+          node tools/audit_phrase_mode_strict.mjs
 
   deploy:
     if: ${{ vars.CLOUDFLARE_PAGES_ENABLED == 'true' }}

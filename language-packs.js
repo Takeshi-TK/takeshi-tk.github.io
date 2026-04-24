@@ -1,6 +1,6 @@
 ﻿import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260424-feature33";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature34";
 
 const categoryMeta = {
   basic: {
@@ -741,14 +741,174 @@ const frenchPhraseBoost2 = {
   ]
 };
 
+const koreanWordBoost3 = {
+  basic: [
+    ["안녕하세요", "こんにちは"], ["감사합니다", "ありがとうございます"], ["죄송합니다", "すみません"], ["괜찮아요", "大丈夫です"], ["진짜", "本当に"],
+    ["다시", "もう一度 / 再び"], ["조금", "少し"], ["많이", "たくさん"], ["빨리", "早く"], ["천천히", "ゆっくり"],
+    ["여기", "ここ"], ["저기", "あそこ"], ["오른쪽", "右側"], ["왼쪽", "左側"], ["근처", "近く"]
+  ],
+  practical: [
+    ["모르겠습니다", "分かりません"], ["괜찮습니다", "大丈夫です"], ["부탁합니다", "お願いします"], ["필요해요", "必要です"], ["가능해요", "できます / 可能です"],
+    ["어려워요", "難しいです"], ["쉬워요", "簡単です"], ["맞아요", "合っています"], ["틀려요", "間違っています"], ["천천히 말하다", "ゆっくり話す"]
+  ],
+  business: [
+    ["일정 조정", "日程調整"], ["확인 요청", "確認依頼"], ["회의 자료", "会議資料"], ["진행 상황", "進捗状況"], ["마감일", "締切日"],
+    ["담당 범위", "担当範囲"], ["추가 비용", "追加費用"], ["내부 검토", "社内確認 / 内部検討"], ["최종 확인", "最終確認"], ["우선 처리", "優先対応"]
+  ],
+  travel: [
+    ["얼마예요?", "いくらですか"], ["어디예요?", "どこですか"], ["도와주세요", "助けてください"], ["예약했어요", "予約しました"], ["길을 잃었어요", "道に迷いました"],
+    ["화장실", "トイレ"], ["편의점", "コンビニ"], ["영수증 주세요", "レシートをください"], ["카드 돼요?", "カードは使えますか"], ["물 주세요", "水をください"]
+  ]
+};
+
+const koreanPhraseBoost3 = {
+  basic: [
+    ["안녕하세요. 잘 지냈어요?", "こんにちは。元気でしたか"], ["오랜만이에요.", "お久しぶりです"], ["보고 싶었어요.", "会いたかったです"],
+    ["잘 부탁합니다.", "よろしくお願いします"], ["진짜 고마워요.", "本当にありがとうございます"], ["다음에 또 봐요.", "また今度会いましょう"],
+    ["괜찮아요. 천천히 하세요.", "大丈夫です。ゆっくりしてください"], ["죄송합니다. 잘 모르겠습니다.", "すみません。よく分かりません"],
+    ["다시 한번 말해 주세요.", "もう一度言ってください"], ["천천히 말해 주세요.", "ゆっくり話してください"],
+    ["이건 제 물건이에요.", "これは私の物です"], ["저는 지금 시간이 없어요.", "今は時間がありません"], ["조금만 기다려 주세요.", "少しだけ待ってください"],
+    ["여기서 기다릴게요.", "ここで待っています"], ["저쪽으로 가면 돼요?", "あちらへ行けばいいですか"], ["오늘은 시간이 괜찮아요.", "今日は時間があります"],
+    ["이 사람을 알고 있어요.", "この人を知っています"], ["먼저 물을 마실게요.", "先に水を飲みます"], ["문을 닫아 주세요.", "ドアを閉めてください"], ["창문을 열어도 돼요?", "窓を開けてもいいですか"]
+  ],
+  practical: [
+    ["이 표현은 일상에서 자주 써요.", "この表現は日常でよく使います"], ["제가 이해한 내용을 다시 말해 볼게요.", "理解した内容を言い直してみます"],
+    ["비슷한 말을 하나 더 알려 주세요.", "似た言い方をもう一つ教えてください"], ["어떤 상황에서 쓰면 좋아요?", "どんな場面で使うといいですか"],
+    ["틀린 부분만 짧게 알려 주세요.", "間違った部分だけ短く教えてください"], ["오늘 배운 표현을 바로 써 볼게요.", "今日覚えた表現をすぐ使ってみます"]
+  ],
+  business: [
+    ["확인 후 바로 회신드리겠습니다.", "確認後すぐに返信します"], ["일정을 다시 조정해 보겠습니다.", "日程を再調整してみます"],
+    ["진행 상황을 공유해 주세요.", "進捗状況を共有してください"], ["담당 범위를 먼저 정리하겠습니다.", "担当範囲を先に整理します"],
+    ["추가 비용이 있는지 확인하겠습니다.", "追加費用があるか確認します"], ["최종 확인 후 진행하겠습니다.", "最終確認後に進めます"]
+  ],
+  travel: [
+    ["화장실이 어디에 있어요?", "トイレはどこにありますか"], ["이 근처에 편의점이 있나요?", "この近くにコンビニはありますか"],
+    ["카드로 결제할 수 있나요?", "カードで支払えますか"], ["영수증을 주세요.", "レシートをください"],
+    ["예약한 사람입니다.", "予約している者です"], ["길을 잃었어요. 도와주세요.", "道に迷いました。助けてください"],
+    ["가방을 잃어버렸어요.", "かばんをなくしました"], ["이 주소까지 가 주세요.", "この住所まで行ってください"], ["가장 가까운 역으로 가고 싶어요.", "一番近い駅へ行きたいです"],
+    ["체크인하고 싶어요.", "チェックインしたいです"], ["방을 확인해 주세요.", "部屋を確認してください"], ["수건을 더 받을 수 있나요?", "タオルを追加でもらえますか"],
+    ["아침 식사는 몇 시부터예요?", "朝食は何時からですか"], ["예약을 취소하고 싶어요.", "予約をキャンセルしたいです"], ["이 길로 가면 되나요?", "この道で合っていますか"],
+    ["표를 한 장 사고 싶어요.", "チケットを1枚買いたいです"], ["환불할 수 있나요?", "返金できますか"], ["조금 더 큰 사이즈가 있나요?", "もう少し大きいサイズはありますか"],
+    ["이 근처는 밤에 안전한가요?", "この辺りは夜安全ですか"], ["응급실에 가야 해요.", "救急外来に行く必要があります"], ["보험 서류가 필요해요.", "保険の書類が必要です"]
+  ]
+};
+
+const chineseWordBoost3 = {
+  basic: [
+    ["你好", "こんにちは"], ["谢谢", "ありがとう"], ["对不起", "すみません"], ["没关系", "大丈夫"], ["真的", "本当に"],
+    ["再", "もう一度 / 再び"], ["一点儿", "少し"], ["很多", "たくさん"], ["快", "速い / 早く"], ["慢", "遅い / ゆっくり"],
+    ["这里", "ここ"], ["那里", "そこ / あそこ"], ["右边", "右側"], ["左边", "左側"], ["附近", "近く"]
+  ],
+  practical: [
+    ["不知道", "分からない"], ["没问题", "問題ありません"], ["麻烦你", "お願いします / お手数ですが"], ["需要", "必要だ"], ["可以", "できる / よい"],
+    ["不可以", "できない / だめ"], ["正确", "正しい"], ["不对", "違う"], ["清楚", "はっきりしている"], ["慢慢说", "ゆっくり話す"]
+  ],
+  business: [
+    ["日程调整", "日程調整"], ["确认请求", "確認依頼"], ["会议资料", "会議資料"], ["进展情况", "進捗状況"], ["截止日期", "締切日"],
+    ["负责范围", "担当範囲"], ["追加费用", "追加費用"], ["内部确认", "社内確認"], ["最终确认", "最終確認"], ["优先处理", "優先対応"]
+  ],
+  travel: [
+    ["多少钱?", "いくらですか"], ["在哪里?", "どこですか"], ["请帮忙", "助けてください"], ["我预订了", "予約しました"], ["我迷路了", "道に迷いました"],
+    ["洗手间", "トイレ"], ["便利店", "コンビニ"], ["请给我收据", "レシートをください"], ["可以刷卡吗?", "カードは使えますか"], ["请给我水", "水をください"]
+  ]
+};
+
+const chinesePhraseBoost3 = {
+  basic: [
+    ["你好，最近怎么样？", "こんにちは、最近どうですか"], ["好久不见。", "お久しぶりです"], ["我很想见你。", "会いたかったです"],
+    ["请多关照。", "よろしくお願いします"], ["真的谢谢你。", "本当にありがとうございます"], ["下次再见。", "また今度会いましょう"],
+    ["没关系，慢慢来。", "大丈夫です。ゆっくりでいいです"], ["对不起，我不太明白。", "すみません。よく分かりません"],
+    ["请再说一遍。", "もう一度言ってください"], ["请慢一点说。", "ゆっくり話してください"],
+    ["这是我的东西。", "これは私の物です"], ["我现在没有时间。", "今は時間がありません"], ["请等我一下。", "少し待ってください"],
+    ["我在这里等。", "ここで待っています"], ["往那边走可以吗？", "あちらへ行けばいいですか"], ["今天我有时间。", "今日は時間があります"],
+    ["我认识这个人。", "この人を知っています"], ["我先喝水。", "先に水を飲みます"], ["请关门。", "ドアを閉めてください"], ["可以开窗吗？", "窓を開けてもいいですか"]
+  ],
+  practical: [
+    ["这个说法日常生活中常用。", "この言い方は日常生活でよく使います"], ["我把理解的内容再说一遍。", "理解した内容をもう一度言います"],
+    ["请再告诉我一个类似的说法。", "似た言い方をもう一つ教えてください"], ["这个在什么情况下用比较好？", "これはどんな場面で使うといいですか"],
+    ["请只告诉我错的地方。", "間違っているところだけ教えてください"], ["我马上用今天学的表达。", "今日覚えた表現をすぐ使ってみます"]
+  ],
+  business: [
+    ["确认后我会马上回复。", "確認後すぐに返信します"], ["我会重新调整日程。", "日程を再調整します"],
+    ["请共享进展情况。", "進捗状況を共有してください"], ["我先整理负责范围。", "担当範囲を先に整理します"],
+    ["我确认一下有没有追加费用。", "追加費用があるか確認します"], ["最终确认后再推进。", "最終確認後に進めます"]
+  ],
+  travel: [
+    ["洗手间在哪里？", "トイレはどこにありますか"], ["这附近有便利店吗？", "この近くにコンビニはありますか"],
+    ["可以刷卡吗？", "カードで支払えますか"], ["请给我收据。", "レシートをください"],
+    ["我有预订。", "予約しています"], ["我迷路了，请帮帮我。", "道に迷いました。助けてください"],
+    ["我的包丢了。", "かばんをなくしました"], ["请去这个地址。", "この住所まで行ってください"], ["我想去最近的车站。", "一番近い駅へ行きたいです"],
+    ["我想办理入住。", "チェックインしたいです"], ["请确认一下房间。", "部屋を確認してください"], ["可以多给我一条毛巾吗？", "タオルを追加でもらえますか"],
+    ["早餐几点开始？", "朝食は何時からですか"], ["我想取消预订。", "予約をキャンセルしたいです"], ["走这条路对吗？", "この道で合っていますか"],
+    ["我想买一张票。", "チケットを1枚買いたいです"], ["可以退款吗？", "返金できますか"], ["有大一点的尺码吗？", "もう少し大きいサイズはありますか"],
+    ["这附近晚上安全吗？", "この辺りは夜安全ですか"], ["我需要去急诊。", "救急外来に行く必要があります"], ["我需要保险文件。", "保険の書類が必要です"],
+    ["请帮我叫出租车。", "タクシーを呼んでください"], ["这班车到机场吗？", "このバスは空港に行きますか"], ["可以把行李寄存在这里吗？", "ここで荷物を預けられますか"],
+    ["请不要放香菜。", "パクチーを入れないでください"], ["我想换到靠窗的座位。", "窓側の席に変えたいです"]
+  ]
+};
+
+const frenchWordBoost3 = {
+  basic: [
+    ["bonjour", "こんにちは"], ["merci", "ありがとう"], ["désolé", "すみません"], ["d'accord", "分かりました / 了解"], ["vraiment", "本当に"],
+    ["encore", "もう一度 / まだ"], ["un peu", "少し"], ["beaucoup", "たくさん"], ["vite", "速く"], ["lentement", "ゆっくり"],
+    ["ici", "ここ"], ["là-bas", "あそこ"], ["à droite", "右へ / 右側"], ["à gauche", "左へ / 左側"], ["près d'ici", "この近く"]
+  ],
+  practical: [
+    ["je ne sais pas", "分かりません"], ["pas de problème", "問題ありません"], ["s'il vous plaît", "お願いします"], ["j'ai besoin de", "〜が必要です"], ["c'est possible", "可能です"],
+    ["ce n'est pas possible", "できません"], ["correct", "正しい"], ["faux", "間違った"], ["clair", "はっきりした"], ["parlez lentement", "ゆっくり話してください"]
+  ],
+  business: [
+    ["ajustement du planning", "日程調整"], ["demande de vérification", "確認依頼"], ["documents de réunion", "会議資料"], ["état d'avancement", "進捗状況"], ["date limite", "締切日"],
+    ["périmètre de responsabilité", "担当範囲"], ["frais supplémentaires", "追加費用"], ["vérification interne", "社内確認"], ["validation finale", "最終確認"], ["traitement prioritaire", "優先対応"]
+  ],
+  travel: [
+    ["combien ça coûte ?", "いくらですか"], ["où est-ce ?", "どこですか"], ["aidez-moi", "助けてください"], ["j'ai réservé", "予約しました"], ["je suis perdu", "道に迷いました"],
+    ["toilettes", "トイレ"], ["supérette", "コンビニ"], ["un reçu, s'il vous plaît", "レシートをください"], ["je peux payer par carte ?", "カードで払えますか"], ["de l'eau, s'il vous plaît", "水をください"]
+  ]
+};
+
+const frenchPhraseBoost3 = {
+  basic: [
+    ["Bonjour, comment allez-vous ?", "こんにちは、お元気ですか"], ["Ça fait longtemps.", "お久しぶりです"], ["J'avais envie de vous voir.", "会いたかったです"],
+    ["Enchanté, je compte sur vous.", "はじめまして、よろしくお願いします"], ["Merci beaucoup, vraiment.", "本当にありがとうございます"], ["À la prochaine fois.", "また今度会いましょう"],
+    ["Ce n'est pas grave, prenez votre temps.", "大丈夫です。ゆっくりでいいです"], ["Désolé, je ne comprends pas bien.", "すみません。よく分かりません"],
+    ["Répétez encore une fois, s'il vous plaît.", "もう一度言ってください"], ["Parlez plus lentement, s'il vous plaît.", "もっとゆっくり話してください"],
+    ["C'est à moi.", "これは私の物です"], ["Je n'ai pas le temps maintenant.", "今は時間がありません"], ["Attendez un instant, s'il vous plaît.", "少し待ってください"],
+    ["Je vous attends ici.", "ここで待っています"], ["Je dois aller par là ?", "あちらへ行けばいいですか"], ["J'ai du temps aujourd'hui.", "今日は時間があります"],
+    ["Je connais cette personne.", "この人を知っています"], ["Je bois d'abord de l'eau.", "先に水を飲みます"], ["Fermez la porte, s'il vous plaît.", "ドアを閉めてください"], ["Je peux ouvrir la fenêtre ?", "窓を開けてもいいですか"]
+  ],
+  practical: [
+    ["Cette tournure s'utilise souvent au quotidien.", "この言い方は日常でよく使います"], ["Je vais reformuler ce que j'ai compris.", "理解した内容を言い直します"],
+    ["Donnez-moi une autre expression proche.", "似た表現をもう一つ教えてください"], ["Dans quelle situation peut-on l'utiliser ?", "どんな場面で使えますか"],
+    ["Indiquez seulement la partie incorrecte.", "間違っている部分だけ教えてください"], ["Je vais utiliser tout de suite l'expression d'aujourd'hui.", "今日覚えた表現をすぐ使ってみます"]
+  ],
+  business: [
+    ["Je répondrai dès que ce sera vérifié.", "確認でき次第返信します"], ["Je vais réajuster le planning.", "日程を再調整します"],
+    ["Partagez l'état d'avancement, s'il vous plaît.", "進捗状況を共有してください"], ["Je vais clarifier le périmètre de responsabilité.", "担当範囲を明確にします"],
+    ["Je vérifie s'il y a des frais supplémentaires.", "追加費用があるか確認します"], ["Nous avancerons après la validation finale.", "最終確認後に進めます"]
+  ],
+  travel: [
+    ["Où sont les toilettes ?", "トイレはどこにありますか"], ["Y a-t-il une supérette près d'ici ?", "この近くにコンビニはありますか"],
+    ["Je peux payer par carte ?", "カードで支払えますか"], ["Un reçu, s'il vous plaît.", "レシートをください"],
+    ["J'ai une réservation.", "予約しています"], ["Je suis perdu, aidez-moi s'il vous plaît.", "道に迷いました。助けてください"],
+    ["J'ai perdu mon sac.", "かばんをなくしました"], ["Allez à cette adresse, s'il vous plaît.", "この住所まで行ってください"], ["Je voudrais aller à la gare la plus proche.", "一番近い駅へ行きたいです"],
+    ["Je voudrais faire l'enregistrement.", "チェックインしたいです"], ["Vérifiez la chambre, s'il vous plaît.", "部屋を確認してください"], ["Puis-je avoir une serviette en plus ?", "タオルを追加でもらえますか"],
+    ["À quelle heure commence le petit déjeuner ?", "朝食は何時からですか"], ["Je voudrais annuler ma réservation.", "予約をキャンセルしたいです"], ["C'est bien par cette route ?", "この道で合っていますか"],
+    ["Je voudrais acheter un billet.", "チケットを1枚買いたいです"], ["Puis-je être remboursé ?", "返金できますか"], ["Vous avez une taille un peu plus grande ?", "もう少し大きいサイズはありますか"],
+    ["Ce quartier est sûr le soir ?", "この辺りは夜安全ですか"], ["Je dois aller aux urgences.", "救急外来に行く必要があります"], ["J'ai besoin des documents d'assurance.", "保険の書類が必要です"],
+    ["Appelez un taxi, s'il vous plaît.", "タクシーを呼んでください"], ["Ce bus va à l'aéroport ?", "このバスは空港に行きますか"], ["Puis-je laisser mes bagages ici ?", "ここで荷物を預けられますか"],
+    ["Sans coriandre, s'il vous plaît.", "パクチーを入れないでください"], ["Je voudrais un siège côté fenêtre.", "窓側の席に変えたいです"]
+  ]
+};
+
 const wordTargetCounts = targetCountsFrom(vocabulary);
 const phraseTargetCounts = targetCountsFrom(phrases);
-const expandedKoreanWords = topUpLanguageGroups("ko", "word", mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), wordTargetCounts);
-const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), phraseTargetCounts);
-const expandedChineseWords = topUpLanguageGroups("zh", "word", mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), wordTargetCounts);
-const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), phraseTargetCounts);
-const expandedFrenchWords = topUpLanguageGroups("fr", "word", mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), wordTargetCounts);
-const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), phraseTargetCounts);
+const expandedKoreanWords = topUpLanguageGroups("ko", "word", mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), wordTargetCounts);
+const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), phraseTargetCounts);
+const expandedChineseWords = topUpLanguageGroups("zh", "word", mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), wordTargetCounts);
+const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), phraseTargetCounts);
+const expandedFrenchWords = topUpLanguageGroups("fr", "word", mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), wordTargetCounts);
+const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), phraseTargetCounts);
 
 export const languagePacks = {
   en: {
