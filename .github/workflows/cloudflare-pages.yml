@@ -7,8 +7,25 @@ on:
       - main
 
 jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Audit learning content
+        run: node tools/audit_multilingual_content.mjs
+
   deploy:
     if: ${{ vars.CLOUDFLARE_PAGES_ENABLED == 'true' }}
+    needs: audit
     runs-on: ubuntu-latest
     permissions:
       contents: read

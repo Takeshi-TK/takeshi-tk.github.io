@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "check": "node --check app.js",
+    "audit:content": "node tools/audit_multilingual_content.mjs",
     "dev": "wrangler pages dev .",
     "deploy:cloudflare": "wrangler pages deploy . --project-name=stridewords --branch=main"
   },
