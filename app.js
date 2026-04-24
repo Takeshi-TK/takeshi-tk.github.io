@@ -5,6 +5,7 @@ const PROFILES_KEY = "stridewords-profiles-v4";
 const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";
 const ACTIVE_ROLE_KEY = "stridewords-active-role-v4";
 const SETTINGS_KEY = "stridewords-settings-v4";
+const USAGE_EXAMPLES_CSV = "./data/learning-items.csv?v=20260424-feature12";
 const PROFILE_ID_PATTERN = /^\S{6,40}$/;
 const ADMIN_ID = "TsubasaP";
 const ADMIN_ID_HASH = "6fd48e59450c59af0cb7e49a23244523486f335f7b301076568646e87414548b";
@@ -96,6 +97,7 @@ const gapRange = document.querySelector("#gapRange");
 const gapValue = document.querySelector("#gapValue");
 const walkStartButton = document.querySelector("#walkStartButton");
 const walkStopButton = document.querySelector("#walkStopButton");
+const walkPreviousButton = document.querySelector("#walkPreviousButton");
 const walkResetButton = document.querySelector("#walkResetButton");
 const walkReplayButton = document.querySelector("#walkReplayButton");
 
@@ -113,6 +115,7 @@ const state = {
   activeProfileId: loadActiveProfileId(),
   role: loadActiveRole(),
   settings: loadSettings(),
+  usageExamples: new Map(),
   reviewMode: null,
   wakeLock: {
     sentinel: null,
@@ -508,11 +511,56 @@ function touchWord(word) {
 }
 
 function buildOptions(answer) {
-  const distractors = shuffle(
-    getCurrentItems().filter((item) => item.english !== answer.english)
-  ).slice(0, 3);
+  const candidates = getCurrentItems().filter((item) => item.english !== answer.english);
+  const distractors = state.studyType === "phrase"
+    ? buildPhraseDistractors(answer, candidates)
+    : shuffle(candidates).slice(0, 3);
 
   return shuffle([answer, ...distractors]);
+}
+
+function tokenizeForSimilarity(value) {
+  return value
+    .toLowerCase()
+    .replace(/[?.!,]/g, "")
+    .split(/\s+|\/|・|、|。/)
+    .filter((token) => token.length >= 2);
+}
+
+function getSharedTokenScore(a, b) {
+  const left = new Set(tokenizeForSimilarity(a));
+  const right = new Set(tokenizeForSimilarity(b));
+  let score = 0;
+
+  for (const token of left) {
+    if (right.has(token)) {
+      score += 1;
+    }
+  }
+
+  return score;
+}
+
+function getPhraseDistractorScore(answer, candidate) {
+  const englishScore = getSharedTokenScore(answer.english, candidate.english) * 4;
+  const japaneseScore = getSharedTokenScore(answer.japanese, candidate.japanese) * 3;
+  const lengthGap = Math.abs(answer.english.length - candidate.english.length);
+  const lengthScore = Math.max(0, 8 - Math.floor(lengthGap / 6));
+  const sameOpening = answer.english.split(/\s+/)[0]?.toLowerCase() === candidate.english.split(/\s+/)[0]?.toLowerCase()
+    ? 4
+    : 0;
+
+  return englishScore + japaneseScore + lengthScore + sameOpening + Math.random();
+}
+
+function buildPhraseDistractors(answer, candidates) {
+  return candidates
+    .map((item) => ({ item, score: getPhraseDistractorScore(answer, item) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
+    .map(({ item }) => item);
 }
 
 function resetQuizSession() {
@@ -838,7 +886,115 @@ function hideUsageExampleCard() {
   usageExampleBody.className = "usage-help-result ready";
 }
 
+function makeUsageExampleKey(english, japanese) {
+  return `${english.trim().toLowerCase()}::${japanese.trim()}`;
+}
+
+function parseCsvRows(text) {
+  const rows = [];
+  let row = [];
+  let value = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    const next = text[index + 1];
+
+    if (char === "\"" && inQuotes && next === "\"") {
+      value += "\"";
+      index += 1;
+      continue;
+    }
+
+    if (char === "\"") {
+      inQuotes = !inQuotes;
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      row.push(value);
+      value = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && next === "\n") {
+        index += 1;
+      }
+
+      row.push(value);
+      if (row.some((cell) => cell.length)) {
+        rows.push(row);
+      }
+      row = [];
+      value = "";
+      continue;
+    }
+
+    value += char;
+  }
+
+  row.push(value);
+  if (row.some((cell) => cell.length)) {
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+async function loadUsageExamples() {
+  try {
+    const response = await fetch(USAGE_EXAMPLES_CSV, { cache: "no-store" });
+    if (!response.ok) {
+      return;
+    }
+
+    const rows = parseCsvRows(await response.text());
+    const headers = rows.shift()?.map((header) => header.replace(/^\uFEFF/, "")) || [];
+    const indexOf = (name) => headers.indexOf(name);
+    const indexes = {
+      type: indexOf("type"),
+      english: indexOf("english"),
+      japanese: indexOf("japanese"),
+      example1En: indexOf("example_1_en"),
+      example1Ja: indexOf("example_1_ja"),
+      example2En: indexOf("example_2_en"),
+      example2Ja: indexOf("example_2_ja"),
+      status: indexOf("review_status")
+    };
+
+    if (Object.values(indexes).some((index) => index < 0)) {
+      return;
+    }
+
+    const examples = new Map();
+    for (const row of rows) {
+      const isWord = row[indexes.type] === "word";
+      const isReviewed = row[indexes.status] === "reviewed";
+      const pair1 = [row[indexes.example1En], row[indexes.example1Ja]];
+      const pair2 = [row[indexes.example2En], row[indexes.example2Ja]];
+
+      if (!isWord || !isReviewed || pair1.some((value) => !value) || pair2.some((value) => !value)) {
+        continue;
+      }
+
+      examples.set(makeUsageExampleKey(row[indexes.english], row[indexes.japanese]), {
+        examples: [pair1, pair2]
+      });
+    }
+
+    state.usageExamples = examples;
+  } catch {
+    state.usageExamples = new Map();
+  }
+}
+
 function buildPracticalWordExample(word, meaning) {
+  const csvExample = state.usageExamples.get(makeUsageExampleKey(word, meaning));
+  if (csvExample) {
+    return csvExample;
+  }
+
   const lower = word.toLowerCase();
   const exactExamples = {
     for: {
@@ -1508,12 +1664,49 @@ function updateWalkingDisplay() {
   if (!state.walking.queue.length) {
     walkWord.textContent = "level complete";
     walkMeaning.textContent = "このレベルは3連続正解で学習完了です。別のレベルに切り替えるか、記録をリセットしてもう一度学習できます。";
+    updateMediaSession();
     return;
   }
 
   const current = state.walking.queue[state.walking.position] ?? state.walking.queue[0];
   walkWord.textContent = current.english;
   walkMeaning.textContent = `${current.japanese} を音読しながら覚えましょう。`;
+  updateMediaSession(current);
+}
+
+function updateMediaSession(current = state.walking.queue[state.walking.position]) {
+  if (!("mediaSession" in navigator) || !current) {
+    return;
+  }
+
+  if ("MediaMetadata" in window) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: current.english,
+      artist: current.japanese,
+      album: "StrideWords Walking Mode"
+    });
+  }
+}
+
+function setupMediaSessionControls() {
+  if (!("mediaSession" in navigator)) {
+    return;
+  }
+
+  const handlers = {
+    previoustrack: () => goToPreviousWalkingItem(),
+    seekbackward: () => goToPreviousWalkingItem(),
+    pause: () => stopWalking(true),
+    play: () => startWalking()
+  };
+
+  for (const [action, handler] of Object.entries(handlers)) {
+    try {
+      navigator.mediaSession.setActionHandler(action, handler);
+    } catch {
+      // Some browsers only support a subset of media session actions.
+    }
+  }
 }
 
 function speak(text, lang, rate) {
@@ -1628,6 +1821,7 @@ async function runWalking(token) {
     const current = state.walking.queue[state.walking.position];
     walkWord.textContent = current.english;
     walkMeaning.textContent = current.japanese;
+    updateMediaSession(current);
 
     await speak(current.english, "en-US", state.settings.speed);
     if (!state.walking.active || token !== state.walking.token) {
@@ -1684,6 +1878,28 @@ function stopWalking(resetBadge = true) {
   }
 
   releaseScreenWakeLock();
+}
+
+function goToPreviousWalkingItem() {
+  if (!state.walking.queue.length) {
+    return;
+  }
+
+  const wasActive = state.walking.active;
+  const nextPosition = Math.max(0, state.walking.position - 1);
+  state.walking.position = nextPosition;
+  state.walking.token += 1;
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
+  updateWalkingDisplay();
+
+  if (wasActive) {
+    state.walking.active = true;
+    runWalking(state.walking.token);
+  }
 }
 
 function resetWalking() {
@@ -1959,6 +2175,10 @@ walkStopButton.addEventListener("click", () => {
   stopWalking(true);
 });
 
+walkPreviousButton.addEventListener("click", () => {
+  goToPreviousWalkingItem();
+});
+
 walkResetButton.addEventListener("click", () => {
   resetWalking();
 });
@@ -1978,4 +2198,5 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-renderAll();
+setupMediaSessionControls();
+loadUsageExamples().finally(() => renderAll());
