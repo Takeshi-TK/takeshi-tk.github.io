@@ -178,6 +178,7 @@ function basicWordPatterns(lang) {
   const isClockTime = (item) => ["朝", "昼", "夜", "週末", "時間"].includes(item.jp);
   const isCleanable = (item) => ["机", "椅子", "窓", "ドア", "本", "ノート", "ペン", "かばん", "服", "靴", "写真"].includes(item.jp);
   const hasNaturalName = (item) => isPerson(item) || isPublicPlace(item) || item.jp === "通り";
+  const isChineseSizeSafe = (item) => !["家", "学校", "ドア", "道", "通り"].includes(item.jp);
   const all = () => true;
   const quotedWord = (suffix) => (label) => `「${label}」${suffix}`;
 
@@ -188,11 +189,10 @@ function basicWordPatterns(lang) {
       ["질문", quotedWord("についての質問"), all], ["기본 표현", quotedWord("の基本表現"), all], ["듣기 연습", quotedWord("の聞き取り練習"), all], ["말하기 연습", quotedWord("の発話練習"), all],
       ["근처", "の近く", isPlaceOrTransport], ["앞", "の前", isPlaceOrTransport], ["뒤", "の後ろ", isPlaceOrTransport], ["옆", "の横", isPlaceOrTransport],
       ["안", "の中", isPlace], ["밖", "の外", isPlace], ["입구", "の入口", isPlace], ["출구", "の出口", isPlace],
-      ["위치", "の場所", isPlaceOrTransport], ["이름", "の名前", hasNaturalName], ["사진", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+      ["위치", "の場所", isPlaceOrTransport], ["이름", "の名前", hasNaturalName], ["사진", "の写真", (item) => isPlaceOrTransport(item) || isTangible(item)],
       ["시간", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
       ["새", "新しい", (item) => isPlace(item) || isTangible(item)], ["작은", "小さい", (item) => isPlace(item) || isTangible(item)],
       ["큰", "大きい", (item) => isPlace(item) || isTangible(item)], ["깨끗한", "きれいな", isCleanable],
-      ["첫", "最初の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)], ["다음", "次の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)],
       ["준비", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
       ["목록", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
       ["예보", "の予報", isWeather], ["기록", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
@@ -213,11 +213,10 @@ function basicWordPatterns(lang) {
       ["问题", quotedWord("についての質問"), all], ["基本表达", quotedWord("の基本表現"), all], ["听力练习", quotedWord("の聞き取り練習"), all], ["口语练习", quotedWord("の発話練習"), all],
       ["附近", "の近く", isPlaceOrTransport], ["前面", "の前", isPlaceOrTransport], ["后面", "の後ろ", isPlaceOrTransport], ["旁边", "の横", isPlaceOrTransport],
       ["里面", "の中", isPlace], ["外面", "の外", isPlace], ["入口", "の入口", isPlace], ["出口", "の出口", isPlace],
-      ["位置", "の場所", isPlaceOrTransport], ["名字", "の名前", hasNaturalName], ["照片", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+      ["位置", "の場所", isPlaceOrTransport], ["名字", "の名前", hasNaturalName], ["照片", "の写真", (item) => isPlaceOrTransport(item) || isTangible(item)],
       ["时间", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
-      ["新", "新しい", (item) => isPlace(item) || isTangible(item)], ["小", "小さい", (item) => isPlace(item) || isTangible(item)],
-      ["大", "大きい", (item) => isPlace(item) || isTangible(item)], ["干净的", "きれいな", isCleanable],
-      ["第一个", "最初の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)], ["下一个", "次の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)],
+      ["新", "新しい", (item) => isPlace(item) || isTangible(item)], ["小", "小さい", (item) => (isPlace(item) || isTangible(item)) && isChineseSizeSafe(item)],
+      ["大", "大きい", (item) => (isPlace(item) || isTangible(item)) && isChineseSizeSafe(item)], ["干净的", "きれいな", isCleanable],
       ["准备", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
       ["列表", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
       ["预报", "の予報", isWeather], ["记录", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
@@ -237,7 +236,7 @@ function basicWordPatterns(lang) {
     ["une question sur", quotedWord("についての質問"), all], ["l'expression de base pour", quotedWord("の基本表現"), all], ["l'écoute de", quotedWord("の聞き取り練習"), all], ["la pratique orale de", quotedWord("の発話練習"), all],
     ["près de", "の近く", isPlaceOrTransport], ["devant", "の前", isPlaceOrTransport], ["derrière", "の後ろ", isPlaceOrTransport], ["à côté de", "の横", isPlaceOrTransport],
     ["dans", "の中", isPlace], ["hors de", "の外", isPlace], ["l'entrée de", "の入口", isPlace], ["la sortie de", "の出口", isPlace],
-    ["l'emplacement de", "の場所", isPlaceOrTransport], ["le nom de", "の名前", hasNaturalName], ["la photo de", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+    ["l'emplacement de", "の場所", isPlaceOrTransport], ["le nom de", "の名前", hasNaturalName], ["la photo de", "の写真", (item) => isPlaceOrTransport(item) || isTangible(item)],
     ["l'heure de", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
     ["avec", "と一緒に", (item) => isPerson(item) || isFood(item) || isMedia(item)], ["sans", "なしで", (item) => isFood(item) || isObject(item) || isTransport(item)],
     ["autour de", "の周り", isPlaceOrTransport], ["en face de", "の向かい", isPlaceOrTransport],
@@ -329,6 +328,7 @@ function practicalWordPatterns(lang) {
   const procedureLabel = (jp) => jp === "手順" ? "手順の確認" : `${jp}の手順`;
   const priorityLabel = (jp) => jp === "優先順位" ? "優先順位の決め方" : `${jp}の優先順位`;
   const recordLabel = (jp) => jp === "記録" ? "記録方法" : `${jp}の記録`;
+  const recordable = new Set(["予定", "約束", "内容", "情報", "住所", "生活", "健康", "気分", "心配", "ミス", "進み具合"]);
 
   const definitions = {
     ko: [
@@ -350,7 +350,7 @@ function practicalWordPatterns(lang) {
       { suffix: "연결 확인", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" && !selfReferential.has(jp) },
       { suffix: "절차", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" && !selfReferential.has(jp) },
       { suffix: "우선순위", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" && !selfReferential.has(jp) },
-      { suffix: "기록", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
+      { suffix: "기록", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => recordable.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
     ],
     zh: [
       { suffix: "确认", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
@@ -371,7 +371,7 @@ function practicalWordPatterns(lang) {
       { suffix: "连接确认", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" && !selfReferential.has(jp) },
       { suffix: "步骤", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" && !selfReferential.has(jp) },
       { suffix: "优先级", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" && !selfReferential.has(jp) },
-      { suffix: "记录", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
+      { suffix: "记录", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => recordable.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
     ],
     fr: [
       { prefix: "vérification de", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
@@ -392,7 +392,7 @@ function practicalWordPatterns(lang) {
       { prefix: "vérification de connexion de", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" && !selfReferential.has(jp) },
       { prefix: "procédure de", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" && !selfReferential.has(jp) },
       { prefix: "priorité de", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" && !selfReferential.has(jp) },
-      { prefix: "enregistrement de", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
+      { prefix: "enregistrement de", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => recordable.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
     ]
   };
 
@@ -876,8 +876,59 @@ function generatedGroupsFor(lang, kind) {
       : category === "basic"
         ? basicWordPatterns(lang)
         : actionWordPatterns(lang, category);
-    return [category, buildRows(items, patterns)];
+    const rows = buildRows(items, patterns);
+    return [category, kind === "word" ? rows.filter((row) => isNaturalWordModeItem(category, row[1])) : rows];
   }));
+}
+
+function isNaturalWordModeItem(category, japanese) {
+  const label = String(japanese || "");
+  const studyOnlyParts = [
+    "「",
+    "について",
+    "メモ",
+    "関連表現",
+    "基本表現",
+    "聞き取り練習",
+    "発話練習",
+    "旅行表現",
+    "必須表現"
+  ];
+  if (studyOnlyParts.some((part) => label.includes(part))) {
+    return false;
+  }
+
+  if (/の(意味|発音|復習|練習|例文|説明|質問|注意点|基本|見直し|言い換え|使い方)$/.test(label)) {
+    return false;
+  }
+
+  if (category === "basic") {
+    if (/の(準備|一覧|利用時間|記録)$/.test(label)) return false;
+    return true;
+  }
+
+  if (category === "practical") {
+    if (/の(情報|要点|状況|提出|修正|共有|最終確認|担当確認|検討|調整|管理|報告|案内|場所|近く|予約|問い合わせ|変更)$/.test(label)) {
+      return false;
+    }
+    return true;
+  }
+
+  if (category === "business") {
+    if (/の(情報|質問|メモ|注意点|要点|状況)$/.test(label)) {
+      return false;
+    }
+    return true;
+  }
+
+  if (category === "travel") {
+    if (/の(情報|確認|案内|使い方|注意点|場所|近く|予約|問い合わせ|準備|変更)$/.test(label)) {
+      return false;
+    }
+    return true;
+  }
+
+  return true;
 }
 
 function topUpGroup(baseRows, generatedRows, targetCount) {

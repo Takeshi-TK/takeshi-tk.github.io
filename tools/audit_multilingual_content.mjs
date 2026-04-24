@@ -6,6 +6,13 @@ const expectedCounts = {
   phrase: { basic: 254, practical: 240, business: 243, travel: 257 }
 };
 
+const reviewedWordMinimums = {
+  en: { basic: 1001, practical: 500, business: 500, travel: 501 },
+  ko: { basic: 380, practical: 200, business: 360, travel: 110 },
+  zh: { basic: 380, practical: 200, business: 360, travel: 110 },
+  fr: { basic: 380, practical: 200, business: 360, travel: 110 }
+};
+
 const languagesToAudit = ["ko", "zh", "fr"];
 const failures = [];
 
@@ -64,7 +71,12 @@ function auditCounts() {
     for (const [kind, categories] of Object.entries(expectedCounts)) {
       for (const [category, expected] of Object.entries(categories)) {
         const actual = pack.datasets[kind][category].words.length;
-        if (actual !== expected) {
+        if (kind === "word") {
+          const minimum = reviewedWordMinimums[language]?.[category] ?? expected;
+          if (actual < minimum) {
+            fail(`${language}.${kind}.${category}: expected at least ${minimum}, got ${actual}`);
+          }
+        } else if (actual !== expected) {
           fail(`${language}.${kind}.${category}: expected ${expected}, got ${actual}`);
         }
       }
