@@ -5,7 +5,7 @@ const PROFILES_KEY = "stridewords-profiles-v4";
 const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";
 const ACTIVE_ROLE_KEY = "stridewords-active-role-v4";
 const SETTINGS_KEY = "stridewords-settings-v4";
-const USAGE_EXAMPLES_CSV = "./data/learning-items.csv?v=20260424-feature12";
+const USAGE_EXAMPLES_CSV = "./data/learning-items.csv?v=20260424-feature13";
 const PROFILE_ID_PATTERN = /^\S{6,40}$/;
 const ADMIN_ID = "TsubasaP";
 const ADMIN_ID_HASH = "6fd48e59450c59af0cb7e49a23244523486f335f7b301076568646e87414548b";
@@ -1264,7 +1264,7 @@ function buildLocalUsageExamples(context, reason = "") {
   const prefix = reason ? `${reason}\n\n` : "";
   const example = buildPracticalWordExample(answer.english, answer.japanese);
   if (!example) {
-    return `${prefix}この項目の使用例はまだ整備中です。\n不自然な使い回し例文を出さないため、確認済みの例文だけ表示しています。`;
+    return "";
   }
 
   if (state.studyType === "phrase") {
@@ -1299,22 +1299,9 @@ function renderUsageHelpActions(container, context) {
     return;
   }
 
-  const actions = document.createElement("span");
-  actions.className = "usage-help-actions";
-
-  const note = document.createElement("span");
-  note.className = "usage-help-note";
-
   if (!hasLocalUsageExample(context)) {
-    note.textContent = "この項目の使用例はCSVで整備中です。不自然な使い回し例文は表示しません。";
-    actions.append(note);
-    container.appendChild(actions);
     return;
   }
-
-  note.textContent = usageExampleCard
-    ? "使用例を下に表示できます。"
-    : "使用例を表示できます。";
 
   const usageButton = document.createElement("button");
   usageButton.type = "button";
@@ -1323,6 +1310,9 @@ function renderUsageHelpActions(container, context) {
 
   usageButton.addEventListener("click", () => {
     const usageText = buildLocalUsageExamples(context);
+    if (!usageText) {
+      return;
+    }
 
     if (usageExampleCard && usageExampleBody) {
       setUsageResult(usageExampleBody, "ready", usageText);
@@ -1331,7 +1321,9 @@ function renderUsageHelpActions(container, context) {
     }
   });
 
-  actions.append(note, usageButton);
+  const actions = document.createElement("span");
+  actions.className = "usage-help-actions";
+  actions.append(usageButton);
   container.appendChild(actions);
 }
 

@@ -9,7 +9,7 @@
     name="description"
     content="StrideWords は英単語クイズとフレーズ学習、ウォーキング学習をまとめた英語学習サイトです。初級からビジネス、旅行英語まで実用的に学べます。"
   >
-  <link rel="stylesheet" href="./styles.css?v=20260424-feature12">
+  <link rel="stylesheet" href="./styles.css?v=20260424-feature13">
   <script
     async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3121682237695422"
@@ -145,8 +145,13 @@
             <p class="section-label">10問ごとのふり返り</p>
             <h3 id="sessionSummaryHeading">10問おつかれさまです</h3>
             <p id="sessionSummaryText" class="panel-note">
-              10問ごとに正答率を確認できます。続ける場合は次の10問へ進んでください。
+              結果を確認して次へ進めます。
             </p>
+            <div class="inline-actions session-summary-actions">
+              <button id="sessionContinueButton" class="primary-button" type="button">次の10問へ</button>
+              <button id="sessionReviewWrongButton" class="ghost-button" type="button">間違い復習</button>
+              <button id="sessionStopButton" class="ghost-button" type="button">終了</button>
+            </div>
             <div class="session-summary-grid">
               <div class="meta-chip">
                 <span>正解</span>
@@ -164,11 +169,6 @@
                 <span>正答率</span>
                 <strong id="sessionAccuracyRate">0%</strong>
               </div>
-            </div>
-            <div class="inline-actions session-summary-actions">
-              <button id="sessionContinueButton" class="primary-button" type="button">次の10問へ進む</button>
-              <button id="sessionReviewWrongButton" class="ghost-button" type="button">間違えた問題を復習</button>
-              <button id="sessionStopButton" class="ghost-button" type="button">ここで一区切り</button>
             </div>
           </div>
 
@@ -299,6 +299,6 @@
       </div>
     </footer>
   </div>
-  <script type="module" src="./app.js?v=20260424-feature12"></script>
+  <script type="module" src="./app.js?v=20260424-feature13"></script>
 </body>
 </html>

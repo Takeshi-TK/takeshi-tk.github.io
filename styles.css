@@ -763,19 +763,19 @@ body.dark-mode .hero {
 }
 
 .session-summary h3 {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   font-size: clamp(1.2rem, 2.2vw, 1.55rem);
 }
 
 .session-summary-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .session-summary-actions {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .feedback.neutral {
@@ -1078,8 +1078,49 @@ body.dark-mode .hero {
     align-items: flex-start;
   }
 
+  .session-summary {
+    padding: 12px;
+  }
+
+  .session-summary h3 {
+    margin-top: 6px;
+    font-size: 1.1rem;
+  }
+
+  .session-summary .panel-note {
+    margin: 6px 0 0;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .session-summary-actions {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 0.72fr;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .session-summary-actions > button {
+    min-height: 34px;
+    padding: 8px 7px;
+    font-size: 0.78rem;
+    line-height: 1.25;
+  }
+
   .session-summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .session-summary .meta-chip {
+    padding: 7px 6px;
+    gap: 2px;
+    text-align: center;
+  }
+
+  .session-summary .meta-chip strong {
+    font-size: 0.9rem;
   }
 
   .hero-category-list {
@@ -1240,5 +1281,21 @@ body.dark-mode .hero {
   .quiz-panel #usageExampleBody {
     font-size: 0.82rem;
     padding: 11px 12px;
+  }
+
+  .session-summary {
+    padding: 10px;
+  }
+
+  .session-summary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .session-summary .meta-chip {
+    padding: 6px 5px;
+  }
+
+  .session-summary .meta-chip span {
+    font-size: 0.68rem;
   }
 }
