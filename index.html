@@ -9,7 +9,7 @@
     name="description"
     content="StrideWords は英単語クイズとフレーズ学習、ウォーキング学習をまとめた英語学習サイトです。初級からビジネス、旅行英語まで実用的に学べます。"
   >
-  <link rel="stylesheet" href="./styles.css?v=20260424-feature19">
+  <link rel="stylesheet" href="./styles.css?v=20260424-feature20">
   <script
     async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3121682237695422"
@@ -280,15 +280,15 @@
         <section class="content-card compact-card">
           <p class="section-label">Study Snapshot</p>
           <div class="snapshot-grid">
-            <div>
+            <div class="snapshot-primary">
               <span class="snapshot-label">正解数</span>
               <strong id="correctCount">0</strong>
             </div>
-            <div>
+            <div class="snapshot-primary">
               <span class="snapshot-label">回答数</span>
               <strong id="attemptCount">0</strong>
             </div>
-            <div>
+            <div class="snapshot-primary">
               <span class="snapshot-label">正答率</span>
               <strong id="accuracyRate">0%</strong>
             </div>
@@ -308,6 +308,20 @@
           <div class="progress-wrap" aria-hidden="true">
             <div id="accuracyBar" class="progress-bar"></div>
           </div>
+          <div class="daily-goal-panel">
+            <label class="daily-goal-control" for="dailyGoalInput">
+              <span>一日の目標数</span>
+              <input id="dailyGoalInput" type="number" min="1" max="999" step="1" value="20">
+            </label>
+            <button id="saveDailyGoalButton" class="ghost-button" type="button">目標を保存</button>
+            <span id="dailyGoalStatus" class="goal-status">今日 0 / 20</span>
+          </div>
+          <div id="weeklyCalendar" class="weekly-calendar" aria-label="直近1週間の目標達成状況"></div>
+          <button id="showGoalHistoryButton" class="ghost-button goal-history-button" type="button">達成日を確認</button>
+          <div id="goalHistoryPanel" class="goal-history-panel hidden">
+            <p class="section-label">Weekly Goal Details</p>
+            <div id="goalHistoryGrid" class="goal-history-grid"></div>
+          </div>
           <div class="theme-control-row">
             <button id="themeToggleButton" class="ghost-button nav-theme-button" type="button">ダークモード</button>
           </div>
@@ -326,6 +340,6 @@
       </div>
     </footer>
   </div>
-  <script type="module" src="./app.js?v=20260424-feature19"></script>
+  <script type="module" src="./app.js?v=20260424-feature20"></script>
 </body>
 </html>

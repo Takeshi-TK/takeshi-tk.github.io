@@ -1,5 +1,5 @@
-import { vocabulary } from "./vocabulary.js?v=20260424-feature19";
-import { phrases } from "./phrases.js?v=20260424-feature19";
+import { vocabulary } from "./vocabulary.js?v=20260424-feature20";
+import { phrases } from "./phrases.js?v=20260424-feature20";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -54,6 +54,13 @@ const accuracyBar = document.querySelector("#accuracyBar");
 const todayStudyCount = document.querySelector("#todayStudyCount");
 const totalPlayCount = document.querySelector("#totalPlayCount");
 const learningStreakCount = document.querySelector("#learningStreakCount");
+const dailyGoalInput = document.querySelector("#dailyGoalInput");
+const saveDailyGoalButton = document.querySelector("#saveDailyGoalButton");
+const dailyGoalStatus = document.querySelector("#dailyGoalStatus");
+const weeklyCalendar = document.querySelector("#weeklyCalendar");
+const showGoalHistoryButton = document.querySelector("#showGoalHistoryButton");
+const goalHistoryPanel = document.querySelector("#goalHistoryPanel");
+const goalHistoryGrid = document.querySelector("#goalHistoryGrid");
 const activeProfileName = document.querySelector("#activeProfileName");
 const profileIdInput = document.querySelector("#profileIdInput");
 const profilePasswordInput = document.querySelector("#profilePasswordInput");
@@ -183,7 +190,9 @@ function createEmptyProfile(id) {
       todayStudyCount: 0,
       totalPlayCount: 0,
       learningStreak: 0,
-      lastStudyDate: ""
+      lastStudyDate: "",
+      dailyGoal: 20,
+      dailyStats: {}
     }
   };
 }
@@ -240,7 +249,7 @@ function saveSettings() {
 }
 
 function getTodayKey(date = new Date()) {
-  return date.toISOString().slice(0, 10);
+  return formatDateKey(date);
 }
 
 function getDateDiffDays(leftKey, rightKey) {
@@ -253,6 +262,53 @@ function getDateDiffDays(leftKey, rightKey) {
   return Math.round((right - left) / 86400000);
 }
 
+function addDays(date, days) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function formatDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getCurrentWeekDates() {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = addDays(today, mondayOffset);
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = addDays(monday, index);
+    return {
+      date,
+      key: formatDateKey(date),
+      label: ["月", "火", "水", "木", "金", "土", "日"][index],
+      shortDate: `${date.getMonth() + 1}/${date.getDate()}`
+    };
+  });
+}
+
+function getDailyGoal(profile) {
+  ensureProfileStats(profile);
+  return Math.max(1, Number(profile.stats.dailyGoal || 20));
+}
+
+function getDailySnapshot(profile, dateKey) {
+  const dailyStats = ensureDailyStats(profile, dateKey);
+  const accuracy = dailyStats.quizAttempts
+    ? Math.round((dailyStats.quizCorrect / dailyStats.quizAttempts) * 100)
+    : 0;
+
+  return {
+    ...dailyStats,
+    accuracy
+  };
+}
+
 function ensureProfileStats(profile) {
   if (!profile.stats) {
     profile.stats = {};
@@ -263,9 +319,33 @@ function ensureProfileStats(profile) {
   profile.stats.totalPlayCount = Number(profile.stats.totalPlayCount || 0);
   profile.stats.learningStreak = Number(profile.stats.learningStreak || 0);
   profile.stats.lastStudyDate ||= "";
+  profile.stats.dailyGoal = Math.max(1, Number(profile.stats.dailyGoal || 20));
+  if (!profile.stats.dailyStats || typeof profile.stats.dailyStats !== "object") {
+    profile.stats.dailyStats = {};
+  }
 }
 
-function recordStudyActivity(kind = "quiz") {
+function ensureDailyStats(profile, dateKey = getTodayKey()) {
+  ensureProfileStats(profile);
+
+  if (!profile.stats.dailyStats[dateKey]) {
+    profile.stats.dailyStats[dateKey] = {
+      studyCount: 0,
+      quizCorrect: 0,
+      quizAttempts: 0,
+      playCount: 0
+    };
+  }
+
+  const day = profile.stats.dailyStats[dateKey];
+  day.studyCount = Number(day.studyCount || 0);
+  day.quizCorrect = Number(day.quizCorrect || 0);
+  day.quizAttempts = Number(day.quizAttempts || 0);
+  day.playCount = Number(day.playCount || 0);
+  return day;
+}
+
+function recordStudyActivity(kind = "quiz", result = {}) {
   const profile = getActiveProfile();
   ensureProfileStats(profile);
   const today = getTodayKey();
@@ -282,8 +362,19 @@ function recordStudyActivity(kind = "quiz") {
   }
 
   profile.stats.todayStudyCount += 1;
+  const dailyStats = ensureDailyStats(profile, today);
+  dailyStats.studyCount += 1;
+
+  if (kind === "quiz") {
+    dailyStats.quizAttempts += 1;
+    if (result.correct) {
+      dailyStats.quizCorrect += 1;
+    }
+  }
+
   if (kind === "play") {
     profile.stats.totalPlayCount += 1;
+    dailyStats.playCount += 1;
   }
 }
 
@@ -830,6 +921,52 @@ function renderCategories() {
   }
 }
 
+function renderWeeklyGoalCalendar(profile) {
+  if (!weeklyCalendar || !dailyGoalStatus || !goalHistoryGrid) {
+    return;
+  }
+
+  const goal = getDailyGoal(profile);
+  const todayKey = getTodayKey();
+  const todayStats = getDailySnapshot(profile, todayKey);
+  dailyGoalInput.value = String(goal);
+  dailyGoalStatus.textContent = `今日 ${todayStats.studyCount} / ${goal}`;
+  dailyGoalStatus.classList.toggle("achieved", todayStats.studyCount >= goal);
+
+  const weekDates = getCurrentWeekDates();
+  weeklyCalendar.innerHTML = weekDates.map((day) => {
+    const stats = getDailySnapshot(profile, day.key);
+    const achieved = stats.studyCount >= goal;
+    const isToday = day.key === todayKey;
+    const mark = achieved ? "◎" : "ー";
+
+    return `
+      <div class="calendar-day ${achieved ? "achieved" : ""} ${isToday ? "today" : ""}">
+        <span>${day.label}</span>
+        <strong>${day.shortDate}</strong>
+        <em aria-label="${achieved ? "目標達成" : "未達成"}">${mark}</em>
+      </div>
+    `;
+  }).join("");
+
+  goalHistoryGrid.innerHTML = weekDates.map((day) => {
+    const stats = getDailySnapshot(profile, day.key);
+    const achieved = stats.studyCount >= goal;
+
+    return `
+      <article class="goal-history-day ${achieved ? "achieved" : ""}">
+        <div>
+          <strong>${day.label} ${day.shortDate}</strong>
+          <span>${achieved ? "達成" : "未達成"}</span>
+        </div>
+        <p>学習数 ${stats.studyCount} / ${goal}</p>
+        <p>回答数 ${stats.quizAttempts}・正解数 ${stats.quizCorrect}・正答率 ${stats.accuracy}%</p>
+        <p>再生回数 ${stats.playCount}</p>
+      </article>
+    `;
+  }).join("");
+}
+
 function updateSnapshot() {
   const category = getCurrentCategory();
   const progress = getCategoryProgress();
@@ -848,6 +985,7 @@ function updateSnapshot() {
   todayStudyCount.textContent = String(profile.stats.todayStudyCount);
   totalPlayCount.textContent = String(profile.stats.totalPlayCount);
   learningStreakCount.textContent = `${profile.stats.learningStreak}日`;
+  renderWeeklyGoalCalendar(profile);
   reviewMistakesButton.disabled = getReviewDueItems().length === 0;
 
   const directionLabel = state.studyType === "word" && state.answerMode === "enToJp" ? "英→日" : "日→英";
@@ -1605,7 +1743,7 @@ function submitAnswer(option, selectedButton) {
 
   progress.attempts += 1;
   answerRecord.attempts += 1;
-  recordStudyActivity("quiz");
+  recordStudyActivity("quiz", { correct: isCorrect });
 
   for (const button of choices.querySelectorAll(".choice-button")) {
     button.disabled = true;
@@ -1998,6 +2136,20 @@ function toggleTheme() {
   applyTheme();
 }
 
+function saveDailyGoal() {
+  const profile = getActiveProfile();
+  ensureProfileStats(profile);
+  const nextGoal = Math.max(1, Math.min(999, Math.round(Number(dailyGoalInput.value) || 20)));
+  profile.stats.dailyGoal = nextGoal;
+  saveProfiles();
+  updateSnapshot();
+}
+
+function toggleGoalHistory() {
+  const isHidden = goalHistoryPanel.classList.toggle("hidden");
+  showGoalHistoryButton.textContent = isHidden ? "達成日を確認" : "達成日を閉じる";
+}
+
 function setStudyType(studyType, answerMode = "jpToEn") {
   if (state.studyType === studyType && state.answerMode === answerMode) {
     return;
@@ -2201,6 +2353,9 @@ sessionReviewWrongButton.addEventListener("click", () => startSessionWrongReview
 sessionStopButton.addEventListener("click", () => stopQuizSessionBreak());
 reviewMistakesButton.addEventListener("click", () => startMistakesReview());
 themeToggleButton.addEventListener("click", () => toggleTheme());
+saveDailyGoalButton.addEventListener("click", () => saveDailyGoal());
+dailyGoalInput.addEventListener("change", () => saveDailyGoal());
+showGoalHistoryButton.addEventListener("click", () => toggleGoalHistory());
 
 registerProfileButton.addEventListener("click", async () => {
   if (await registerProfile(profileIdInput.value, profilePasswordInput.value)) {

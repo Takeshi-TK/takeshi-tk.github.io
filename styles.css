@@ -105,7 +105,8 @@ body.dark-mode .primary-button {
 
 body.dark-mode .usage-help-result.ready {
   color: var(--ink);
-  background: rgba(125, 211, 168, 0.12);
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.28);
 }
 
 .page-shell {
@@ -506,18 +507,25 @@ body.dark-mode .hero {
 
 body.dark-mode .category-button.active,
 body.dark-mode .mode-button.active {
-  background: linear-gradient(135deg, #f59e5b, #fb923c);
-  color: #111827;
-  border-color: rgba(255, 209, 173, 0.9);
-  box-shadow: 0 0 0 2px rgba(255, 209, 173, 0.28), 0 16px 28px rgba(0, 0, 0, 0.34);
+  background: linear-gradient(135deg, rgba(154, 91, 46, 0.72), rgba(92, 58, 39, 0.9));
+  color: #fff7ed;
+  border-color: rgba(245, 158, 91, 0.56);
+  box-shadow: 0 0 0 2px rgba(245, 158, 91, 0.18), 0 16px 28px rgba(0, 0, 0, 0.32);
   font-weight: 800;
 }
 
 .snapshot-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-top: 12px;
+}
+
+.snapshot-grid > div {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.44);
 }
 
 .snapshot-grid strong {
@@ -540,6 +548,147 @@ body.dark-mode .mode-button.active {
   border-radius: inherit;
   background: linear-gradient(90deg, var(--accent), #f0b376);
   transition: width 220ms ease;
+}
+
+.daily-goal-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: end;
+  margin-top: 14px;
+}
+
+.daily-goal-control {
+  display: grid;
+  gap: 6px;
+}
+
+.daily-goal-control span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.daily-goal-control input {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid rgba(31, 42, 55, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+}
+
+.goal-status {
+  align-self: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(31, 42, 55, 0.08);
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.goal-status.achieved {
+  background: rgba(47, 143, 104, 0.14);
+  color: var(--success);
+  font-weight: 700;
+}
+
+.weekly-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.calendar-day {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 5px;
+  border-radius: 12px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid rgba(31, 42, 55, 0.08);
+}
+
+.calendar-day span,
+.calendar-day em {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: normal;
+}
+
+.calendar-day strong {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.calendar-day.achieved {
+  background: rgba(47, 143, 104, 0.12);
+  border-color: rgba(47, 143, 104, 0.28);
+}
+
+.calendar-day.achieved em {
+  color: var(--success);
+  font-weight: 800;
+}
+
+.calendar-day.today {
+  outline: 2px solid rgba(219, 108, 50, 0.24);
+}
+
+.goal-history-button {
+  margin-top: 10px;
+}
+
+.goal-history-panel {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.44);
+  border: 1px solid rgba(31, 42, 55, 0.08);
+}
+
+.goal-history-grid {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.goal-history-day {
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(31, 42, 55, 0.08);
+}
+
+.goal-history-day div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.goal-history-day strong {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.goal-history-day span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.goal-history-day.achieved span {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.goal-history-day p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 .mode-switch {
@@ -787,6 +936,16 @@ body.dark-mode .choice-button.wrong {
 
 .session-summary {
   background: linear-gradient(160deg, rgba(255, 248, 239, 0.94), rgba(255, 238, 219, 0.82));
+}
+
+body.dark-mode .session-summary,
+body.dark-mode .snapshot-grid > div,
+body.dark-mode .goal-history-panel,
+body.dark-mode .goal-history-day,
+body.dark-mode .calendar-day,
+body.dark-mode .quiz-panel .quiz-footer {
+  background: rgba(15, 23, 42, 0.42);
+  border-color: rgba(148, 163, 184, 0.18);
 }
 
 .session-summary h3 {
@@ -1346,5 +1505,51 @@ body.dark-mode .choice-button.wrong {
   .session-summary-ad .section-label {
     margin-bottom: 6px;
     font-size: 0.58rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .compact-card .snapshot-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .compact-card .snapshot-grid > div {
+    padding: 8px 6px;
+  }
+
+  .compact-card .snapshot-grid strong {
+    font-size: 0.9rem;
+  }
+
+  .compact-card .snapshot-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+  }
+
+  .daily-goal-panel {
+    grid-template-columns: 1fr auto;
+  }
+
+  .goal-status {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .weekly-calendar {
+    gap: 4px;
+  }
+
+  .calendar-day {
+    padding: 7px 3px;
+  }
+
+  .calendar-day span,
+  .calendar-day em {
+    font-size: 0.62rem;
+  }
+
+  .calendar-day strong {
+    font-size: 0.66rem;
   }
 }
