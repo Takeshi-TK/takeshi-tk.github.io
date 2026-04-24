@@ -1,6 +1,6 @@
 import { languagePacks } from "../language-packs.js?v=word-mode-strict";
 
-const languages = ["ko", "zh", "fr"];
+const languages = ["en", "ko", "zh", "fr"];
 const failures = [];
 
 const bannedFragments = [
@@ -59,7 +59,10 @@ for (const language of languages) {
   for (const [category, data] of Object.entries(languagePacks[language].datasets.word)) {
     for (const item of data.words) {
       const location = `${language}.word.${category}: ${item.english} = ${item.japanese}`;
-      if (item.japanese !== "メモ" && bannedFragments.some((fragment) => item.japanese.includes(fragment))) {
+      if (/[\s?？。.]/.test(String(item.english || "").trim())) {
+        failures.push(`multi-token target in word mode: ${location}`);
+      }
+      if (language !== "en" && item.japanese !== "メモ" && bannedFragments.some((fragment) => item.japanese.includes(fragment))) {
         failures.push(`study/meta label fragment: ${location}`);
       }
       if (bannedExactLabels.has(item.japanese)) {

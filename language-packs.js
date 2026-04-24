@@ -1,6 +1,6 @@
-﻿import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
+﻿import { vocabulary } from "./vocabulary.js?v=20260425-feature38";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature37";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature38";
 
 const categoryMeta = {
   basic: {
@@ -33,6 +33,34 @@ function buildEntries(items) {
   }));
 }
 
+function isSingleTargetUnit(target, language) {
+  const value = String(target || "").trim();
+  if (!value) return false;
+
+  if (language === "zh") {
+    return !/[\s?？。.]/.test(value);
+  }
+
+  return !/\s/.test(value) && !/[?？。.]/.test(value);
+}
+
+function hashText(text) {
+  let hash = 2166136261;
+  for (const char of String(text || "").normalize("NFKC")) {
+    hash ^= char.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+function makeItemId(kind, category, japanese) {
+  return `${kind}:${category}:${hashText(japanese)}`;
+}
+
+function makeUniqueItemId(kind, category, target, japanese) {
+  return `${kind}:${category}:${hashText(`${target}::${japanese}`)}`;
+}
+
 function dedupeEntries(items) {
   const seen = new Set();
 
@@ -47,13 +75,35 @@ function dedupeEntries(items) {
   });
 }
 
-function createCollection(groups, kind) {
+function decorateCollection(collection, kind, language) {
+  return Object.fromEntries(Object.entries(collection).map(([key, category]) => [
+    key,
+    {
+      ...category,
+      words: category.words
+        .filter((item) => kind !== "word" || (isSingleTargetUnit(item.english, language) && !isPhraseLikeWordLabel(item.japanese)))
+        .map((item) => ({
+          ...item,
+          id: makeUniqueItemId(kind, key, item.english, item.japanese),
+          meaningId: makeItemId(kind, key, item.japanese)
+        }))
+    }
+  ]));
+}
+
+function createCollection(groups, kind, language) {
   return Object.fromEntries(Object.entries(categoryMeta).map(([key, meta]) => [
     key,
     {
       label: meta.label,
       description: kind === "word" ? meta.wordDescription : meta.phraseDescription,
       words: dedupeEntries(buildEntries(groups[key] || []))
+        .filter((item) => kind !== "word" || (isSingleTargetUnit(item.english, language) && !isPhraseLikeWordLabel(item.japanese)))
+        .map((item) => ({
+          ...item,
+          id: makeUniqueItemId(kind, key, item.english, item.japanese),
+          meaningId: makeItemId(kind, key, item.japanese)
+        }))
     }
   ]));
 }
@@ -1107,6 +1157,8 @@ const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsTo
 const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), chinesePhraseBoost5), phraseTargetCounts);
 const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), frenchPhraseBoost5), phraseTargetCounts);
+const englishWords = decorateCollection(vocabulary, "word", "en");
+const englishPhrases = decorateCollection(phrases, "phrase", "en");
 
 export const languagePacks = {
   en: {
@@ -1115,8 +1167,8 @@ export const languagePacks = {
     targetName: "英語",
     speechLang: "en-US",
     datasets: {
-      word: vocabulary,
-      phrase: phrases
+      word: englishWords,
+      phrase: englishPhrases
     }
   },
   ko: {
@@ -1125,8 +1177,8 @@ export const languagePacks = {
     targetName: "韓国語",
     speechLang: "ko-KR",
     datasets: {
-      word: createCollection(expandedKoreanWords, "word"),
-      phrase: createCollection(expandedKoreanPhrases, "phrase")
+      word: createCollection(expandedKoreanWords, "word", "ko"),
+      phrase: createCollection(expandedKoreanPhrases, "phrase", "ko")
     }
   },
   zh: {
@@ -1135,8 +1187,8 @@ export const languagePacks = {
     targetName: "中国語",
     speechLang: "zh-CN",
     datasets: {
-      word: createCollection(expandedChineseWords, "word"),
-      phrase: createCollection(expandedChinesePhrases, "phrase")
+      word: createCollection(expandedChineseWords, "word", "zh"),
+      phrase: createCollection(expandedChinesePhrases, "phrase", "zh")
     }
   },
   fr: {
@@ -1145,8 +1197,8 @@ export const languagePacks = {
     targetName: "フランス語",
     speechLang: "fr-FR",
     datasets: {
-      word: createCollection(expandedFrenchWords, "word"),
-      phrase: createCollection(expandedFrenchPhrases, "phrase")
+      word: createCollection(expandedFrenchWords, "word", "fr"),
+      phrase: createCollection(expandedFrenchPhrases, "phrase", "fr")
     }
   }
 };

@@ -7,10 +7,10 @@ const expectedCounts = {
 };
 
 const reviewedWordMinimums = {
-  en: { basic: 1001, practical: 500, business: 500, travel: 501 },
-  ko: { basic: 101, practical: 90, business: 97, travel: 89 },
+  en: { basic: 898, practical: 361, business: 320, travel: 161 },
+  ko: { basic: 101, practical: 88, business: 86, travel: 83 },
   zh: { basic: 102, practical: 95, business: 96, travel: 89 },
-  fr: { basic: 103, practical: 92, business: 99, travel: 89 }
+  fr: { basic: 100, practical: 90, business: 80, travel: 70 }
 };
 
 const languagesToAudit = ["ko", "zh", "fr"];

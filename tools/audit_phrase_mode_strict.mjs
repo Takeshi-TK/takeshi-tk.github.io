@@ -1,6 +1,6 @@
 import { languagePacks } from "../language-packs.js?v=phrase-mode-strict";
 
-const languages = ["ko", "zh", "fr"];
+const languages = ["en", "ko", "zh", "fr"];
 const failures = [];
 
 const bannedJapanesePatterns = [

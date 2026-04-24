@@ -1,4 +1,4 @@
-import { languagePacks } from "./language-packs.js?v=20260425-feature37";
+import { languagePacks } from "./language-packs.js?v=20260425-feature38";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -492,7 +492,7 @@ function getCategoryProgress(category = state.category, studyType = state.studyT
 }
 
 function getWordKey(word, category = state.category, studyType = state.studyType) {
-  return `${state.language}::${studyType}::${category}::${word.english}::${word.japanese}`;
+  return `${state.language}::${studyType}::${category}::${word.id || `${word.english}::${word.japanese}`}`;
 }
 
 function getWordRecord(word, category = state.category, studyType = state.studyType) {
