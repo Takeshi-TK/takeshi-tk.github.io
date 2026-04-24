@@ -74,9 +74,56 @@ const conceptBanks = {
   ]
 };
 
-function itemForLang(row, lang) {
+const basicTagSets = {
+  place: new Set(["家", "学校", "駅", "店", "公園", "市場", "病院", "薬局", "銀行", "郵便局", "図書館", "会社", "部屋", "台所", "道", "通り"]),
+  person: new Set(["友だち", "家族", "先生", "学生", "子ども"]),
+  food: new Set(["水", "お茶", "コーヒー", "牛乳", "パン", "ご飯", "卵", "りんご", "料理"]),
+  object: new Set(["机", "椅子", "窓", "ドア", "本", "ノート", "ペン", "かばん", "服", "靴", "電話", "写真", "名前", "色", "番号", "値段"]),
+  tangible: new Set(["机", "椅子", "窓", "ドア", "本", "ノート", "ペン", "かばん", "服", "靴", "電話", "写真"]),
+  time: new Set(["天気", "雨", "雪", "朝", "昼", "夜", "週末", "時間"]),
+  transport: new Set(["車", "バス", "電車", "自転車"]),
+  media: new Set(["音楽", "映画", "運動"])
+};
+basicTagSets.publicPlace = new Set(["学校", "駅", "店", "公園", "市場", "病院", "薬局", "銀行", "郵便局", "図書館", "会社"]);
+
+function inferTags(category, japanese) {
+  if (category !== "basic") {
+    return new Set([category, "abstract"]);
+  }
+
+  const tags = new Set(["basic"]);
+  for (const [tag, values] of Object.entries(basicTagSets)) {
+    if (values.has(japanese)) {
+      tags.add(tag);
+    }
+  }
+  if (tags.size === 1) {
+    tags.add("object");
+  }
+  return tags;
+}
+
+function hasTag(item, tag) {
+  return item.tags?.has(tag);
+}
+
+function frJoin(prefix, target) {
+  if (prefix.endsWith("de")) {
+    if (target.startsWith("le ")) return `${prefix.replace(/\bde$/, "du")} ${target.slice(3)}`;
+    if (target.startsWith("les ")) return `${prefix.replace(/\bde$/, "des")} ${target.slice(4)}`;
+    if (target.startsWith("l'")) return `${prefix} ${target}`;
+  }
+  if (prefix.endsWith("à")) {
+    if (target.startsWith("le ")) return `${prefix.slice(0, -1)}au ${target.slice(3)}`;
+    if (target.startsWith("les ")) return `${prefix.slice(0, -1)}aux ${target.slice(4)}`;
+    if (target.startsWith("l'")) return `${prefix} ${target}`;
+  }
+  return `${prefix} ${target}`;
+}
+
+function itemForLang(row, lang, category) {
   const indexes = { ko: 1, zh: 2, fr: 3 };
-  return { jp: row[0], target: row[indexes[lang]] };
+  return { jp: row[0], target: row[indexes[lang]], tags: inferTags(category, row[0]) };
 }
 
 function hasKoreanBatchim(text) {
@@ -107,6 +154,9 @@ function buildRows(items, patterns) {
   const rows = [];
   for (const item of items) {
     for (const pattern of patterns) {
+      if (pattern.applies && !pattern.applies(item)) {
+        continue;
+      }
       rows.push([pattern.target(item), pattern.jp(item)]);
     }
   }
@@ -114,15 +164,42 @@ function buildRows(items, patterns) {
 }
 
 function basicWordPatterns(lang) {
+  const isPlace = (item) => hasTag(item, "place");
+  const isPlaceOrTransport = (item) => hasTag(item, "place") || hasTag(item, "transport");
+  const isPerson = (item) => hasTag(item, "person");
+  const isObject = (item) => hasTag(item, "object") || hasTag(item, "food") || hasTag(item, "transport") || hasTag(item, "media");
+  const isTangible = (item) => hasTag(item, "tangible");
+  const isFood = (item) => hasTag(item, "food");
+  const isTime = (item) => hasTag(item, "time");
+  const isPublicPlace = (item) => hasTag(item, "publicPlace");
+  const isMedia = (item) => hasTag(item, "media");
+  const isTransport = (item) => hasTag(item, "transport");
+  const isWeather = (item) => ["天気", "雨", "雪"].includes(item.jp);
+  const isClockTime = (item) => ["朝", "昼", "夜", "週末", "時間"].includes(item.jp);
+  const all = () => true;
+
   if (lang === "ko") {
     return [
-      ["근처", "の近く"], ["앞", "の前"], ["뒤", "の後ろ"], ["옆", "の横"], ["안", "の中"], ["밖", "の外"],
-      ["입구", "の入口"], ["출구", "の出口"], ["위치", "の場所"], ["이름", "の名前"], ["사진", "の写真"], ["시간", "の時間"],
-      ["새", "新しい"], ["오래된", "古い"], ["작은", "小さい"], ["큰", "大きい"], ["깨끗한", "きれいな"], ["중요한", "重要な"],
-      ["첫", "最初の"], ["다음", "次の"]
-    ].map(([prefixOrSuffix, jp]) => {
-      const isAdjective = ["새", "오래된", "작은", "큰", "깨끗한", "중요한", "첫", "다음"].includes(prefixOrSuffix);
+      ["뜻", "の意味", all], ["발음", "の発音", all], ["예문", "の例文", all], ["설명", "の説明", all],
+      ["복습", "の復習", all], ["연습", "の練習", all], ["메모", "のメモ", all], ["관련 표현", "の関連表現", all],
+      ["질문", "についての質問", all], ["기본 표현", "の基本表現", all], ["듣기 연습", "の聞き取り練習", all], ["말하기 연습", "の発話練習", all],
+      ["근처", "の近く", isPlaceOrTransport], ["앞", "の前", isPlaceOrTransport], ["뒤", "の後ろ", isPlaceOrTransport], ["옆", "の横", isPlaceOrTransport],
+      ["안", "の中", isPlace], ["밖", "の外", isPlace], ["입구", "の入口", isPlace], ["출구", "の出口", isPlace],
+      ["위치", "の場所", isPlaceOrTransport], ["이름", "の名前", (item) => isPerson(item) || isPlace(item)], ["사진", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+      ["시간", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
+      ["새", "新しい", (item) => isPlace(item) || isTangible(item)], ["작은", "小さい", (item) => isPlace(item) || isTangible(item)],
+      ["큰", "大きい", (item) => isPlace(item) || isTangible(item)], ["깨끗한", "きれいな", (item) => isPlace(item) || isTangible(item)],
+      ["첫", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["다음", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
+      ["좋아하는", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
+      ["찾는", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
+      ["사용할", "使う予定の", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+      ["준비", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
+      ["목록", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+      ["예보", "の予報", isWeather], ["기록", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
+    ].map(([prefixOrSuffix, jp, applies]) => {
+      const isAdjective = ["새", "작은", "큰", "깨끗한", "첫", "다음", "좋아하는", "찾는", "사용할"].includes(prefixOrSuffix);
       return {
+        applies,
         target: ({ target }) => isAdjective ? `${prefixOrSuffix} ${target}` : `${target} ${prefixOrSuffix}`,
         jp: ({ jp: label }) => isAdjective ? `${jp}${label}` : `${label}${jp}`
       };
@@ -131,13 +208,26 @@ function basicWordPatterns(lang) {
 
   if (lang === "zh") {
     return [
-      ["附近", "の近く"], ["前面", "の前"], ["后面", "の後ろ"], ["旁边", "の横"], ["里面", "の中"], ["外面", "の外"],
-      ["入口", "の入口"], ["出口", "の出口"], ["位置", "の場所"], ["名字", "の名前"], ["照片", "の写真"], ["时间", "の時間"],
-      ["新", "新しい"], ["旧", "古い"], ["小", "小さい"], ["大", "大きい"], ["干净的", "きれいな"], ["重要的", "重要な"],
-      ["第一个", "最初の"], ["下一个", "次の"]
-    ].map(([part, jp]) => {
-      const isPrefix = ["新", "旧", "小", "大", "干净的", "重要的", "第一个", "下一个"].includes(part);
+      ["意思", "の意味", all], ["发音", "の発音", all], ["例句", "の例文", all], ["说明", "の説明", all],
+      ["复习", "の復習", all], ["练习", "の練習", all], ["笔记", "のメモ", all], ["相关表达", "の関連表現", all],
+      ["问题", "についての質問", all], ["基本表达", "の基本表現", all], ["听力练习", "の聞き取り練習", all], ["口语练习", "の発話練習", all],
+      ["附近", "の近く", isPlaceOrTransport], ["前面", "の前", isPlaceOrTransport], ["后面", "の後ろ", isPlaceOrTransport], ["旁边", "の横", isPlaceOrTransport],
+      ["里面", "の中", isPlace], ["外面", "の外", isPlace], ["入口", "の入口", isPlace], ["出口", "の出口", isPlace],
+      ["位置", "の場所", isPlaceOrTransport], ["名字", "の名前", (item) => isPerson(item) || isPlace(item)], ["照片", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+      ["时间", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
+      ["新", "新しい", (item) => isPlace(item) || isTangible(item)], ["小", "小さい", (item) => isPlace(item) || isTangible(item)],
+      ["大", "大きい", (item) => isPlace(item) || isTangible(item)], ["干净的", "きれいな", (item) => isPlace(item) || isTangible(item)],
+      ["第一个", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["下一个", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
+      ["喜欢的", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
+      ["正在找的", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
+      ["要用的", "使う予定の", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+      ["准备", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
+      ["列表", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+      ["预报", "の予報", isWeather], ["记录", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
+    ].map(([part, jp, applies]) => {
+      const isPrefix = ["新", "小", "大", "干净的", "第一个", "下一个", "喜欢的", "正在找的", "要用的"].includes(part);
       return {
+        applies,
         target: ({ target }) => isPrefix ? `${part}${target}` : `${target}${part}`,
         jp: ({ jp: label }) => isPrefix ? `${jp}${label}` : `${label}${jp}`
       };
@@ -145,13 +235,23 @@ function basicWordPatterns(lang) {
   }
 
   return [
-    ["près de", "の近く"], ["devant", "の前"], ["derrière", "の後ろ"], ["à côté de", "の横"], ["dans", "の中"],
-    ["hors de", "の外"], ["l'entrée de", "の入口"], ["la sortie de", "の出口"], ["l'emplacement de", "の場所"],
-    ["le nom de", "の名前"], ["la photo de", "の写真"], ["l'heure de", "の時間"], ["avant", "の前に"], ["après", "の後に"],
-    ["avec", "と一緒に"], ["sans", "なしで"], ["pour", "のために"], ["autour de", "の周り"], ["en face de", "の向かい"], ["près d'ici avec", "近くの"]
-  ].map(([prefix, jp]) => ({
-    target: ({ target }) => `${prefix} ${target}`,
-    jp: ({ jp: label }) => jp === "近くの" ? `${jp}${label}` : `${label}${jp}`
+    ["le sens de", "の意味", all], ["la prononciation de", "の発音", all], ["un exemple avec", "の例文", all], ["l'explication de", "の説明", all],
+    ["la révision de", "の復習", all], ["l'exercice de", "の練習", all], ["une note sur", "のメモ", all], ["une expression liée à", "の関連表現", all],
+    ["une question sur", "についての質問", all], ["l'expression de base pour", "の基本表現", all], ["l'écoute de", "の聞き取り練習", all], ["la pratique orale de", "の発話練習", all],
+    ["près de", "の近く", isPlaceOrTransport], ["devant", "の前", isPlaceOrTransport], ["derrière", "の後ろ", isPlaceOrTransport], ["à côté de", "の横", isPlaceOrTransport],
+    ["dans", "の中", isPlace], ["hors de", "の外", isPlace], ["l'entrée de", "の入口", isPlace], ["la sortie de", "の出口", isPlace],
+    ["l'emplacement de", "の場所", isPlaceOrTransport], ["le nom de", "の名前", (item) => isPerson(item) || isPlace(item)], ["la photo de", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+    ["l'heure de", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
+    ["avec", "と一緒に", (item) => isPerson(item) || isFood(item) || isMedia(item)], ["sans", "なしで", (item) => isFood(item) || isObject(item) || isTransport(item)],
+    ["autour de", "の周り", isPlaceOrTransport], ["en face de", "の向かい", isPlaceOrTransport],
+    ["prévu pour", "に使う予定の", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+    ["la préparation de", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
+    ["la liste de", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+    ["la météo de", "の予報", isWeather], ["l'enregistrement de", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
+  ].map(([prefix, jp, applies]) => ({
+    applies,
+    target: ({ target }) => frJoin(prefix, target),
+    jp: ({ jp: label }) => `${label}${jp}`
   }));
 }
 
@@ -180,8 +280,13 @@ const actionLabels = {
 };
 
 function actionWordPatterns(lang, category) {
+  if (category === "travel") {
+    return travelWordPatterns(lang);
+  }
+
   const index = { ko: 1, zh: 2, fr: 3 }[lang];
   return actionLabels[category].map((action) => ({
+    applies: (item) => actionApplies(category, action[0], item.jp),
     target: ({ target }) => {
       if (lang === "ko") return `${target} ${action[index]}`;
       if (lang === "zh") return `${action[index]}${target}`;
@@ -191,44 +296,234 @@ function actionWordPatterns(lang, category) {
   }));
 }
 
+function travelWordPatterns(lang) {
+  const places = new Set(["空港", "駅", "ホテル", "部屋", "受付", "搭乗口", "バス停", "タクシー", "地下鉄", "入口", "出口", "レストラン", "病院", "警察署"]);
+  const documents = new Set(["予約", "パスポート", "チケット", "地図", "レシート", "カード", "保険"]);
+  const belongings = new Set(["荷物", "預け荷物", "忘れ物", "お土産", "薬"]);
+  const bookable = new Set(["ホテル", "部屋", "予約", "チケット", "座席", "レストラン", "静かな部屋"]);
+  const contactable = new Set(["ホテル", "受付", "病院", "警察署", "緊急連絡先", "保険"]);
+  const usable = new Set(["空港", "駅", "ホテル", "部屋", "バス停", "タクシー", "地下鉄", "レストラン", "カード", "現金", "地図", "薬"]);
+  const changeable = new Set(["予約", "部屋", "チケット", "座席", "窓側", "通路側", "乗り換え", "両替", "サイズ"]);
+  const receivable = new Set(["チケット", "荷物", "預け荷物", "レシート", "おつり", "お土産", "薬"]);
+  const checkable = (item) => item.jp !== "売り切れ";
+  const nearable = (item) => places.has(item.jp);
+  const all = () => true;
+
+  const definitions = {
+    ko: [
+      { suffix: "정보", jp: ({ jp }) => `${jp}の情報`, applies: all },
+      { suffix: "확인", jp: ({ jp }) => `${jp}の確認`, applies: checkable },
+      { suffix: "안내", jp: ({ jp }) => `${jp}の案内`, applies: all },
+      { suffix: "메모", jp: ({ jp }) => `${jp}のメモ`, applies: all },
+      { suffix: "여행 표현", jp: ({ jp }) => `${jp}の旅行表現`, applies: all },
+      { suffix: "사용법", jp: ({ jp }) => `${jp}の使い方`, applies: all },
+      { suffix: "주의점", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { suffix: "필수 표현", jp: ({ jp }) => `${jp}の必須表現`, applies: all },
+      { suffix: "관련 표현", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
+      { suffix: "질문", jp: ({ jp }) => `${jp}についての質問`, applies: all },
+      { suffix: "위치", jp: ({ jp }) => `${jp}の場所`, applies: (item) => places.has(item.jp) || belongings.has(item.jp) },
+      { suffix: "근처", jp: ({ jp }) => `${jp}の近く`, applies: nearable },
+      { suffix: "예약", jp: ({ jp }) => `${jp}の予約`, applies: (item) => bookable.has(item.jp) },
+      { suffix: "문의", jp: ({ jp }) => `${jp}の問い合わせ`, applies: (item) => contactable.has(item.jp) },
+      { suffix: "준비", jp: ({ jp }) => `${jp}の準備`, applies: (item) => documents.has(item.jp) || belongings.has(item.jp) },
+      { suffix: "받기", jp: ({ jp }) => `${jp}を受け取る`, applies: (item) => receivable.has(item.jp) },
+      { suffix: "보여주기", jp: ({ jp }) => `${jp}を見せる`, applies: (item) => documents.has(item.jp) },
+      { suffix: "이용하기", jp: ({ jp }) => `${jp}を利用する`, applies: (item) => usable.has(item.jp) },
+      { suffix: "변경", jp: ({ jp }) => `${jp}の変更`, applies: (item) => changeable.has(item.jp) }
+    ],
+    zh: [
+      { suffix: "信息", jp: ({ jp }) => `${jp}の情報`, applies: all },
+      { prefix: "确认", jp: ({ jp }) => `${jp}の確認`, applies: checkable },
+      { suffix: "指南", jp: ({ jp }) => `${jp}の案内`, applies: all },
+      { suffix: "笔记", jp: ({ jp }) => `${jp}のメモ`, applies: all },
+      { suffix: "旅行表达", jp: ({ jp }) => `${jp}の旅行表現`, applies: all },
+      { suffix: "用法", jp: ({ jp }) => `${jp}の使い方`, applies: all },
+      { suffix: "注意点", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { suffix: "必备表达", jp: ({ jp }) => `${jp}の必須表現`, applies: all },
+      { suffix: "相关表达", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
+      { suffix: "问题", jp: ({ jp }) => `${jp}についての質問`, applies: all },
+      { suffix: "位置", jp: ({ jp }) => `${jp}の場所`, applies: (item) => places.has(item.jp) || belongings.has(item.jp) },
+      { suffix: "附近", jp: ({ jp }) => `${jp}の近く`, applies: nearable },
+      { suffix: "预订", jp: ({ jp }) => `${jp}の予約`, applies: (item) => bookable.has(item.jp) },
+      { suffix: "咨询", jp: ({ jp }) => `${jp}の問い合わせ`, applies: (item) => contactable.has(item.jp) },
+      { suffix: "准备", jp: ({ jp }) => `${jp}の準備`, applies: (item) => documents.has(item.jp) || belongings.has(item.jp) },
+      { prefix: "领取", jp: ({ jp }) => `${jp}を受け取る`, applies: (item) => receivable.has(item.jp) },
+      { prefix: "出示", jp: ({ jp }) => `${jp}を見せる`, applies: (item) => documents.has(item.jp) },
+      { prefix: "使用", jp: ({ jp }) => `${jp}を利用する`, applies: (item) => usable.has(item.jp) },
+      { suffix: "更改", jp: ({ jp }) => `${jp}の変更`, applies: (item) => changeable.has(item.jp) }
+    ],
+    fr: [
+      { prefix: "information sur", jp: ({ jp }) => `${jp}の情報`, applies: all },
+      { prefix: "vérification de", jp: ({ jp }) => `${jp}の確認`, applies: checkable },
+      { prefix: "guide de", jp: ({ jp }) => `${jp}の案内`, applies: all },
+      { prefix: "note sur", jp: ({ jp }) => `${jp}のメモ`, applies: all },
+      { prefix: "expression de voyage pour", jp: ({ jp }) => `${jp}の旅行表現`, applies: all },
+      { prefix: "utilisation de", jp: ({ jp }) => `${jp}の使い方`, applies: all },
+      { prefix: "point d'attention pour", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { prefix: "expression essentielle pour", jp: ({ jp }) => `${jp}の必須表現`, applies: all },
+      { prefix: "expression liée à", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
+      { prefix: "question sur", jp: ({ jp }) => `${jp}についての質問`, applies: all },
+      { prefix: "emplacement de", jp: ({ jp }) => `${jp}の場所`, applies: (item) => places.has(item.jp) || belongings.has(item.jp) },
+      { prefix: "près de", jp: ({ jp }) => `${jp}の近く`, applies: nearable },
+      { prefix: "réservation de", jp: ({ jp }) => `${jp}の予約`, applies: (item) => bookable.has(item.jp) },
+      { prefix: "contact pour", jp: ({ jp }) => `${jp}の問い合わせ`, applies: (item) => contactable.has(item.jp) },
+      { prefix: "préparation de", jp: ({ jp }) => `${jp}の準備`, applies: (item) => documents.has(item.jp) || belongings.has(item.jp) },
+      { prefix: "réception de", jp: ({ jp }) => `${jp}を受け取る`, applies: (item) => receivable.has(item.jp) },
+      { prefix: "présentation de", jp: ({ jp }) => `${jp}を見せる`, applies: (item) => documents.has(item.jp) },
+      { prefix: "utilisation de", jp: ({ jp }) => `${jp}を利用する`, applies: (item) => usable.has(item.jp) },
+      { prefix: "modification de", jp: ({ jp }) => `${jp}の変更`, applies: (item) => changeable.has(item.jp) }
+    ]
+  };
+
+  return definitions[lang].map((pattern) => ({
+    applies: pattern.applies,
+    target: ({ target }) => {
+      if (pattern.prefix) return lang === "fr" ? frJoin(pattern.prefix, target) : `${pattern.prefix}${target}`;
+      return `${target}${lang === "ko" ? " " : ""}${pattern.suffix}`;
+    },
+    jp: pattern.jp
+  }));
+}
+
+function actionApplies(category, action, jp) {
+  if (category !== "travel") {
+    return true;
+  }
+
+  const reservable = new Set(["ホテル", "部屋", "予約", "レストラン", "チケット", "座席", "静かな部屋"]);
+  const payable = new Set(["注文", "会計", "レシート", "カード", "現金", "両替", "おつり", "お土産", "チケット", "薬"]);
+  const receivable = new Set(["チケット", "レシート", "荷物", "預け荷物", "忘れ物", "おつり", "カード", "薬", "お土産"]);
+  const exchangeable = new Set(["両替", "現金", "おつり", "カード", "チケット", "座席", "部屋"]);
+  const transit = new Set(["駅", "空港", "バス停", "タクシー", "地下鉄", "乗り換え", "搭乗口"]);
+  const orderable = new Set(["レストラン", "メニュー", "注文", "会計", "お土産", "薬"]);
+  const borrowable = new Set(["地図", "薬", "カード", "タクシー"]);
+  const contactable = new Set(["ホテル", "受付", "病院", "警察署", "緊急連絡先", "保険"]);
+  const showable = new Set(["パスポート", "チケット", "レシート", "カード", "地図", "予約", "保険", "忘れ物"]);
+  const guideable = new Set(["空港", "駅", "ホテル", "部屋", "搭乗口", "地図", "道案内", "バス停", "タクシー", "地下鉄", "入口", "出口", "病院", "警察署"]);
+  const searchable = new Set(["空港", "駅", "ホテル", "部屋", "受付", "荷物", "預け荷物", "搭乗口", "チケット", "座席", "地図", "道案内", "バス停", "タクシー", "地下鉄", "入口", "出口", "レストラン", "メニュー", "レシート", "カード", "現金", "お土産", "サイズ", "薬", "病院", "警察署", "忘れ物", "緊急連絡先", "営業時間"]);
+
+  if (action === "予約する") return reservable.has(jp);
+  if (action === "支払う") return payable.has(jp);
+  if (action === "受け取る") return receivable.has(jp);
+  if (action === "交換する") return exchangeable.has(jp);
+  if (action === "乗り換える") return transit.has(jp);
+  if (action === "注文する") return orderable.has(jp);
+  if (action === "借りる") return borrowable.has(jp);
+  if (action === "連絡する") return contactable.has(jp);
+  if (action === "見せる") return showable.has(jp);
+  if (action === "案内する") return guideable.has(jp);
+  if (action === "探す") return searchable.has(jp);
+  if (action === "変更する") return reservable.has(jp) || exchangeable.has(jp) || transit.has(jp);
+  if (action === "返金する") return payable.has(jp) || jp === "保険";
+  if (action === "確認する") return jp !== "売り切れ";
+  return true;
+}
+
 function phrasePatterns(lang, category) {
   if (category === "basic") {
+    const isPlace = (item) => hasTag(item, "place");
+    const isPerson = (item) => hasTag(item, "person");
+    const isFood = (item) => hasTag(item, "food");
+    const isObject = (item) => hasTag(item, "object");
+    const isTangible = (item) => hasTag(item, "tangible");
+    const isTransport = (item) => hasTag(item, "transport");
+    const isMedia = (item) => hasTag(item, "media");
+    const isWeather = (item) => ["天気", "雨", "雪"].includes(item.jp);
+    const isClockTime = (item) => ["朝", "昼", "夜", "週末", "時間"].includes(item.jp);
+    const needed = (item) => isFood(item) || isTangible(item) || isTransport(item) || isMedia(item);
+    const searchable = (item) => isFood(item) || isTangible(item) || isTransport(item) || isPlace(item);
+    const usable = (item) => isTangible(item) || isTransport(item) || isMedia(item);
+    const nearby = (item) => isPlace(item) || isTransport(item);
+    const all = () => true;
+    const frFoodAmount = ({ jp, target }) => {
+      const amounts = {
+        "水": "de l'eau",
+        "お茶": "du thé",
+        "コーヒー": "du café",
+        "牛乳": "du lait",
+        "パン": "du pain",
+        "ご飯": "du riz",
+        "卵": "un œuf",
+        "りんご": "une pomme",
+        "料理": "un plat"
+      };
+      return amounts[jp] || target;
+    };
+
     if (lang === "ko") {
       return [
-        { target: ({ target }) => `${target}${koSubject(target)} 필요해요.`, jp: ({ jp }) => `${jp}が必要です` },
-        { target: ({ target }) => `${target}${koObject(target)} 찾고 있어요.`, jp: ({ jp }) => `${jp}を探しています` },
-        { target: ({ target }) => `${target}${koObject(target)} 주세요.`, jp: ({ jp }) => `${jp}をください` },
-        { target: ({ target }) => `${target}${koTopic(target)} 어디에 있어요?`, jp: ({ jp }) => `${jp}はどこにありますか` },
-        { target: ({ target }) => `오늘 ${target}${koObject(target)} 봤어요.`, jp: ({ jp }) => `今日${jp}を見ました` },
-        { target: ({ target }) => `${target}${koTopic(target)} 좋아요.`, jp: ({ jp }) => `${jp}は良いです` }
+        { applies: needed, target: ({ target }) => `${target}${koSubject(target)} 필요해요.`, jp: ({ jp }) => `${jp}が必要です` },
+        { applies: searchable, target: ({ target }) => `${target}${koObject(target)} 찾고 있어요.`, jp: ({ jp }) => `${jp}を探しています` },
+        { applies: isFood, target: ({ target }) => `${target}${koObject(target)} 주세요.`, jp: ({ jp }) => `${jp}をください` },
+        { applies: isPlace, target: ({ target }) => `${target}${koTopic(target)} 어디에 있어요?`, jp: ({ jp }) => `${jp}はどこにありますか` },
+        { applies: isPlace, target: ({ target }) => `오늘 ${target}에 갔어요.`, jp: ({ jp }) => `今日${jp}に行きました` },
+        { applies: isPlace, target: ({ target }) => `${target}에서 만나요.`, jp: ({ jp }) => `${jp}で会いましょう` },
+        { applies: isPerson, target: ({ target }) => `오늘 ${target}${koObject(target)} 만났어요.`, jp: ({ jp }) => `今日${jp}に会いました` },
+        { applies: isPerson, target: ({ target }) => `${target}에게 물어볼게요.`, jp: ({ jp }) => `${jp}に聞いてみます` },
+        { applies: nearby, target: ({ target }) => `${target}${koTopic(target)} 가까워요.`, jp: ({ jp }) => `${jp}は近いです` },
+        { applies: usable, target: ({ target }) => `${target}${koObject(target)} 사용해요.`, jp: ({ jp }) => `${jp}を使います` },
+        { applies: isWeather, target: ({ target }) => `${target}${koTopic(target)} 어때요?`, jp: ({ jp }) => `${jp}はどうですか` },
+        { applies: isClockTime, target: ({ target }) => `${target}에 다시 확인할게요.`, jp: ({ jp }) => `${jp}にもう一度確認します` },
+        { applies: all, target: ({ target }) => `${target} 발음을 연습해요.`, jp: ({ jp }) => `${jp}の発音を練習します` },
+        { applies: all, target: ({ target }) => `${target} 뜻을 복습해요.`, jp: ({ jp }) => `${jp}の意味を復習します` }
       ];
     }
     if (lang === "zh") {
       return [
-        { target: ({ target }) => `我需要${target}。`, jp: ({ jp }) => `${jp}が必要です` },
-        { target: ({ target }) => `我在找${target}。`, jp: ({ jp }) => `${jp}を探しています` },
-        { target: ({ target }) => `请给我${target}。`, jp: ({ jp }) => `${jp}をください` },
-        { target: ({ target }) => `${target}在哪里？`, jp: ({ jp }) => `${jp}はどこですか` },
-        { target: ({ target }) => `我今天看到了${target}。`, jp: ({ jp }) => `今日${jp}を見ました` },
-        { target: ({ target }) => `${target}很好。`, jp: ({ jp }) => `${jp}は良いです` }
+        { applies: needed, target: ({ target }) => `我需要${target}。`, jp: ({ jp }) => `${jp}が必要です` },
+        { applies: searchable, target: ({ target }) => `我在找${target}。`, jp: ({ jp }) => `${jp}を探しています` },
+        { applies: isFood, target: ({ target }) => `请给我${target}。`, jp: ({ jp }) => `${jp}をください` },
+        { applies: isPlace, target: ({ target }) => `${target}在哪里？`, jp: ({ jp }) => `${jp}はどこですか` },
+        { applies: isPlace, target: ({ target }) => `我今天去了${target}。`, jp: ({ jp }) => `今日${jp}に行きました` },
+        { applies: isPlace, target: ({ target }) => `我们在${target}见面吧。`, jp: ({ jp }) => `${jp}で会いましょう` },
+        { applies: isPerson, target: ({ target }) => `我今天见了${target}。`, jp: ({ jp }) => `今日${jp}に会いました` },
+        { applies: isPerson, target: ({ target }) => `我问一下${target}。`, jp: ({ jp }) => `${jp}に聞いてみます` },
+        { applies: nearby, target: ({ target }) => `${target}很近。`, jp: ({ jp }) => `${jp}は近いです` },
+        { applies: usable, target: ({ target }) => `我会用${target}。`, jp: ({ jp }) => `${jp}を使います` },
+        { applies: isWeather, target: ({ target }) => `${target}怎么样？`, jp: ({ jp }) => `${jp}はどうですか` },
+        { applies: isClockTime, target: ({ target }) => `我在${target}再确认一次。`, jp: ({ jp }) => `${jp}にもう一度確認します` },
+        { applies: all, target: ({ target }) => `我练习${target}的发音。`, jp: ({ jp }) => `${jp}の発音を練習します` },
+        { applies: all, target: ({ target }) => `我复习${target}的意思。`, jp: ({ jp }) => `${jp}の意味を復習します` }
       ];
     }
     return [
-      { target: ({ target }) => `J'ai besoin de ${target}.`, jp: ({ jp }) => `${jp}が必要です` },
-      { target: ({ target }) => `Je cherche ${target}.`, jp: ({ jp }) => `${jp}を探しています` },
-      { target: ({ target }) => `Je voudrais ${target}.`, jp: ({ jp }) => `${jp}が欲しいです` },
-      { target: ({ target }) => `Où est ${target} ?`, jp: ({ jp }) => `${jp}はどこですか` },
-      { target: ({ target }) => `J'ai vu ${target} aujourd'hui.`, jp: ({ jp }) => `今日${jp}を見ました` },
-      { target: ({ target }) => `${target} est pratique.`, jp: ({ jp }) => `${jp}は便利です` }
+      { applies: needed, target: ({ target }) => `J'ai besoin ${frJoin("de", target)}.`, jp: ({ jp }) => `${jp}が必要です` },
+      { applies: searchable, target: ({ target }) => `Je cherche ${target}.`, jp: ({ jp }) => `${jp}を探しています` },
+      { applies: isFood, target: (item) => `Je voudrais ${frFoodAmount(item)}.`, jp: ({ jp }) => `${jp}をください` },
+      { applies: isPlace, target: ({ target }) => `Où est ${target} ?`, jp: ({ jp }) => `${jp}はどこですか` },
+      { applies: isPlace, target: ({ target }) => `Je vais ${frJoin("à", target)} aujourd'hui.`, jp: ({ jp }) => `今日${jp}に行きます` },
+      { applies: isPlace, target: ({ target }) => `On se retrouve ${frJoin("à", target)}.`, jp: ({ jp }) => `${jp}で会いましょう` },
+      { applies: isPerson, target: ({ target }) => `J'ai rencontré ${target} aujourd'hui.`, jp: ({ jp }) => `今日${jp}に会いました` },
+      { applies: isPerson, target: ({ target }) => `Je vais demander ${frJoin("à", target)}.`, jp: ({ jp }) => `${jp}に聞いてみます` },
+      { applies: nearby, target: ({ target }) => `${target} est proche.`, jp: ({ jp }) => `${jp}は近いです` },
+      { applies: usable, target: ({ target }) => `J'utilise ${target}.`, jp: ({ jp }) => `${jp}を使います` },
+      { applies: isWeather, target: ({ target }) => `Comment est ${target} ?`, jp: ({ jp }) => `${jp}はどうですか` },
+      { applies: isClockTime, target: ({ target }) => `Je vérifierai encore ${target}.`, jp: ({ jp }) => `${jp}にもう一度確認します` },
+      { applies: all, target: ({ target }) => `Je pratique la prononciation ${frJoin("de", target)}.`, jp: ({ jp }) => `${jp}の発音を練習します` },
+      { applies: all, target: ({ target }) => `Je révise le sens ${frJoin("de", target)}.`, jp: ({ jp }) => `${jp}の意味を復習します` }
     ];
   }
+
+  if (category === "travel") {
+    return travelPhrasePatterns(lang);
+  }
+
+  const sendablePhrase = ({ jp }) => new Set([
+    "ファイル", "写真", "メール", "リンク", "メモ", "回答", "通知", "予定", "日程", "レポート",
+    "資料", "請求書", "見積書", "フォーム", "契約", "提案", "議事録", "注文", "納品", "数字"
+  ]).has(jp);
+  const neededPhrase = ({ jp }) => new Set([
+    "助け", "手伝い", "時間", "ファイル", "メモ", "回答", "通知", "予定", "日程", "意味", "発音",
+    "資料", "予算", "承認", "権限", "見積もり", "請求書", "フォーム", "契約", "人員", "情報", "注文", "納品"
+  ]).has(jp);
 
   if (lang === "ko") {
     return [
       { target: ({ target }) => `${target}${koObject(target)} 확인해 주세요.`, jp: ({ jp }) => `${jp}を確認してください` },
-      { target: ({ target }) => `${target}${koObject(target)} 다시 보내 주세요.`, jp: ({ jp }) => `${jp}をもう一度送ってください` },
+      { target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください` },
+      { applies: sendablePhrase, target: ({ target }) => `${target}${koObject(target)} 다시 보내 주세요.`, jp: ({ jp }) => `${jp}をもう一度送ってください` },
       { target: ({ target }) => `${target}${koTopic(target)} 나중에 볼게요.`, jp: ({ jp }) => `${jp}はあとで見ます` },
-      { target: ({ target }) => `${target}${koSubject(target)} 필요합니다.`, jp: ({ jp }) => `${jp}が必要です` },
+      { applies: neededPhrase, target: ({ target }) => `${target}${koSubject(target)} 필요합니다.`, jp: ({ jp }) => `${jp}が必要です` },
       { target: ({ target }) => `${target}${koObject(target)} 먼저 정리하겠습니다.`, jp: ({ jp }) => `${jp}を先に整理します` },
       { target: ({ target }) => `${target}${koObject(target)} 쉽게 설명해 주세요.`, jp: ({ jp }) => `${jp}を簡単に説明してください` }
     ];
@@ -236,26 +531,78 @@ function phrasePatterns(lang, category) {
   if (lang === "zh") {
     return [
       { target: ({ target }) => `请确认${target}。`, jp: ({ jp }) => `${jp}を確認してください` },
-      { target: ({ target }) => `请再发送一次${target}。`, jp: ({ jp }) => `${jp}をもう一度送ってください` },
+      { target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください` },
+      { applies: sendablePhrase, target: ({ target }) => `请再发送一次${target}。`, jp: ({ jp }) => `${jp}をもう一度送ってください` },
       { target: ({ target }) => `${target}我稍后再看。`, jp: ({ jp }) => `${jp}はあとで見ます` },
-      { target: ({ target }) => `需要${target}。`, jp: ({ jp }) => `${jp}が必要です` },
+      { applies: neededPhrase, target: ({ target }) => `需要${target}。`, jp: ({ jp }) => `${jp}が必要です` },
       { target: ({ target }) => `我先整理${target}。`, jp: ({ jp }) => `${jp}を先に整理します` },
       { target: ({ target }) => `请简单说明${target}。`, jp: ({ jp }) => `${jp}を簡単に説明してください` }
     ];
   }
   return [
     { target: ({ target }) => `Vérifiez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を確認してください` },
-    { target: ({ target }) => `Renvoyez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}をもう一度送ってください` },
+    { target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください` },
+    { applies: sendablePhrase, target: ({ target }) => `Renvoyez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}をもう一度送ってください` },
     { target: ({ target }) => `Je regarderai ${target} plus tard.`, jp: ({ jp }) => `${jp}はあとで見ます` },
-    { target: ({ target }) => `Il faut ${target}.`, jp: ({ jp }) => `${jp}が必要です` },
+    { applies: neededPhrase, target: ({ target }) => `Il faut ${target}.`, jp: ({ jp }) => `${jp}が必要です` },
     { target: ({ target }) => `Je vais d'abord organiser ${target}.`, jp: ({ jp }) => `${jp}を先に整理します` },
     { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を簡単に説明してください` }
   ];
 }
 
+function travelPhrasePatterns(lang) {
+  const places = new Set(["空港", "駅", "ホテル", "部屋", "受付", "搭乗口", "バス停", "タクシー", "地下鉄", "入口", "出口", "レストラン", "病院", "警察署"]);
+  const needed = new Set(["予約", "パスポート", "チケット", "座席", "地図", "カード", "現金", "薬", "保険", "緊急連絡先", "静かな部屋"]);
+  const showable = new Set(["予約", "パスポート", "チケット", "地図", "レシート", "カード", "保険"]);
+  const receivable = new Set(["チケット", "荷物", "預け荷物", "レシート", "おつり", "お土産", "薬"]);
+  const contactable = new Set(["ホテル", "受付", "病院", "警察署", "緊急連絡先", "保険"]);
+  const all = () => true;
+
+  if (lang === "ko") {
+    return [
+      { applies: all, target: ({ target }) => `${target}${koObject(target)} 확인해 주세요.`, jp: ({ jp }) => `${jp}を確認してください` },
+      { applies: all, target: ({ target }) => `${target}${koObject(target)} 다시 확인할게요.`, jp: ({ jp }) => `${jp}をもう一度確認します` },
+      { applies: all, target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください` },
+      { applies: all, target: ({ target }) => `${target} 관련 메모를 남길게요.`, jp: ({ jp }) => `${jp}についてメモします` },
+      { applies: ({ jp }) => places.has(jp), target: ({ target }) => `${target}${koTopic(target)} 어디인가요?`, jp: ({ jp }) => `${jp}はどこですか` },
+      { applies: ({ jp }) => places.has(jp), target: ({ target }) => `${target}까지 어떻게 가나요?`, jp: ({ jp }) => `${jp}まではどう行きますか` },
+      { applies: ({ jp }) => needed.has(jp), target: ({ target }) => `${target}${koSubject(target)} 필요합니다.`, jp: ({ jp }) => `${jp}が必要です` },
+      { applies: ({ jp }) => showable.has(jp), target: ({ target }) => `${target}${koObject(target)} 보여 드릴게요.`, jp: ({ jp }) => `${jp}を見せます` },
+      { applies: ({ jp }) => receivable.has(jp), target: ({ target }) => `${target}${koObject(target)} 받았어요.`, jp: ({ jp }) => `${jp}を受け取りました` },
+      { applies: ({ jp }) => contactable.has(jp), target: ({ target }) => `${target}에 연락해 주세요.`, jp: ({ jp }) => `${jp}に連絡してください` }
+    ];
+  }
+  if (lang === "zh") {
+    return [
+      { applies: all, target: ({ target }) => `请确认${target}。`, jp: ({ jp }) => `${jp}を確認してください` },
+      { applies: all, target: ({ target }) => `我再确认一下${target}。`, jp: ({ jp }) => `${jp}をもう一度確認します` },
+      { applies: all, target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください` },
+      { applies: all, target: ({ target }) => `我会记下${target}。`, jp: ({ jp }) => `${jp}についてメモします` },
+      { applies: ({ jp }) => places.has(jp), target: ({ target }) => `${target}在哪里？`, jp: ({ jp }) => `${jp}はどこですか` },
+      { applies: ({ jp }) => places.has(jp), target: ({ target }) => `到${target}怎么走？`, jp: ({ jp }) => `${jp}まではどう行きますか` },
+      { applies: ({ jp }) => needed.has(jp), target: ({ target }) => `我需要${target}。`, jp: ({ jp }) => `${jp}が必要です` },
+      { applies: ({ jp }) => showable.has(jp), target: ({ target }) => `我给您看${target}。`, jp: ({ jp }) => `${jp}を見せます` },
+      { applies: ({ jp }) => receivable.has(jp), target: ({ target }) => `我收到了${target}。`, jp: ({ jp }) => `${jp}を受け取りました` },
+      { applies: ({ jp }) => contactable.has(jp), target: ({ target }) => `请联系${target}。`, jp: ({ jp }) => `${jp}に連絡してください` }
+    ];
+  }
+  return [
+    { applies: all, target: ({ target }) => `Vérifiez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を確認してください` },
+    { applies: all, target: ({ target }) => `Je vais revérifier ${target}.`, jp: ({ jp }) => `${jp}をもう一度確認します` },
+    { applies: all, target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください` },
+    { applies: all, target: ({ target }) => `Je vais noter ${target}.`, jp: ({ jp }) => `${jp}についてメモします` },
+    { applies: ({ jp }) => places.has(jp), target: ({ target }) => `Où est ${target} ?`, jp: ({ jp }) => `${jp}はどこですか` },
+    { applies: ({ jp }) => places.has(jp), target: ({ target }) => `Comment aller ${frJoin("à", target)} ?`, jp: ({ jp }) => `${jp}まではどう行きますか` },
+    { applies: ({ jp }) => needed.has(jp), target: ({ target }) => `J'ai besoin ${frJoin("de", target)}.`, jp: ({ jp }) => `${jp}が必要です` },
+    { applies: ({ jp }) => showable.has(jp), target: ({ target }) => `Je vais montrer ${target}.`, jp: ({ jp }) => `${jp}を見せます` },
+    { applies: ({ jp }) => receivable.has(jp), target: ({ target }) => `J'ai reçu ${target}.`, jp: ({ jp }) => `${jp}を受け取りました` },
+    { applies: ({ jp }) => contactable.has(jp), target: ({ target }) => `Contactez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}に連絡してください` }
+  ];
+}
+
 function generatedGroupsFor(lang, kind) {
   return Object.fromEntries(categories.map((category) => {
-    const items = conceptBanks[category].map((row) => itemForLang(row, lang));
+    const items = conceptBanks[category].map((row) => itemForLang(row, lang, category));
     const patterns = kind === "phrase"
       ? phrasePatterns(lang, category)
       : category === "basic"
