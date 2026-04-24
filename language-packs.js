@@ -1,6 +1,6 @@
 ﻿import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature35";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature36";
 
 const categoryMeta = {
   basic: {
@@ -380,7 +380,7 @@ const koreanPhraseBoost = {
   practical: [
     ["제가 이해한 게 맞나요?", "私の理解で合っていますか"], ["다시 한번 정리해 볼게요.", "もう一度整理してみます"], ["이 표현은 자연스러운가요?", "この表現は自然ですか"],
     ["더 쉬운 예문이 필요해요.", "もっと簡単な例文が必要です"], ["제가 고친 문장을 확인해 주세요.", "私が直した文を確認してください"], ["이 단어를 어떻게 써요?", "この単語をどう使いますか"],
-    ["오늘 배운 내용을 복습하고 싶어요.", "今日学んだ内容を復習したいです"], ["이건 나중에 다시 볼게요.", "これはあとでまた見ます"], ["잠깐 생각할 시간을 주세요.", "少し考える時間をください"],
+    ["오늘 배운 내용을 복습하고 싶어요.", "今日学んだ内容を復習したいです"], ["이건 나중에 다시 볼게요.", "これはあとでまた見ます"], ["잠깐 생각할 시간을 주세요.", "少し考えさせてください"],
     ["제가 실수한 부분을 알려 주세요.", "私が間違えた部分を教えてください"], ["답만 말고 이유도 알고 싶어요.", "答えだけでなく理由も知りたいです"], ["두 표현의 차이를 설명해 주세요.", "二つの表現の違いを説明してください"],
     ["상황에 맞게 말하고 싶어요.", "場面に合うように言いたいです"], ["기록을 저장하고 계속 공부할게요.", "記録を保存して続けて勉強します"], ["오늘 목표를 채우고 싶어요.", "今日の目標を達成したいです"],
     ["조금 더 자연스럽게 바꿔 주세요.", "もう少し自然に変えてください"], ["발음을 다시 들려 주세요.", "発音をもう一度聞かせてください"], ["이 문장은 너무 딱딱해요.", "この文は硬すぎます"],
@@ -475,7 +475,7 @@ const chinesePhraseBoost = {
   practical: [
     ["我的理解对吗？", "私の理解で合っていますか"], ["我再整理一下。", "もう一度整理します"], ["这个表达自然吗？", "この表現は自然ですか"],
     ["我需要更简单的例句。", "もっと簡単な例文が必要です"], ["请确认我修改的句子。", "私が直した文を確認してください"], ["这个词怎么用？", "この単語をどう使いますか"],
-    ["我想复习今天学的内容。", "今日学んだ内容を復習したいです"], ["这个我以后再看。", "これはあとでまた見ます"], ["请给我一点时间想想。", "少し考える時間をください"],
+    ["我想复习今天学的内容。", "今日学んだ内容を復習したいです"], ["这个我以后再看。", "これはあとでまた見ます"], ["请给我一点时间想想。", "少し考えさせてください"],
     ["请告诉我哪里错了。", "どこを間違えたか教えてください"], ["我不仅想知道答案，也想知道原因。", "答えだけでなく理由も知りたいです"], ["请说明这两个表达的区别。", "二つの表現の違いを説明してください"],
     ["我想根据场景来说。", "場面に合わせて言いたいです"], ["我会保存记录继续学习。", "記録を保存して続けて学習します"], ["我想完成今天的目标。", "今日の目標を達成したいです"],
     ["请改得更自然一点。", "もう少し自然に直してください"], ["请再播放一次发音。", "発音をもう一度再生してください"], ["这个句子太生硬了。", "この文は硬すぎます"],
@@ -570,7 +570,7 @@ const frenchPhraseBoost = {
   practical: [
     ["Est-ce que j'ai bien compris ?", "私の理解で合っていますか"], ["Je vais le résumer encore une fois.", "もう一度整理します"], ["Cette expression est naturelle ?", "この表現は自然ですか"],
     ["J'ai besoin d'exemples plus simples.", "もっと簡単な例文が必要です"], ["Vérifiez ma phrase corrigée, s'il vous plaît.", "私が直した文を確認してください"], ["Comment utilise-t-on ce mot ?", "この単語をどう使いますか"],
-    ["Je veux réviser ce que j'ai appris aujourd'hui.", "今日学んだ内容を復習したいです"], ["Je reverrai cela plus tard.", "これはあとでまた見ます"], ["Laissez-moi un peu de temps pour réfléchir.", "少し考える時間をください"],
+    ["Je veux réviser ce que j'ai appris aujourd'hui.", "今日学んだ内容を復習したいです"], ["Je reverrai cela plus tard.", "これはあとでまた見ます"], ["Laissez-moi un peu de temps pour réfléchir.", "少し考えさせてください"],
     ["Dites-moi où je me suis trompé.", "どこを間違えたか教えてください"], ["Je veux connaître la raison, pas seulement la réponse.", "答えだけでなく理由も知りたいです"], ["Expliquez la différence entre ces deux expressions.", "二つの表現の違いを説明してください"],
     ["Je veux parler selon la situation.", "場面に合わせて話したいです"], ["Je vais sauvegarder mes progrès et continuer.", "記録を保存して続けます"], ["Je veux atteindre mon objectif d'aujourd'hui.", "今日の目標を達成したいです"],
     ["Rendez-le un peu plus naturel.", "もう少し自然にしてください"], ["Faites écouter la prononciation encore une fois.", "発音をもう一度聞かせてください"], ["Cette phrase est trop formelle.", "この文は硬すぎます"],
@@ -970,14 +970,98 @@ const frenchPhraseBoost4 = {
   ]
 };
 
+const koreanPhraseBoost5 = {
+  basic: [
+    ["오늘은 조금 일찍 일어났어요.", "今日は少し早く起きました"], ["이 가게는 역에서 가까워요.", "この店は駅から近いです"], ["나중에 전화할게요.", "あとで電話します"],
+    ["사진을 한 장 찍었어요.", "写真を一枚撮りました"], ["새 신발을 샀어요.", "新しい靴を買いました"], ["주말에는 집에서 쉴 거예요.", "週末は家で休みます"],
+    ["영화를 보러 갈 거예요.", "映画を見に行きます"], ["음악을 들으면서 걸어요.", "音楽を聞きながら歩きます"], ["이 번호를 기억하고 있어요.", "この番号を覚えています"],
+    ["가격을 확인하고 살게요.", "値段を確認してから買います"], ["아침에 커피를 마셔요.", "朝にコーヒーを飲みます"], ["밤에는 일찍 잘게요.", "夜は早めに寝ます"],
+    ["공원에서 조금 걸었어요.", "公園で少し歩きました"], ["오늘 요리를 만들었어요.", "今日は料理を作りました"]
+  ],
+  practical: [
+    ["오늘 할 일을 먼저 정리할게요.", "今日やることを先に整理します"], ["중요한 것부터 시작할게요.", "重要なものから始めます"], ["잠깐만 시간을 주세요.", "少し待ってください"],
+    ["지금 바로 확인해 볼게요.", "今すぐ確認してみます"], ["이 방법이 더 쉬워요.", "この方法のほうが簡単です"], ["다른 방법도 시도해 볼게요.", "別の方法も試してみます"],
+    ["어디부터 보면 좋을까요?", "どこから見ればいいですか"], ["이 부분만 다시 해 볼게요.", "この部分だけもう一度やってみます"], ["메시지를 짧게 보낼게요.", "メッセージを短く送ります"],
+    ["주소를 지도에서 확인할게요.", "住所を地図で確認します"], ["비밀번호를 새로 만들게요.", "パスワードを新しく作ります"], ["화면을 아래로 내려 주세요.", "画面を下にスクロールしてください"],
+    ["파일 이름을 바꿀게요.", "ファイル名を変えます"], ["인터넷이 느려요.", "インターネットが遅いです"], ["소리가 잘 안 들려요.", "音がよく聞こえません"],
+    ["글자가 너무 작아요.", "文字が小さすぎます"], ["다시 저장해 볼게요.", "もう一度保存してみます"], ["오늘 목표까지 조금 남았어요.", "今日の目標まで少し残っています"],
+    ["이 화면을 조금 더 보기 쉽게 할게요.", "この画面を少し見やすくします"], ["소리를 한 번 더 들을게요.", "もう一度音声を聞きます"], ["다음에는 짧은 문장으로 연습할게요.", "次は短い文で練習します"],
+    ["모르는 단어에 표시해 둘게요.", "分からない単語に印を付けます"], ["오늘 복습을 먼저 끝낼게요.", "今日の復習を先に終わらせます"], ["답을 보지 않고 생각할게요.", "答えを見ずに考えます"],
+    ["예문을 제 말로 바꿔 볼게요.", "例文を自分の言葉に変えます"], ["저장이 됐는지 확인할게요.", "保存できたか確認します"], ["틀린 이유를 메모할게요.", "間違えた理由をメモします"],
+    ["같은 표현을 소리 내어 말할게요.", "同じ表現を声に出します"], ["잘 안 들리면 속도를 낮출게요.", "聞こえないときは速度を下げます"], ["화면을 위로 올려 주세요.", "画面を上に戻してください"],
+    ["마지막에 어려운 단어를 다시 볼게요.", "最後に苦手な単語を見直します"]
+  ],
+  business: [
+    ["회의록을 오늘 안에 공유하겠습니다.", "議事録を今日中に共有します"], ["자료의 최신 버전을 보내 주세요.", "資料の最新版を送ってください"], ["담당자에게 먼저 확인하겠습니다.", "担当者に先に確認します"],
+    ["고객 답변은 짧게 정리하겠습니다.", "顧客への回答は短く整理します"], ["계약 조건에 빠진 부분이 있습니다.", "契約条件に抜けがあります"], ["예산을 넘지 않도록 조정하겠습니다.", "予算を超えないよう調整します"],
+    ["재고가 부족하면 대안을 찾겠습니다.", "在庫が足りない場合は代案を探します"], ["공개 전에 최종 확인을 하겠습니다.", "公開前に最終確認します"], ["문제가 생기면 바로 공유하겠습니다.", "問題が起きたらすぐ共有します"]
+  ]
+};
+
+const chinesePhraseBoost5 = {
+  basic: [
+    ["今天我起得有点早。", "今日は少し早く起きました"], ["这家店离车站很近。", "この店は駅から近いです"], ["我待会儿打电话。", "あとで電話します"],
+    ["我拍了一张照片。", "写真を一枚撮りました"], ["我买了新鞋。", "新しい靴を買いました"], ["周末我在家休息。", "週末は家で休みます"],
+    ["我去看电影。", "映画を見に行きます"], ["我一边听音乐一边走路。", "音楽を聞きながら歩きます"], ["我记得这个号码。", "この番号を覚えています"],
+    ["我确认价格后再买。", "値段を確認してから買います"], ["早上我喝咖啡。", "朝にコーヒーを飲みます"], ["晚上我早点睡。", "夜は早めに寝ます"],
+    ["我在公园走了一会儿。", "公園で少し歩きました"], ["今天我做了菜。", "今日は料理を作りました"]
+  ],
+  practical: [
+    ["我先整理今天要做的事。", "今日やることを先に整理します"], ["我先从重要的开始。", "重要なものから始めます"], ["请给我一点时间。", "少し待ってください"],
+    ["我现在马上确认。", "今すぐ確認してみます"], ["这个方法更简单。", "この方法のほうが簡単です"], ["我也试试别的方法。", "別の方法も試してみます"],
+    ["应该从哪里开始看？", "どこから見ればいいですか"], ["我只重新做这一部分。", "この部分だけもう一度やってみます"], ["我会把消息发短一点。", "メッセージを短く送ります"],
+    ["我在地图上确认地址。", "住所を地図で確認します"], ["我重新设置密码。", "パスワードを新しく作ります"], ["请把屏幕往下滑。", "画面を下にスクロールしてください"],
+    ["我改一下文件名。", "ファイル名を変えます"], ["网络很慢。", "インターネットが遅いです"], ["声音听不太清楚。", "音がよく聞こえません"],
+    ["字太小了。", "文字が小さすぎます"], ["我再保存一次。", "もう一度保存してみます"], ["离今天的目标还差一点。", "今日の目標まで少し残っています"],
+    ["我把这个画面调得更容易看。", "この画面を少し見やすくします"], ["我再听一遍声音。", "もう一度音声を聞きます"], ["下一次我用短句练习。", "次は短い文で練習します"],
+    ["我把不懂的单词标出来。", "分からない単語に印を付けます"], ["我先完成今天的复习。", "今日の復習を先に終わらせます"], ["我不看答案，先想一下。", "答えを見ずに考えます"],
+    ["我把例句改成自己的说法。", "例文を自分の言葉に変えます"], ["我确认一下有没有保存好。", "保存できたか確認します"], ["我把错的原因记下来。", "間違えた理由をメモします"],
+    ["我把同一个表达说出声。", "同じ表現を声に出します"], ["听不清时我把速度调慢。", "聞こえないときは速度を下げます"], ["请把画面往上滑。", "画面を上に戻してください"],
+    ["最后我再看一遍不熟的单词。", "最後に苦手な単語を見直します"]
+  ],
+  business: [
+    ["我今天内共享会议记录。", "議事録を今日中に共有します"], ["请发送资料的最新版。", "資料の最新版を送ってください"], ["我先和负责人确认。", "担当者に先に確認します"],
+    ["给客户的回复我会简短整理。", "顧客への回答は短く整理します"], ["合同条件里有遗漏。", "契約条件に抜けがあります"], ["我会调整到不超过预算。", "予算を超えないよう調整します"],
+    ["库存不足时我会找替代方案。", "在庫が足りない場合は代案を探します"], ["发布前我会做最终确认。", "公開前に最終確認します"], ["如果出现问题，我会马上共享。", "問題が起きたらすぐ共有します"]
+  ]
+};
+
+const frenchPhraseBoost5 = {
+  basic: [
+    ["Aujourd'hui, je me suis levé un peu tôt.", "今日は少し早く起きました"], ["Ce magasin est près de la gare.", "この店は駅から近いです"], ["J'appellerai plus tard.", "あとで電話します"],
+    ["J'ai pris une photo.", "写真を一枚撮りました"], ["J'ai acheté de nouvelles chaussures.", "新しい靴を買いました"], ["Le week-end, je me repose à la maison.", "週末は家で休みます"],
+    ["Je vais voir un film.", "映画を見に行きます"], ["Je marche en écoutant de la musique.", "音楽を聞きながら歩きます"], ["Je me souviens de ce numéro.", "この番号を覚えています"],
+    ["Je vérifie le prix avant d'acheter.", "値段を確認してから買います"], ["Je bois du café le matin.", "朝にコーヒーを飲みます"], ["Je me couche tôt le soir.", "夜は早めに寝ます"],
+    ["Aujourd'hui, j'ai cuisiné un plat.", "今日は料理を作りました"]
+  ],
+  practical: [
+    ["Je vais d'abord organiser les tâches d'aujourd'hui.", "今日やることを先に整理します"], ["Je commence par le plus important.", "重要なものから始めます"], ["Donnez-moi juste un peu de temps.", "少し待ってください"],
+    ["Je vais vérifier tout de suite.", "今すぐ確認してみます"], ["Cette méthode est plus simple.", "この方法のほうが簡単です"], ["Je vais essayer une autre méthode aussi.", "別の方法も試してみます"],
+    ["Par où dois-je commencer ?", "どこから見ればいいですか"], ["Je vais refaire seulement cette partie.", "この部分だけもう一度やってみます"], ["J'enverrai un message court.", "メッセージを短く送ります"],
+    ["Je vérifie l'adresse sur la carte.", "住所を地図で確認します"], ["Je vais créer un nouveau mot de passe.", "パスワードを新しく作ります"], ["Faites défiler l'écran vers le bas.", "画面を下にスクロールしてください"],
+    ["Je vais changer le nom du fichier.", "ファイル名を変えます"], ["Internet est lent.", "インターネットが遅いです"], ["J'entends mal le son.", "音がよく聞こえません"],
+    ["Les lettres sont trop petites.", "文字が小さすぎます"], ["Je vais enregistrer encore une fois.", "もう一度保存してみます"], ["Il reste encore un peu avant l'objectif d'aujourd'hui.", "今日の目標まで少し残っています"],
+    ["Je vais rendre cet écran un peu plus lisible.", "この画面を少し見やすくします"], ["Je vais réécouter l'audio.", "もう一度音声を聞きます"], ["La prochaine fois, je m'entraînerai avec une phrase courte.", "次は短い文で練習します"],
+    ["Je vais marquer les mots que je ne comprends pas.", "分からない単語に印を付けます"], ["Je vais finir d'abord la révision d'aujourd'hui.", "今日の復習を先に終わらせます"], ["Je vais réfléchir sans regarder la réponse.", "答えを見ずに考えます"],
+    ["Je vais reformuler l'exemple avec mes propres mots.", "例文を自分の言葉に変えます"], ["Je vais vérifier si c'est bien enregistré.", "保存できたか確認します"], ["Je vais noter pourquoi je me suis trompé.", "間違えた理由をメモします"],
+    ["Je vais dire la même expression à voix haute.", "同じ表現を声に出します"], ["Si je n'entends pas bien, je ralentirai la vitesse.", "聞こえないときは速度を下げます"], ["Faites remonter l'écran, s'il vous plaît.", "画面を上に戻してください"],
+    ["À la fin, je reverrai les mots difficiles.", "最後に苦手な単語を見直します"], ["Je vais m'arrêter ici pour aujourd'hui.", "今日の学習をここで終わります"]
+  ],
+  business: [
+    ["Je partagerai le compte rendu aujourd'hui.", "議事録を今日中に共有します"], ["Envoyez la dernière version des documents.", "資料の最新版を送ってください"], ["Je vérifierai d'abord avec le responsable.", "担当者に先に確認します"],
+    ["Je vais résumer brièvement la réponse au client.", "顧客への回答は短く整理します"], ["Il manque un point dans les conditions du contrat.", "契約条件に抜けがあります"], ["J'ajusterai pour ne pas dépasser le budget.", "予算を超えないよう調整します"],
+    ["S'il manque du stock, je chercherai une autre solution.", "在庫が足りない場合は代案を探します"], ["Je ferai une dernière vérification avant la publication.", "公開前に最終確認します"], ["S'il y a un problème, je le partagerai tout de suite.", "問題が起きたらすぐ共有します"]
+  ]
+};
+
 const wordTargetCounts = targetCountsFrom(vocabulary);
 const phraseTargetCounts = targetCountsFrom(phrases);
 const expandedKoreanWords = topUpLanguageGroups("ko", "word", mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), wordTargetCounts);
-const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), koreanPhraseBoost4), phraseTargetCounts);
+const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), koreanPhraseBoost4), koreanPhraseBoost5), phraseTargetCounts);
 const expandedChineseWords = topUpLanguageGroups("zh", "word", mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), wordTargetCounts);
-const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), phraseTargetCounts);
+const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), chinesePhraseBoost5), phraseTargetCounts);
 const expandedFrenchWords = topUpLanguageGroups("fr", "word", mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), wordTargetCounts);
-const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), phraseTargetCounts);
+const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), frenchPhraseBoost5), phraseTargetCounts);
 
 export const languagePacks = {
   en: {
