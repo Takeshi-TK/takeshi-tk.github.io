@@ -21,7 +21,9 @@ jobs:
           node-version: 22
 
       - name: Audit learning content
-        run: node tools/audit_multilingual_content.mjs
+        run: |
+          node tools/audit_multilingual_content.mjs
+          node tools/audit_word_label_quality.mjs
 
   deploy:
     if: ${{ vars.CLOUDFLARE_PAGES_ENABLED == 'true' }}

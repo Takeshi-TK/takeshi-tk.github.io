@@ -177,6 +177,7 @@ function basicWordPatterns(lang) {
   const isWeather = (item) => ["天気", "雨", "雪"].includes(item.jp);
   const isClockTime = (item) => ["朝", "昼", "夜", "週末", "時間"].includes(item.jp);
   const isCleanable = (item) => ["机", "椅子", "窓", "ドア", "本", "ノート", "ペン", "かばん", "服", "靴", "写真"].includes(item.jp);
+  const hasNaturalName = (item) => isPerson(item) || isPublicPlace(item) || item.jp === "通り";
   const all = () => true;
   const quotedWord = (suffix) => (label) => `「${label}」${suffix}`;
 
@@ -187,19 +188,16 @@ function basicWordPatterns(lang) {
       ["질문", quotedWord("についての質問"), all], ["기본 표현", quotedWord("の基本表現"), all], ["듣기 연습", quotedWord("の聞き取り練習"), all], ["말하기 연습", quotedWord("の発話練習"), all],
       ["근처", "の近く", isPlaceOrTransport], ["앞", "の前", isPlaceOrTransport], ["뒤", "の後ろ", isPlaceOrTransport], ["옆", "の横", isPlaceOrTransport],
       ["안", "の中", isPlace], ["밖", "の外", isPlace], ["입구", "の入口", isPlace], ["출구", "の出口", isPlace],
-      ["위치", "の場所", isPlaceOrTransport], ["이름", "の名前", (item) => isPerson(item) || isPlace(item)], ["사진", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+      ["위치", "の場所", isPlaceOrTransport], ["이름", "の名前", hasNaturalName], ["사진", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
       ["시간", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
       ["새", "新しい", (item) => isPlace(item) || isTangible(item)], ["작은", "小さい", (item) => isPlace(item) || isTangible(item)],
       ["큰", "大きい", (item) => isPlace(item) || isTangible(item)], ["깨끗한", "きれいな", isCleanable],
-      ["첫", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["다음", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
-      ["좋아하는", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
-      ["찾는", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
-      ["사용할", "使う予定の", (item) => isTangible(item) || isTransport(item) || isMedia(item)],
+      ["첫", "最初の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)], ["다음", "次の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)],
       ["준비", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
       ["목록", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
       ["예보", "の予報", isWeather], ["기록", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
     ].map(([prefixOrSuffix, jp, applies]) => {
-      const isAdjective = ["새", "작은", "큰", "깨끗한", "첫", "다음", "좋아하는", "찾는", "사용할"].includes(prefixOrSuffix);
+      const isAdjective = ["새", "작은", "큰", "깨끗한", "첫", "다음"].includes(prefixOrSuffix);
       return {
         applies,
         target: ({ target }) => isAdjective ? `${prefixOrSuffix} ${target}` : `${target} ${prefixOrSuffix}`,
@@ -215,19 +213,16 @@ function basicWordPatterns(lang) {
       ["问题", quotedWord("についての質問"), all], ["基本表达", quotedWord("の基本表現"), all], ["听力练习", quotedWord("の聞き取り練習"), all], ["口语练习", quotedWord("の発話練習"), all],
       ["附近", "の近く", isPlaceOrTransport], ["前面", "の前", isPlaceOrTransport], ["后面", "の後ろ", isPlaceOrTransport], ["旁边", "の横", isPlaceOrTransport],
       ["里面", "の中", isPlace], ["外面", "の外", isPlace], ["入口", "の入口", isPlace], ["出口", "の出口", isPlace],
-      ["位置", "の場所", isPlaceOrTransport], ["名字", "の名前", (item) => isPerson(item) || isPlace(item)], ["照片", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+      ["位置", "の場所", isPlaceOrTransport], ["名字", "の名前", hasNaturalName], ["照片", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
       ["时间", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
       ["新", "新しい", (item) => isPlace(item) || isTangible(item)], ["小", "小さい", (item) => isPlace(item) || isTangible(item)],
       ["大", "大きい", (item) => isPlace(item) || isTangible(item)], ["干净的", "きれいな", isCleanable],
-      ["第一个", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["下一个", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
-      ["喜欢的", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
-      ["正在找的", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
-      ["要用的", "使う予定の", (item) => isTangible(item) || isTransport(item) || isMedia(item)],
+      ["第一个", "最初の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)], ["下一个", "次の", (item) => isTransport(item) || isMedia(item) || isClockTime(item)],
       ["准备", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
       ["列表", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
       ["预报", "の予報", isWeather], ["记录", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
     ].map(([part, jp, applies]) => {
-      const isPrefix = ["新", "小", "大", "干净的", "第一个", "下一个", "喜欢的", "正在找的", "要用的"].includes(part);
+      const isPrefix = ["新", "小", "大", "干净的", "第一个", "下一个"].includes(part);
       return {
         applies,
         target: ({ target }) => isPrefix ? `${part}${target}` : `${target}${part}`,
@@ -242,11 +237,10 @@ function basicWordPatterns(lang) {
     ["une question sur", quotedWord("についての質問"), all], ["l'expression de base pour", quotedWord("の基本表現"), all], ["l'écoute de", quotedWord("の聞き取り練習"), all], ["la pratique orale de", quotedWord("の発話練習"), all],
     ["près de", "の近く", isPlaceOrTransport], ["devant", "の前", isPlaceOrTransport], ["derrière", "の後ろ", isPlaceOrTransport], ["à côté de", "の横", isPlaceOrTransport],
     ["dans", "の中", isPlace], ["hors de", "の外", isPlace], ["l'entrée de", "の入口", isPlace], ["la sortie de", "の出口", isPlace],
-    ["l'emplacement de", "の場所", isPlaceOrTransport], ["le nom de", "の名前", (item) => isPerson(item) || isPlace(item)], ["la photo de", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
+    ["l'emplacement de", "の場所", isPlaceOrTransport], ["le nom de", "の名前", hasNaturalName], ["la photo de", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
     ["l'heure de", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
     ["avec", "と一緒に", (item) => isPerson(item) || isFood(item) || isMedia(item)], ["sans", "なしで", (item) => isFood(item) || isObject(item) || isTransport(item)],
     ["autour de", "の周り", isPlaceOrTransport], ["en face de", "の向かい", isPlaceOrTransport],
-    ["prévu pour", "用の", (item) => isTangible(item) || isTransport(item) || isMedia(item)],
     ["la préparation de", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
     ["la liste de", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
     ["la météo de", "の予報", isWeather], ["l'enregistrement de", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
@@ -313,6 +307,8 @@ function patternTarget(lang, pattern, target) {
 
 function practicalWordPatterns(lang) {
   const linguistic = new Set(["意味", "例", "説明", "質問", "答え", "発音", "文", "単語", "会話", "違い", "選択"]);
+  const practiceFriendly = new Set(["説明", "答え", "文", "単語", "会話", "違い", "選択"]);
+  const selfReferential = new Set(["質問", "意味", "例", "設定", "記録", "練習", "発音", "保存", "削除", "接続", "手順", "優先順位"]);
   const digital = new Set(["メール", "メッセージ", "通知", "設定", "パスワード", "画面", "ファイル", "検索", "保存", "削除", "接続", "充電", "バッテリー"]);
   const process = new Set(["予定", "約束", "理由", "方法", "内容", "情報", "住所", "記録", "練習", "復習", "生活", "健康", "気分", "心配", "ミス", "手順", "優先順位", "進み具合"]);
   const all = () => true;
@@ -336,67 +332,67 @@ function practicalWordPatterns(lang) {
 
   const definitions = {
     ko: [
-      { suffix: "확인", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => jp !== "確認" },
+      { suffix: "확인", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => jp !== "確認" && !selfReferential.has(jp) },
       { suffix: "정보", jp: ({ jp }) => infoLabel(jp), applies: all },
-      { suffix: "질문", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" },
+      { suffix: "질문", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" && !selfReferential.has(jp) },
       { suffix: "메모", jp: ({ jp }) => memoLabel(jp), applies: all },
       { suffix: "주의점", jp: ({ jp }) => `${jp}の注意点`, applies: all },
       { suffix: "기본", jp: ({ jp }) => basicsLabel(jp), applies: all },
       { suffix: "관련 표현", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
       { suffix: "다시 보기", jp: ({ jp }) => reviewLabel(jp), applies: all },
-      { suffix: "발음", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "発音" },
-      { suffix: "예문", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "例" },
-      { suffix: "바꿔 말하기", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => linguistic.has(jp) },
-      { suffix: "연습", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "練習" },
-      { suffix: "설정", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" },
+      { suffix: "발음", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "예문", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "바꿔 말하기", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "연습", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "설정", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" && !selfReferential.has(jp) },
       { suffix: "저장 방법", jp: ({ jp }) => saveLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "保存" },
       { suffix: "삭제 방법", jp: ({ jp }) => deleteLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "削除" },
-      { suffix: "연결 확인", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" },
-      { suffix: "절차", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" },
-      { suffix: "우선순위", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" },
-      { suffix: "기록", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" }
+      { suffix: "연결 확인", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" && !selfReferential.has(jp) },
+      { suffix: "절차", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" && !selfReferential.has(jp) },
+      { suffix: "우선순위", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" && !selfReferential.has(jp) },
+      { suffix: "기록", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
     ],
     zh: [
-      { suffix: "确认", jp: ({ jp }) => confirmLabel(jp), applies: all },
+      { suffix: "确认", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { suffix: "信息", jp: ({ jp }) => infoLabel(jp), applies: all },
-      { suffix: "问题", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" },
+      { suffix: "问题", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" && !selfReferential.has(jp) },
       { suffix: "笔记", jp: ({ jp }) => memoLabel(jp), applies: all },
       { suffix: "注意点", jp: ({ jp }) => `${jp}の注意点`, applies: all },
       { suffix: "基础", jp: ({ jp }) => basicsLabel(jp), applies: all },
       { suffix: "相关表达", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
       { suffix: "复盘", jp: ({ jp }) => reviewLabel(jp), applies: all },
-      { suffix: "发音", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "発音" },
-      { suffix: "例句", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "例" },
-      { suffix: "换一种说法", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => linguistic.has(jp) },
-      { suffix: "练习", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "練習" },
-      { suffix: "设置", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" },
+      { suffix: "发音", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "例句", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "换一种说法", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "练习", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { suffix: "设置", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" && !selfReferential.has(jp) },
       { suffix: "保存方法", jp: ({ jp }) => saveLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "保存" },
       { suffix: "删除方法", jp: ({ jp }) => deleteLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "削除" },
-      { suffix: "连接确认", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" },
-      { suffix: "步骤", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" },
-      { suffix: "优先级", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" },
-      { suffix: "记录", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" }
+      { suffix: "连接确认", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" && !selfReferential.has(jp) },
+      { suffix: "步骤", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" && !selfReferential.has(jp) },
+      { suffix: "优先级", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" && !selfReferential.has(jp) },
+      { suffix: "记录", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
     ],
     fr: [
-      { prefix: "vérification de", jp: ({ jp }) => confirmLabel(jp), applies: all },
+      { prefix: "vérification de", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { prefix: "information sur", jp: ({ jp }) => infoLabel(jp), applies: all },
-      { prefix: "question sur", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" },
+      { prefix: "question sur", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" && !selfReferential.has(jp) },
       { prefix: "note sur", jp: ({ jp }) => memoLabel(jp), applies: all },
       { prefix: "point d'attention pour", jp: ({ jp }) => `${jp}の注意点`, applies: all },
       { prefix: "base de", jp: ({ jp }) => basicsLabel(jp), applies: all },
       { prefix: "expression liée à", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
       { prefix: "révision de", jp: ({ jp }) => reviewLabel(jp), applies: all },
-      { prefix: "prononciation de", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "発音" },
-      { prefix: "phrase d'exemple pour", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "例" },
-      { prefix: "reformulation de", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => linguistic.has(jp) },
-      { prefix: "exercice de", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "練習" },
-      { prefix: "réglage de", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" },
+      { prefix: "prononciation de", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { prefix: "phrase d'exemple pour", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { prefix: "reformulation de", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { prefix: "exercice de", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => practiceFriendly.has(jp) },
+      { prefix: "réglage de", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" && !selfReferential.has(jp) },
       { prefix: "méthode d'enregistrement de", jp: ({ jp }) => saveLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "保存" },
       { prefix: "méthode de suppression de", jp: ({ jp }) => deleteLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "削除" },
-      { prefix: "vérification de connexion de", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" },
-      { prefix: "procédure de", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" },
-      { prefix: "priorité de", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" },
-      { prefix: "enregistrement de", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" }
+      { prefix: "vérification de connexion de", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" && !selfReferential.has(jp) },
+      { prefix: "procédure de", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" && !selfReferential.has(jp) },
+      { prefix: "priorité de", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" && !selfReferential.has(jp) },
+      { prefix: "enregistrement de", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" && !selfReferential.has(jp) }
     ]
   };
 
@@ -411,6 +407,7 @@ function businessWordPatterns(lang) {
   const documents = new Set(["資料", "報告", "契約", "見積もり", "請求書", "フォーム", "添付ファイル", "最終版", "マニュアル", "成果物"]);
   const people = new Set(["担当者", "部署", "チーム", "顧客", "取引先"]);
   const projects = new Set(["会議", "議題", "納品", "在庫", "品質", "費用", "予算", "売上", "締切", "日程", "進捗", "リスク", "問題点", "改善", "提案", "承認", "権限", "セキュリティ", "修正", "返信", "依頼", "検収", "運用", "更新", "公開"]);
+  const selfReferential = new Set(["確認", "進捗"]);
   const all = () => true;
   const confirmLabel = (jp) => jp === "確認" ? "確認事項" : `${jp}の確認`;
   const infoLabel = (jp) => {
@@ -429,14 +426,14 @@ function businessWordPatterns(lang) {
 
   const definitions = {
     ko: [
-      { suffix: "확인", jp: ({ jp }) => confirmLabel(jp), applies: all },
+      { suffix: "확인", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { suffix: "정보", jp: ({ jp }) => infoLabel(jp), applies: all },
-      { suffix: "질문", jp: ({ jp }) => questionLabel(jp), applies: all },
+      { suffix: "질문", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { suffix: "메모", jp: ({ jp }) => memoLabel(jp), applies: all },
       { suffix: "주의점", jp: ({ jp }) => `${jp}の注意点`, applies: all },
       { suffix: "요점", jp: ({ jp }) => `${jp}の要点`, applies: all },
-      { suffix: "절차", jp: ({ jp }) => procedureLabel(jp), applies: all },
-      { suffix: "상황", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => jp !== "進捗" },
+      { suffix: "절차", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
+      { suffix: "상황", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { suffix: "제출", jp: ({ jp }) => `${jp}の提出`, applies: ({ jp }) => documents.has(jp) },
       { suffix: "수정", jp: ({ jp }) => `${jp}の修正`, applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
       { suffix: "공유", jp: ({ jp }) => shareLabel(jp), applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
@@ -449,14 +446,14 @@ function businessWordPatterns(lang) {
       { suffix: "보고", jp: ({ jp }) => reportLabel(jp), applies: ({ jp }) => projects.has(jp) }
     ],
     zh: [
-      { suffix: "确认", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => jp !== "確認" },
+      { suffix: "确认", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { suffix: "信息", jp: ({ jp }) => infoLabel(jp), applies: all },
-      { suffix: "问题", jp: ({ jp }) => questionLabel(jp), applies: all },
+      { suffix: "问题", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { suffix: "笔记", jp: ({ jp }) => memoLabel(jp), applies: all },
       { suffix: "注意点", jp: ({ jp }) => `${jp}の注意点`, applies: all },
       { suffix: "要点", jp: ({ jp }) => `${jp}の要点`, applies: all },
-      { suffix: "流程", jp: ({ jp }) => procedureLabel(jp), applies: all },
-      { suffix: "状态", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => jp !== "進捗" },
+      { suffix: "流程", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
+      { suffix: "状态", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { suffix: "提交", jp: ({ jp }) => `${jp}の提出`, applies: ({ jp }) => documents.has(jp) },
       { suffix: "修改", jp: ({ jp }) => `${jp}の修正`, applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
       { suffix: "共享", jp: ({ jp }) => shareLabel(jp), applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
@@ -469,14 +466,14 @@ function businessWordPatterns(lang) {
       { suffix: "汇报", jp: ({ jp }) => reportLabel(jp), applies: ({ jp }) => projects.has(jp) }
     ],
     fr: [
-      { prefix: "vérification de", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => jp !== "確認" },
+      { prefix: "vérification de", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { prefix: "information sur", jp: ({ jp }) => infoLabel(jp), applies: all },
-      { prefix: "question sur", jp: ({ jp }) => questionLabel(jp), applies: all },
+      { prefix: "question sur", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { prefix: "note sur", jp: ({ jp }) => memoLabel(jp), applies: all },
       { prefix: "point d'attention pour", jp: ({ jp }) => `${jp}の注意点`, applies: all },
       { prefix: "point clé de", jp: ({ jp }) => `${jp}の要点`, applies: all },
-      { prefix: "procédure de", jp: ({ jp }) => procedureLabel(jp), applies: all },
-      { prefix: "état de", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => jp !== "進捗" },
+      { prefix: "procédure de", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
+      { prefix: "état de", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => !selfReferential.has(jp) },
       { prefix: "soumission de", jp: ({ jp }) => `${jp}の提出`, applies: ({ jp }) => documents.has(jp) },
       { prefix: "modification de", jp: ({ jp }) => `${jp}の修正`, applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
       { prefix: "partage de", jp: ({ jp }) => shareLabel(jp), applies: ({ jp }) => documents.has(jp) || projects.has(jp) },

@@ -1,6 +1,6 @@
 ﻿import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260424-feature31";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260424-feature32";
 
 const categoryMeta = {
   basic: {
