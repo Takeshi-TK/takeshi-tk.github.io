@@ -114,7 +114,38 @@ function auditKnownBadCombinations() {
     "リスクをもう一度送ってください",
     "先生の中",
     "先生の入口",
-    "先生の出口"
+    "先生の出口",
+    "共有を共有する",
+    "報告を報告する",
+    "会議を承認する",
+    "リスクを完了する",
+    "担当者を提出する",
+    "健康はあとで見ます",
+    "意味が必要です",
+    "発音が必要です",
+    "質問を先に整理します",
+    "リスクはあとで見ます",
+    "問題点を先に整理します",
+    "質問についての質問",
+    "設定の設定",
+    "進捗の状況",
+    "確認の確認",
+    "意味の意味",
+    "発音の発音",
+    "練習の練習",
+    "記録の記録",
+    "手順の手順",
+    "優先順位の優先順位",
+    "駅に使う予定の"
+  ]);
+  const exactBadTargets = new Set([
+    "질문 질문",
+    "설정 설정",
+    "진행 상황 상황",
+    "确认确认",
+    "问题问题",
+    "设置设置",
+    "状态状态"
   ]);
   const awkwardRegexes = [
     /(先生|学生|友だち|子ども|家族)(が必要|をください|はどこ|を使います|の準備|の一覧|の中|の入口|の出口)/,
@@ -135,6 +166,7 @@ function auditKnownBadCombinations() {
           }
 
           if (exactBadJapanese.has(item.japanese)) fail(`known bad phrase: ${label}`);
+          if (exactBadTargets.has(item.english)) fail(`known bad target: ${label}`);
           if (awkwardRegexes.some((regex) => regex.test(item.japanese)) && !item.japanese.includes("少し考える時間をください")) {
             fail(`awkward generated Japanese: ${label}`);
           }

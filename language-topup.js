@@ -192,7 +192,7 @@ function basicWordPatterns(lang) {
       ["첫", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["다음", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
       ["좋아하는", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
       ["찾는", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
-      ["사용할", "使う予定の", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+      ["사용할", "使う予定の", (item) => isTangible(item) || isTransport(item) || isMedia(item)],
       ["준비", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
       ["목록", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
       ["예보", "の予報", isWeather], ["기록", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
@@ -220,7 +220,7 @@ function basicWordPatterns(lang) {
       ["第一个", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["下一个", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
       ["喜欢的", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
       ["正在找的", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
-      ["要用的", "使う予定の", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+      ["要用的", "使う予定の", (item) => isTangible(item) || isTransport(item) || isMedia(item)],
       ["准备", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
       ["列表", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
       ["预报", "の予報", isWeather], ["记录", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
@@ -244,7 +244,7 @@ function basicWordPatterns(lang) {
     ["l'heure de", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
     ["avec", "と一緒に", (item) => isPerson(item) || isFood(item) || isMedia(item)], ["sans", "なしで", (item) => isFood(item) || isObject(item) || isTransport(item)],
     ["autour de", "の周り", isPlaceOrTransport], ["en face de", "の向かい", isPlaceOrTransport],
-    ["prévu pour", "に使う予定の", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
+    ["prévu pour", "用の", (item) => isTangible(item) || isTransport(item) || isMedia(item)],
     ["la préparation de", "の準備", (item) => isPlace(item) || isObject(item) || isFood(item) || isTransport(item) || isWeather(item)],
     ["la liste de", "の一覧", (item) => isPlace(item) || isTangible(item) || isTransport(item) || isMedia(item)],
     ["la météo de", "の予報", isWeather], ["l'enregistrement de", "の記録", (item) => isClockTime(item) || isWeather(item) || isMedia(item)]
@@ -280,6 +280,12 @@ const actionLabels = {
 };
 
 function actionWordPatterns(lang, category) {
+  if (category === "practical") {
+    return practicalWordPatterns(lang);
+  }
+  if (category === "business") {
+    return businessWordPatterns(lang);
+  }
   if (category === "travel") {
     return travelWordPatterns(lang);
   }
@@ -293,6 +299,199 @@ function actionWordPatterns(lang, category) {
       return `${action[index]} ${target}`;
     },
     jp: ({ jp }) => `${jp}を${action[0]}`
+  }));
+}
+
+function patternTarget(lang, pattern, target) {
+  if (pattern.prefix) {
+    return lang === "fr" ? frJoin(pattern.prefix, target) : `${pattern.prefix}${target}`;
+  }
+  return `${target}${lang === "ko" ? " " : ""}${pattern.suffix}`;
+}
+
+function practicalWordPatterns(lang) {
+  const linguistic = new Set(["意味", "例", "説明", "質問", "答え", "発音", "文", "単語", "会話", "違い", "選択"]);
+  const digital = new Set(["メール", "メッセージ", "通知", "設定", "パスワード", "画面", "ファイル", "検索", "保存", "削除", "接続", "充電", "バッテリー"]);
+  const process = new Set(["予定", "約束", "理由", "方法", "内容", "情報", "住所", "記録", "練習", "復習", "生活", "健康", "気分", "心配", "ミス", "手順", "優先順位", "進み具合"]);
+  const all = () => true;
+  const confirmLabel = (jp) => jp === "確認" ? "確認事項" : `${jp}の確認`;
+  const infoLabel = (jp) => jp === "情報" ? "情報の整理" : `${jp}の情報`;
+  const questionLabel = (jp) => jp === "質問" ? "質問表現" : `${jp}についての質問`;
+  const memoLabel = (jp) => jp === "記録" ? "記録用メモ" : `${jp}についてのメモ`;
+  const basicsLabel = (jp) => jp === "意味" ? "意味の基本" : `${jp}の基本`;
+  const reviewLabel = (jp) => jp === "復習" ? "復習内容の見直し" : `${jp}の見直し`;
+  const pronunciationLabel = (jp) => jp === "発音" ? "発音練習" : `${jp}の発音`;
+  const exampleLabel = (jp) => jp === "例" ? "例文" : `${jp}の例文`;
+  const paraphraseLabel = (jp) => jp === "違い" ? "違いの説明" : `${jp}の言い換え`;
+  const practiceLabel = (jp) => jp === "練習" ? "練習方法" : `${jp}の練習`;
+  const settingLabel = (jp) => jp === "設定" ? "設定方法" : `${jp}の設定`;
+  const saveLabel = (jp) => jp === "保存" ? "保存のしかた" : `${jp}の保存方法`;
+  const deleteLabel = (jp) => jp === "削除" ? "削除のしかた" : `${jp}の削除方法`;
+  const connectionLabel = (jp) => jp === "接続" ? "接続状態の確認" : `${jp}の接続確認`;
+  const procedureLabel = (jp) => jp === "手順" ? "手順の確認" : `${jp}の手順`;
+  const priorityLabel = (jp) => jp === "優先順位" ? "優先順位の決め方" : `${jp}の優先順位`;
+  const recordLabel = (jp) => jp === "記録" ? "記録方法" : `${jp}の記録`;
+
+  const definitions = {
+    ko: [
+      { suffix: "확인", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => jp !== "確認" },
+      { suffix: "정보", jp: ({ jp }) => infoLabel(jp), applies: all },
+      { suffix: "질문", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" },
+      { suffix: "메모", jp: ({ jp }) => memoLabel(jp), applies: all },
+      { suffix: "주의점", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { suffix: "기본", jp: ({ jp }) => basicsLabel(jp), applies: all },
+      { suffix: "관련 표현", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
+      { suffix: "다시 보기", jp: ({ jp }) => reviewLabel(jp), applies: all },
+      { suffix: "발음", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "発音" },
+      { suffix: "예문", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "例" },
+      { suffix: "바꿔 말하기", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => linguistic.has(jp) },
+      { suffix: "연습", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "練習" },
+      { suffix: "설정", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" },
+      { suffix: "저장 방법", jp: ({ jp }) => saveLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "保存" },
+      { suffix: "삭제 방법", jp: ({ jp }) => deleteLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "削除" },
+      { suffix: "연결 확인", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" },
+      { suffix: "절차", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" },
+      { suffix: "우선순위", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" },
+      { suffix: "기록", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" }
+    ],
+    zh: [
+      { suffix: "确认", jp: ({ jp }) => confirmLabel(jp), applies: all },
+      { suffix: "信息", jp: ({ jp }) => infoLabel(jp), applies: all },
+      { suffix: "问题", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" },
+      { suffix: "笔记", jp: ({ jp }) => memoLabel(jp), applies: all },
+      { suffix: "注意点", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { suffix: "基础", jp: ({ jp }) => basicsLabel(jp), applies: all },
+      { suffix: "相关表达", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
+      { suffix: "复盘", jp: ({ jp }) => reviewLabel(jp), applies: all },
+      { suffix: "发音", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "発音" },
+      { suffix: "例句", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "例" },
+      { suffix: "换一种说法", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => linguistic.has(jp) },
+      { suffix: "练习", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "練習" },
+      { suffix: "设置", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" },
+      { suffix: "保存方法", jp: ({ jp }) => saveLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "保存" },
+      { suffix: "删除方法", jp: ({ jp }) => deleteLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "削除" },
+      { suffix: "连接确认", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" },
+      { suffix: "步骤", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" },
+      { suffix: "优先级", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" },
+      { suffix: "记录", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" }
+    ],
+    fr: [
+      { prefix: "vérification de", jp: ({ jp }) => confirmLabel(jp), applies: all },
+      { prefix: "information sur", jp: ({ jp }) => infoLabel(jp), applies: all },
+      { prefix: "question sur", jp: ({ jp }) => questionLabel(jp), applies: ({ jp }) => jp !== "質問" },
+      { prefix: "note sur", jp: ({ jp }) => memoLabel(jp), applies: all },
+      { prefix: "point d'attention pour", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { prefix: "base de", jp: ({ jp }) => basicsLabel(jp), applies: all },
+      { prefix: "expression liée à", jp: ({ jp }) => `${jp}の関連表現`, applies: all },
+      { prefix: "révision de", jp: ({ jp }) => reviewLabel(jp), applies: all },
+      { prefix: "prononciation de", jp: ({ jp }) => pronunciationLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "発音" },
+      { prefix: "phrase d'exemple pour", jp: ({ jp }) => exampleLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "例" },
+      { prefix: "reformulation de", jp: ({ jp }) => paraphraseLabel(jp), applies: ({ jp }) => linguistic.has(jp) },
+      { prefix: "exercice de", jp: ({ jp }) => practiceLabel(jp), applies: ({ jp }) => linguistic.has(jp) && jp !== "練習" },
+      { prefix: "réglage de", jp: ({ jp }) => settingLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "設定" },
+      { prefix: "méthode d'enregistrement de", jp: ({ jp }) => saveLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "保存" },
+      { prefix: "méthode de suppression de", jp: ({ jp }) => deleteLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "削除" },
+      { prefix: "vérification de connexion de", jp: ({ jp }) => connectionLabel(jp), applies: ({ jp }) => digital.has(jp) && jp !== "接続" },
+      { prefix: "procédure de", jp: ({ jp }) => procedureLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "手順" },
+      { prefix: "priorité de", jp: ({ jp }) => priorityLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "優先順位" },
+      { prefix: "enregistrement de", jp: ({ jp }) => recordLabel(jp), applies: ({ jp }) => process.has(jp) && jp !== "記録" }
+    ]
+  };
+
+  return definitions[lang].map((pattern) => ({
+    applies: pattern.applies,
+    target: ({ target }) => patternTarget(lang, pattern, target),
+    jp: pattern.jp
+  }));
+}
+
+function businessWordPatterns(lang) {
+  const documents = new Set(["資料", "報告", "契約", "見積もり", "請求書", "フォーム", "添付ファイル", "最終版", "マニュアル", "成果物"]);
+  const people = new Set(["担当者", "部署", "チーム", "顧客", "取引先"]);
+  const projects = new Set(["会議", "議題", "納品", "在庫", "品質", "費用", "予算", "売上", "締切", "日程", "進捗", "リスク", "問題点", "改善", "提案", "承認", "権限", "セキュリティ", "修正", "返信", "依頼", "検収", "運用", "更新", "公開"]);
+  const all = () => true;
+  const confirmLabel = (jp) => jp === "確認" ? "確認事項" : `${jp}の確認`;
+  const infoLabel = (jp) => {
+    if (jp === "共有") return "共有内容";
+    if (jp === "確認") return "確認内容";
+    if (jp === "報告") return "報告内容";
+    return `${jp}の情報`;
+  };
+  const questionLabel = (jp) => jp === "確認" ? "確認したい点" : `${jp}についての質問`;
+  const memoLabel = (jp) => jp === "報告" ? "報告用メモ" : `${jp}についてのメモ`;
+  const procedureLabel = (jp) => jp === "運用" ? "運用手順" : `${jp}の手順`;
+  const statusLabel = (jp) => jp === "進捗" ? "進捗状況" : `${jp}の状況`;
+  const shareLabel = (jp) => jp === "共有" ? "共有内容" : `${jp}の共有`;
+  const reportLabel = (jp) => jp === "報告" ? "報告内容" : `${jp}の報告`;
+  const managementLabel = (jp) => jp === "運用" ? "運用管理" : `${jp}の管理`;
+
+  const definitions = {
+    ko: [
+      { suffix: "확인", jp: ({ jp }) => confirmLabel(jp), applies: all },
+      { suffix: "정보", jp: ({ jp }) => infoLabel(jp), applies: all },
+      { suffix: "질문", jp: ({ jp }) => questionLabel(jp), applies: all },
+      { suffix: "메모", jp: ({ jp }) => memoLabel(jp), applies: all },
+      { suffix: "주의점", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { suffix: "요점", jp: ({ jp }) => `${jp}の要点`, applies: all },
+      { suffix: "절차", jp: ({ jp }) => procedureLabel(jp), applies: all },
+      { suffix: "상황", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => jp !== "進捗" },
+      { suffix: "제출", jp: ({ jp }) => `${jp}の提出`, applies: ({ jp }) => documents.has(jp) },
+      { suffix: "수정", jp: ({ jp }) => `${jp}の修正`, applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
+      { suffix: "공유", jp: ({ jp }) => shareLabel(jp), applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
+      { suffix: "최종 확인", jp: ({ jp }) => `${jp}の最終確認`, applies: ({ jp }) => documents.has(jp) },
+      { suffix: "연락", jp: ({ jp }) => `${jp}への連絡`, applies: ({ jp }) => people.has(jp) },
+      { suffix: "담당 확인", jp: ({ jp }) => `${jp}の担当確認`, applies: ({ jp }) => people.has(jp) },
+      { suffix: "검토", jp: ({ jp }) => `${jp}の検討`, applies: ({ jp }) => projects.has(jp) },
+      { suffix: "조정", jp: ({ jp }) => `${jp}の調整`, applies: ({ jp }) => projects.has(jp) },
+      { suffix: "관리", jp: ({ jp }) => managementLabel(jp), applies: ({ jp }) => projects.has(jp) },
+      { suffix: "보고", jp: ({ jp }) => reportLabel(jp), applies: ({ jp }) => projects.has(jp) }
+    ],
+    zh: [
+      { suffix: "确认", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => jp !== "確認" },
+      { suffix: "信息", jp: ({ jp }) => infoLabel(jp), applies: all },
+      { suffix: "问题", jp: ({ jp }) => questionLabel(jp), applies: all },
+      { suffix: "笔记", jp: ({ jp }) => memoLabel(jp), applies: all },
+      { suffix: "注意点", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { suffix: "要点", jp: ({ jp }) => `${jp}の要点`, applies: all },
+      { suffix: "流程", jp: ({ jp }) => procedureLabel(jp), applies: all },
+      { suffix: "状态", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => jp !== "進捗" },
+      { suffix: "提交", jp: ({ jp }) => `${jp}の提出`, applies: ({ jp }) => documents.has(jp) },
+      { suffix: "修改", jp: ({ jp }) => `${jp}の修正`, applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
+      { suffix: "共享", jp: ({ jp }) => shareLabel(jp), applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
+      { suffix: "最终确认", jp: ({ jp }) => `${jp}の最終確認`, applies: ({ jp }) => documents.has(jp) },
+      { suffix: "联系", jp: ({ jp }) => `${jp}への連絡`, applies: ({ jp }) => people.has(jp) },
+      { suffix: "负责人确认", jp: ({ jp }) => `${jp}の担当確認`, applies: ({ jp }) => people.has(jp) },
+      { suffix: "讨论", jp: ({ jp }) => `${jp}の検討`, applies: ({ jp }) => projects.has(jp) },
+      { suffix: "调整", jp: ({ jp }) => `${jp}の調整`, applies: ({ jp }) => projects.has(jp) },
+      { suffix: "管理", jp: ({ jp }) => managementLabel(jp), applies: ({ jp }) => projects.has(jp) },
+      { suffix: "汇报", jp: ({ jp }) => reportLabel(jp), applies: ({ jp }) => projects.has(jp) }
+    ],
+    fr: [
+      { prefix: "vérification de", jp: ({ jp }) => confirmLabel(jp), applies: ({ jp }) => jp !== "確認" },
+      { prefix: "information sur", jp: ({ jp }) => infoLabel(jp), applies: all },
+      { prefix: "question sur", jp: ({ jp }) => questionLabel(jp), applies: all },
+      { prefix: "note sur", jp: ({ jp }) => memoLabel(jp), applies: all },
+      { prefix: "point d'attention pour", jp: ({ jp }) => `${jp}の注意点`, applies: all },
+      { prefix: "point clé de", jp: ({ jp }) => `${jp}の要点`, applies: all },
+      { prefix: "procédure de", jp: ({ jp }) => procedureLabel(jp), applies: all },
+      { prefix: "état de", jp: ({ jp }) => statusLabel(jp), applies: ({ jp }) => jp !== "進捗" },
+      { prefix: "soumission de", jp: ({ jp }) => `${jp}の提出`, applies: ({ jp }) => documents.has(jp) },
+      { prefix: "modification de", jp: ({ jp }) => `${jp}の修正`, applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
+      { prefix: "partage de", jp: ({ jp }) => shareLabel(jp), applies: ({ jp }) => documents.has(jp) || projects.has(jp) },
+      { prefix: "vérification finale de", jp: ({ jp }) => `${jp}の最終確認`, applies: ({ jp }) => documents.has(jp) },
+      { prefix: "contact avec", jp: ({ jp }) => `${jp}への連絡`, applies: ({ jp }) => people.has(jp) },
+      { prefix: "confirmation du responsable de", jp: ({ jp }) => `${jp}の担当確認`, applies: ({ jp }) => people.has(jp) },
+      { prefix: "examen de", jp: ({ jp }) => `${jp}の検討`, applies: ({ jp }) => projects.has(jp) },
+      { prefix: "ajustement de", jp: ({ jp }) => `${jp}の調整`, applies: ({ jp }) => projects.has(jp) },
+      { prefix: "gestion de", jp: ({ jp }) => managementLabel(jp), applies: ({ jp }) => projects.has(jp) },
+      { prefix: "rapport sur", jp: ({ jp }) => reportLabel(jp), applies: ({ jp }) => projects.has(jp) }
+    ]
+  };
+
+  return definitions[lang].map((pattern) => ({
+    applies: pattern.applies,
+    target: ({ target }) => patternTarget(lang, pattern, target),
+    jp: pattern.jp
   }));
 }
 
@@ -507,6 +706,12 @@ function phrasePatterns(lang, category) {
   if (category === "travel") {
     return travelPhrasePatterns(lang);
   }
+  if (category === "practical") {
+    return practicalPhrasePatterns(lang);
+  }
+  if (category === "business") {
+    return businessPhrasePatterns(lang);
+  }
 
   const sendablePhrase = ({ jp }) => new Set([
     "ファイル", "写真", "メール", "リンク", "メモ", "回答", "通知", "予定", "日程", "レポート",
@@ -548,6 +753,70 @@ function phrasePatterns(lang, category) {
     { target: ({ target }) => `Je vais d'abord organiser ${target}.`, jp: ({ jp }) => `${jp}を先に整理します` },
     { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を簡単に説明してください` }
   ];
+}
+
+function practicalPhrasePatterns(lang) {
+  const all = () => true;
+  const definitions = {
+    ko: [
+      { target: ({ target }) => `${target}${koObject(target)} 확인해 주세요.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
+      { target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
+      { target: ({ target }) => `${target}에 대해 메모할게요.`, jp: ({ jp }) => `${jp}についてメモします`, applies: all },
+      { target: ({ target }) => `${target}의 주의점을 확인할게요.`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: all },
+      { target: ({ target }) => `${target}${koObject(target)} 다시 확인할게요.`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: all },
+      { target: ({ target }) => `${target}에 대해 쉽게 설명해 주세요.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+    ],
+    zh: [
+      { target: ({ target }) => `请确认${target}。`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
+      { target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
+      { target: ({ target }) => `我会记下关于${target}的内容。`, jp: ({ jp }) => `${jp}についてメモします`, applies: all },
+      { target: ({ target }) => `我确认一下${target}的注意点。`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: all },
+      { target: ({ target }) => `我再确认一下${target}。`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: all },
+      { target: ({ target }) => `请简单说明一下${target}。`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+    ],
+    fr: [
+      { target: ({ target }) => `Vérifiez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
+      { target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
+      { target: ({ target }) => `Je vais prendre une note sur ${target}.`, jp: ({ jp }) => `${jp}についてメモします`, applies: all },
+      { target: ({ target }) => `Je vais vérifier les points d'attention de ${target}.`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: all },
+      { target: ({ target }) => `Je vais revérifier ${target}.`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: all },
+      { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+    ]
+  };
+
+  return definitions[lang];
+}
+
+function businessPhrasePatterns(lang) {
+  const all = () => true;
+  const definitions = {
+    ko: [
+      { target: ({ target }) => `${target}${koObject(target)} 확인해 주세요.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
+      { target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
+      { target: ({ target }) => `${target}에 대해 메모하겠습니다.`, jp: ({ jp }) => `${jp}についてメモします`, applies: all },
+      { target: ({ target }) => `${target}의 상황을 확인하겠습니다.`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: ({ jp }) => jp !== "進捗" },
+      { target: ({ target }) => `${target}의 요점을 확인하겠습니다.`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: all },
+      { target: ({ target }) => `${target}에 대해 쉽게 설명해 주세요.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+    ],
+    zh: [
+      { target: ({ target }) => `请确认${target}。`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
+      { target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
+      { target: ({ target }) => `我会记下关于${target}的内容。`, jp: ({ jp }) => `${jp}についてメモします`, applies: all },
+      { target: ({ target }) => `我确认一下${target}的状态。`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: ({ jp }) => jp !== "進捗" },
+      { target: ({ target }) => `我确认一下${target}的要点。`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: all },
+      { target: ({ target }) => `请简单说明一下${target}。`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+    ],
+    fr: [
+      { target: ({ target }) => `Vérifiez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
+      { target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
+      { target: ({ target }) => `Je vais prendre une note sur ${target}.`, jp: ({ jp }) => `${jp}についてメモします`, applies: all },
+      { target: ({ target }) => `Je vais vérifier l'état de ${target}.`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: ({ jp }) => jp !== "進捗" },
+      { target: ({ target }) => `Je vais vérifier les points clés de ${target}.`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: all },
+      { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+    ]
+  };
+
+  return definitions[lang];
 }
 
 function travelPhrasePatterns(lang) {
