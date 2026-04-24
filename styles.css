@@ -109,6 +109,18 @@ body.dark-mode .usage-help-result.ready {
   border-color: rgba(148, 163, 184, 0.28);
 }
 
+body.dark-mode .hero-free-badge,
+body.dark-mode .profile-note-strong {
+  background: rgba(245, 158, 91, 0.14);
+  border-color: rgba(245, 158, 91, 0.32);
+  color: var(--ink);
+}
+
+body.dark-mode .hero-register-note {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--ink);
+}
+
 .page-shell {
   width: calc(100% - 20px);
   max-width: min(1360px, 100%);
@@ -249,6 +261,32 @@ body.dark-mode .hero {
   color: var(--muted);
   line-break: anywhere;
   word-break: break-word;
+}
+
+.hero-free-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin: 10px 0 4px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(219, 108, 50, 0.16);
+  border: 1px solid rgba(219, 108, 50, 0.28);
+  color: var(--accent-deep);
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.hero-register-note {
+  max-width: 62ch;
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(31, 42, 55, 0.05);
+  color: var(--ink);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  font-weight: 700;
 }
 
 .hero-stats {
@@ -409,6 +447,13 @@ body.dark-mode .hero {
   color: var(--muted);
   line-height: 1.7;
   overflow-wrap: anywhere;
+}
+
+.profile-note-strong {
+  background: rgba(219, 108, 50, 0.1);
+  border-color: rgba(219, 108, 50, 0.24);
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .field-block span,

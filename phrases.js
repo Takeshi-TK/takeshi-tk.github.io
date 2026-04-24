@@ -973,10 +973,110 @@ const practicalPhraseBoost = {
   ]
 };
 
+const sourceInspiredPhraseBoost = {
+  basic: [
+    ...withSharedExplanation([
+      ["Please take a deep breath.", "深呼吸してください"],
+      ["I need a short break.", "少し休憩が必要です"],
+      ["Can you wait here for a moment?", "ここで少し待ってもらえますか"],
+      ["Please tell me the next step.", "次にすることを教えてください"],
+      ["Let's start from the beginning.", "最初から始めましょう"],
+      ["I forgot what to say.", "何と言うか忘れました"],
+      ["I don't have enough time.", "時間が足りません"],
+      ["Can you make it easier?", "もっと簡単にしてもらえますか"],
+      ["Please speak one at a time.", "一人ずつ話してください"],
+      ["I can do that.", "それならできます"],
+      ["I can't do that right now.", "今はそれができません"],
+      ["That is a good idea.", "それはいい考えです"],
+      ["Let's choose this one.", "これを選びましょう"],
+      ["I need to stay calm.", "落ち着く必要があります"],
+      ["Please read this part.", "この部分を読んでください"],
+      ["Can you point to it?", "それを指さしてもらえますか"],
+      ["I want to try by myself.", "自分でやってみたいです"],
+      ["Let's practice one more time.", "もう一度練習しましょう"],
+      ["I can almost remember it.", "もう少しで思い出せそうです"],
+      ["Please check my answer.", "私の答えを確認してください"]
+    ], "短い依頼、確認、返答で使える基本フレーズです。日常会話の入口として、まず声に出して使いやすい表現を追加しています。")
+  ],
+  practical: [
+    ...withSharedExplanation([
+      ["This depends on the case.", "これは場合によります"],
+      ["Let's look at this case carefully.", "この件を慎重に見てみましょう"],
+      ["I want to avoid careless mistakes.", "不注意なミスを避けたいです"],
+      ["Could you show me a clear example?", "わかりやすい例を見せてもらえますか"],
+      ["I need to organize my thoughts.", "考えを整理する必要があります"],
+      ["Let's not overthink it.", "考えすぎないようにしましょう"],
+      ["This sounds more natural.", "こちらのほうが自然に聞こえます"],
+      ["Could you compare these two expressions?", "この二つの表現を比べてもらえますか"],
+      ["I want to use it in daily conversation.", "日常会話で使えるようにしたいです"],
+      ["Please correct only the unnatural part.", "不自然な部分だけ直してください"],
+      ["I need feedback, not just the answer.", "答えだけでなくフィードバックが必要です"],
+      ["Let's make this easier to remember.", "これを覚えやすくしましょう"],
+      ["I want to build a habit.", "習慣を作りたいです"],
+      ["Let's review this tomorrow.", "これは明日見直しましょう"],
+      ["Please remind me later.", "あとで思い出させてください"],
+      ["Can you send it in writing?", "書面で送ってもらえますか"],
+      ["I want to keep a record of this.", "これを記録に残したいです"],
+      ["This is outside my comfort zone.", "これは少し苦手な範囲です"],
+      ["Can we lower the difficulty?", "難易度を下げられますか"],
+      ["That seems more realistic.", "そのほうが現実的そうです"]
+    ], "確認、言い換え、学習相談、判断の場面で使いやすい実用フレーズです。丸暗記ではなく、実際の会話で使える型を増やしています。")
+  ],
+  business: [
+    ...withSharedExplanation([
+      ["Could you share the main takeaway?", "主なポイントを共有してもらえますか"],
+      ["Who should approve this?", "これは誰が承認するべきですか"],
+      ["Can we set a clear deadline?", "明確な締切を設定できますか"],
+      ["I'll prepare the first draft.", "最初の案を準備します"],
+      ["Please review it when you have time.", "時間があるときに確認してください"],
+      ["Let's keep the client updated.", "顧客に最新状況を共有し続けましょう"],
+      ["We need to reduce unnecessary steps.", "不要な手順を減らす必要があります"],
+      ["Could you check the latest figures?", "最新の数字を確認してもらえますか"],
+      ["Let's decide the priority first.", "まず優先順位を決めましょう"],
+      ["Can we confirm the budget range?", "予算の範囲を確認できますか"],
+      ["I'll contact the person in charge.", "担当者に連絡します"],
+      ["Please send the final file.", "最終版のファイルを送ってください"],
+      ["Let's keep the tone professional.", "文面は仕事向けの丁寧さにしましょう"],
+      ["Could you add a brief note?", "短い補足を追加してもらえますか"],
+      ["We should avoid unclear wording.", "あいまいな表現は避けたほうがよいです"],
+      ["Can we test it before release?", "公開前にテストできますか"],
+      ["Let's prepare for possible questions.", "想定される質問に備えましょう"],
+      ["I need to check the contract first.", "先に契約内容を確認する必要があります"],
+      ["Could you introduce me to the right person?", "適切な担当者を紹介してもらえますか"],
+      ["Let's make the next action obvious.", "次の行動が分かるようにしましょう"]
+    ], "会議、確認、承認、顧客対応、資料作成で使えるビジネスフレーズです。仕事でそのまま使いやすい自然な言い方を増やしています。")
+  ],
+  travel: [
+    ...withSharedExplanation([
+      ["Can I get a receipt?", "レシートをもらえますか"],
+      ["Could you call a taxi for me?", "タクシーを呼んでもらえますか"],
+      ["I need to change trains.", "電車を乗り換える必要があります"],
+      ["Is this train direct?", "この電車は直通ですか"],
+      ["Where is the information desk?", "案内所はどこですか"],
+      ["Could you speak into this app?", "このアプリに向かって話してもらえますか"],
+      ["I have a reservation under this name.", "この名前で予約しています"],
+      ["Can I check in early?", "早めにチェックインできますか"],
+      ["The air conditioner is not working.", "エアコンが動いていません"],
+      ["There is no hot water.", "お湯が出ません"],
+      ["Could you change my room?", "部屋を変更してもらえますか"],
+      ["I'm allergic to nuts.", "ナッツアレルギーがあります"],
+      ["Does this contain meat?", "これは肉が入っていますか"],
+      ["Could you make it less spicy?", "辛さを控えめにできますか"],
+      ["Where can I buy a ticket?", "チケットはどこで買えますか"],
+      ["Can I use this pass today?", "このパスは今日使えますか"],
+      ["I need to report a problem.", "問題を報告したいです"],
+      ["Could you write the address in English?", "住所を英語で書いてもらえますか"],
+      ["Is there a restroom nearby?", "近くにトイレはありますか"],
+      ["Can I leave my luggage until evening?", "夕方まで荷物を預けられますか"]
+    ], "移動、宿泊、食事、支払い、トラブル対応で使える旅行フレーズです。海外で困りやすい場面を想定して追加しています。")
+  ]
+};
+
 const basicPhraseWords = dedupeEntries([
   ...legacyPhrases.beginner.words,
   ...buildEntries(basicPhraseExpansion),
   ...buildEntries(practicalPhraseBoost.basic),
+  ...buildEntries(sourceInspiredPhraseBoost.basic),
   ...buildEntries([
     ["See you tomorrow.", "また明日ね", "別れ際に次の日また会う予定があるときの自然な一言です。See you later よりも日時がはっきりしています。"],
     ["What time is it now?", "今何時ですか", "時刻をたずねる基本表現です。now を入れることで、今の時刻を知りたい意図がより明確になります。"],
@@ -1009,6 +1109,7 @@ const practicalPhraseWords = dedupeEntries([
   ...legacyPhrases.advanced.words,
   ...buildEntries(practicalPhraseExpansion),
   ...buildEntries(practicalPhraseBoost.practical),
+  ...buildEntries(sourceInspiredPhraseBoost.practical),
   ...buildEntries([
     ["Could you write it down for me?", "書いてもらえますか", "聞き取りにくい単語や住所、番号などを文字で確認したいときの表現です。口頭だけでは不安な場面で役立ちます。"],
     ["I need a little more time.", "もう少し時間が必要です", "その場ですぐに決められないときや、準備に少し時間が欲しいときに使える表現です。丁寧で使い回しやすい一言です。"],
@@ -1040,6 +1141,7 @@ const businessPhraseWords = dedupeEntries([
   ...legacyPhrases.business.words,
   ...buildEntries(businessPhraseExpansion),
   ...buildEntries(practicalPhraseBoost.business),
+  ...buildEntries(sourceInspiredPhraseBoost.business),
   ...buildEntries([
     ["Could you share the file with the team?", "そのファイルをチームに共有してもらえますか", "社内の共有作業でよく使う表現です。share A with B で「AをBに共有する」という形になります。"],
     ["Let's confirm the deadline once again.", "締切をもう一度確認しましょう", "日程トラブルを防ぐために、あらためて確認するときの言い方です。once again を入れると再確認の意図が明確です。"],
@@ -1072,6 +1174,7 @@ const travelPhraseWords = dedupeEntries([
   ...legacyPhrases.travel.words,
   ...buildEntries(travelPhraseExpansion),
   ...buildEntries(practicalPhraseBoost.travel),
+  ...buildEntries(sourceInspiredPhraseBoost.travel),
   ...buildEntries([
     ["Is this seat taken?", "この席は空いていますか", "電車、バス、待合室などで座ってよいか確認する基本表現です。taken は「使われている、埋まっている」という意味です。"],
     ["Could I have a non-smoking room?", "禁煙の部屋をお願いできますか", "ホテルで部屋の希望を伝える定番表現です。smoking room と対で覚えると便利です。"],
