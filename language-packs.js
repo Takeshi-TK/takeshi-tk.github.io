@@ -591,12 +591,154 @@ const frenchPhraseBoost = {
   ]
 };
 
-const expandedKoreanWords = mergeGroups(koreanWords, koreanWordBoost);
-const expandedKoreanPhrases = mergeGroups(koreanPhrases, koreanPhraseBoost);
-const expandedChineseWords = mergeGroups(chineseWords, chineseWordBoost);
-const expandedChinesePhrases = mergeGroups(chinesePhrases, chinesePhraseBoost);
-const expandedFrenchWords = mergeGroups(frenchWords, frenchWordBoost);
-const expandedFrenchPhrases = mergeGroups(frenchPhrases, frenchPhraseBoost);
+const koreanWordBoost2 = {
+  basic: [
+    ["남자", "男性"], ["여자", "女性"], ["아기", "赤ちゃん"], ["형", "兄"], ["누나", "姉"],
+    ["동생", "弟 / 妹"], ["시장", "市場"], ["공원", "公園"], ["거리", "通り / 距離"], ["우유", "牛乳"],
+    ["계란", "卵"], ["노래", "歌"], ["운동", "運動"], ["읽다", "読む"], ["쓰다", "書く / 使う"]
+  ],
+  practical: [
+    ["생활비", "生活費"], ["알림", "通知"], ["메모", "メモ"], ["앱 설정", "アプリ設定"], ["로그인", "ログイン"],
+    ["저장", "保存"], ["삭제", "削除"], ["복습", "復習"], ["반복", "反復"], ["연결", "接続"],
+    ["실패", "失敗"], ["성공", "成功"], ["추천", "おすすめ"], ["익숙하다", "慣れている"], ["확실하다", "確かだ"]
+  ],
+  business: [
+    ["견적", "見積もり"], ["청구서", "請求書"], ["납품", "納品"], ["매뉴얼", "マニュアル"], ["권한", "権限"],
+    ["보안", "セキュリティ"], ["재고", "在庫"], ["담당", "担当"], ["승인 요청", "承認依頼"], ["회신", "返信"],
+    ["지연", "遅延"], ["합의", "合意"], ["공유 폴더", "共有フォルダ"], ["운영팀", "運用チーム"], ["검수", "検収"]
+  ],
+  travel: [
+    ["탑승구", "搭乗口"], ["수하물", "預け荷物"], ["환전", "両替"], ["여권 번호", "パスポート番号"], ["숙박비", "宿泊費"],
+    ["체크아웃", "チェックアウト"], ["온수", "お湯"], ["조용한 방", "静かな部屋"], ["분실", "紛失"], ["안내소", "案内所"],
+    ["버스 정류장", "バス停"], ["약", "薬"], ["통역", "通訳"], ["영업 중", "営業中"], ["매진", "売り切れ"]
+  ]
+};
+
+const koreanPhraseBoost2 = {
+  basic: [
+    ["오늘은 집에서 쉬고 싶어요.", "今日は家で休みたいです"], ["이 노래를 좋아해요.", "この歌が好きです"], ["공원에서 만나요.", "公園で会いましょう"],
+    ["우유를 하나 사 주세요.", "牛乳を一つ買ってください"], ["천천히 읽어 볼게요.", "ゆっくり読んでみます"], ["제가 먼저 쓸게요.", "私が先に書きます"],
+    ["동생이 아직 안 왔어요.", "弟 / 妹がまだ来ていません"], ["시장이 어디에 있어요?", "市場はどこにありますか"], ["운동을 자주 해요.", "よく運動します"], ["이 거리는 조용해요.", "この通りは静かです"]
+  ],
+  practical: [
+    ["알림을 꺼도 될까요?", "通知を切ってもいいですか"], ["메모로 남겨 둘게요.", "メモに残しておきます"], ["로그인이 잘 안 돼요.", "ログインがうまくできません"],
+    ["파일을 다시 저장해 주세요.", "ファイルをもう一度保存してください"], ["삭제하기 전에 확인해 주세요.", "削除する前に確認してください"], ["복습할 내용을 표시해 주세요.", "復習する内容を表示してください"],
+    ["같은 문장을 반복해서 들어요.", "同じ文を繰り返し聞きます"], ["인터넷 연결이 끊겼어요.", "インターネット接続が切れました"], ["성공한 방법을 알려 주세요.", "うまくいった方法を教えてください"], ["아직 익숙하지 않아요.", "まだ慣れていません"]
+  ],
+  business: [
+    ["견적서를 다시 보내 주세요.", "見積書を送り直してください"], ["청구서 발행일을 확인하겠습니다.", "請求書の発行日を確認します"], ["납품 일정을 조정해야 합니다.", "納品日程を調整する必要があります"],
+    ["권한 설정을 확인해 주세요.", "権限設定を確認してください"], ["보안상 공유할 수 없습니다.", "セキュリティ上、共有できません"], ["재고가 부족합니다.", "在庫が不足しています"],
+    ["승인 요청을 올리겠습니다.", "承認依頼を出します"], ["회신이 아직 없습니다.", "返信がまだありません"], ["일정이 지연되고 있습니다.", "日程が遅れています"], ["운영팀에 확인하겠습니다.", "運用チームに確認します"]
+  ],
+  travel: [
+    ["탑승구가 변경되었습니다.", "搭乗口が変更されました"], ["수하물을 어디서 찾나요?", "預け荷物はどこで受け取りますか"], ["근처에서 환전할 수 있나요?", "近くで両替できますか"],
+    ["체크아웃 시간을 알고 싶어요.", "チェックアウト時間を知りたいです"], ["방에 온수가 안 나와요.", "部屋でお湯が出ません"], ["조용한 방으로 바꿀 수 있나요?", "静かな部屋に変えられますか"],
+    ["분실물을 신고하고 싶어요.", "忘れ物を届け出たいです"], ["버스 정류장은 어디인가요?", "バス停はどこですか"], ["약을 살 수 있는 곳이 있나요?", "薬を買える場所はありますか"], ["오늘 표는 매진인가요?", "今日のチケットは売り切れですか"],
+    ["짐 보관 시간이 몇 시까지예요?", "荷物預かりは何時までですか"], ["택시비는 대략 얼마인가요?", "タクシー代はだいたいいくらですか"]
+  ]
+};
+
+const chineseWordBoost2 = {
+  basic: [
+    ["男人", "男性"], ["女人", "女性"], ["孩子", "子ども"], ["宝宝", "赤ちゃん"], ["哥哥", "兄"],
+    ["姐姐", "姉"], ["弟弟", "弟"], ["妹妹", "妹"], ["市场", "市場"], ["公园", "公園"], ["衣服", "服"],
+    ["街道", "通り"], ["牛奶", "牛乳"], ["鸡蛋", "卵"], ["唱歌", "歌う"], ["写字", "字を書く"]
+  ],
+  practical: [
+    ["生活费", "生活費"], ["通知", "通知"], ["笔记", "メモ"], ["设置", "設定"], ["登录", "ログイン"],
+    ["备份", "バックアップ"], ["清理", "片付ける / 整理する"], ["回顾", "振り返る"], ["重复", "繰り返す"], ["连接", "接続"],
+    ["失败", "失敗"], ["成功", "成功"], ["建议", "提案 / アドバイス"], ["习惯", "習慣"], ["清楚", "はっきりした"],
+    ["排序", "並べ替える"]
+  ],
+  business: [
+    ["报价", "見積もり"], ["发票", "請求書 / 領収書"], ["交付", "納品"], ["手册", "マニュアル"], ["权限", "権限"],
+    ["安全", "セキュリティ"], ["库存", "在庫"], ["负责", "担当する"], ["审批申请", "承認依頼"], ["回信", "返信"],
+    ["延迟", "遅延"], ["共识", "合意"], ["共享文件夹", "共有フォルダ"], ["运营团队", "運用チーム"], ["验收", "検収"]
+  ],
+  travel: [
+    ["登机口", "搭乗口"], ["托运行李", "預け荷物"], ["换钱", "両替する"], ["护照号码", "パスポート番号"], ["住宿费", "宿泊費"],
+    ["退房", "チェックアウト"], ["热水", "お湯"], ["安静的房间", "静かな部屋"], ["丢失", "紛失"], ["问讯处", "案内所"],
+    ["公交车站", "バス停"], ["药", "薬"], ["翻译", "通訳 / 翻訳"], ["营业中", "営業中"], ["卖完", "売り切れ"]
+  ]
+};
+
+const chinesePhraseBoost2 = {
+  basic: [
+    ["今天我想在家休息。", "今日は家で休みたいです"], ["我喜欢这首歌。", "この歌が好きです"], ["我们在公园见吧。", "公園で会いましょう"],
+    ["请买一瓶牛奶。", "牛乳を1本買ってください"], ["我慢慢读一遍。", "ゆっくり一度読みます"], ["我先写。", "私が先に書きます"],
+    ["孩子还没回来。", "子どもがまだ帰っていません"], ["市场在哪里？", "市場はどこですか"], ["我经常运动。", "よく運動します"], ["这条街很安静。", "この通りは静かです"]
+  ],
+  practical: [
+    ["可以关掉通知吗？", "通知を切ってもいいですか"], ["我会记在笔记里。", "メモに残します"], ["我登录不了。", "ログインできません"],
+    ["请再保存一次文件。", "ファイルをもう一度保存してください"], ["删除前请确认。", "削除する前に確認してください"], ["请显示要复习的内容。", "復習する内容を表示してください"],
+    ["我会反复听同一句话。", "同じ文を繰り返し聞きます"], ["网络连接断了。", "ネット接続が切れました"], ["请告诉我成功的方法。", "うまくいった方法を教えてください"], ["我还不习惯。", "まだ慣れていません"]
+  ],
+  business: [
+    ["请重新发送报价单。", "見積書を送り直してください"], ["我确认一下发票日期。", "請求書の日付を確認します"], ["需要调整交付日期。", "納品日を調整する必要があります"],
+    ["请确认权限设置。", "権限設定を確認してください"], ["出于安全原因不能共享。", "セキュリティ上、共有できません"], ["库存不够。", "在庫が足りません"],
+    ["我会提交审批申请。", "承認依頼を出します"], ["还没有收到回信。", "返信がまだありません"], ["进度有延迟。", "進捗が遅れています"], ["我会和运营团队确认。", "運用チームに確認します"]
+  ],
+  travel: [
+    ["登机口变了。", "搭乗口が変わりました"], ["托运行李在哪里取？", "預け荷物はどこで受け取りますか"], ["附近可以换钱吗？", "近くで両替できますか"],
+    ["我想知道退房时间。", "チェックアウト時間を知りたいです"], ["房间没有热水。", "部屋でお湯が出ません"], ["可以换到安静的房间吗？", "静かな部屋に変えられますか"],
+    ["我想申报丢失物品。", "忘れ物を届け出たいです"], ["公交车站在哪里？", "バス停はどこですか"], ["附近有医院吗？", "近くに病院はありますか"], ["今天的票卖完了吗？", "今日のチケットは売り切れですか"],
+    ["出租车费大概多少钱？", "タクシー代はだいたいいくらですか"]
+  ]
+};
+
+const frenchWordBoost2 = {
+  basic: [
+    ["homme", "男性"], ["femme", "女性"], ["bébé", "赤ちゃん"], ["frère", "兄 / 弟"], ["sœur", "姉 / 妹"],
+    ["marché", "市場"], ["parc", "公園"], ["rue", "通り"], ["lait", "牛乳"], ["œuf", "卵"],
+    ["chanson", "歌"], ["sport", "運動"], ["lire", "読む"], ["utiliser", "使う"], ["acheter", "買う"]
+  ],
+  practical: [
+    ["dépenses", "生活費"], ["notification", "通知"], ["note", "メモ"], ["réglage", "設定"], ["connexion", "ログイン / 接続"],
+    ["enregistrer", "保存する"], ["effacer", "消す"], ["révision", "復習"], ["répétition", "反復"], ["échec", "失敗"],
+    ["réussite", "成功"], ["conseil", "助言 / おすすめ"], ["habitué", "慣れている"], ["clair", "はっきりした"], ["rapide", "速い"]
+  ],
+  business: [
+    ["devis", "見積もり"], ["facture", "請求書"], ["livraison", "納品 / 配送"], ["manuel", "マニュアル"], ["autorisation", "権限"],
+    ["sécurité", "セキュリティ"], ["stock", "在庫"], ["demande d'approbation", "承認依頼"], ["retard", "遅延"], ["accord", "合意"],
+    ["dossier partagé", "共有フォルダ"], ["équipe opérationnelle", "運用チーム"], ["recette", "検収"], ["prioritaire", "優先の"], ["mise à jour", "更新"]
+  ],
+  travel: [
+    ["porte d'embarquement", "搭乗口"], ["bagage enregistré", "預け荷物"], ["change", "両替"], ["numéro de passeport", "パスポート番号"], ["frais d'hébergement", "宿泊費"],
+    ["départ de l'hôtel", "チェックアウト"], ["eau chaude", "お湯"], ["chambre calme", "静かな部屋"], ["perte", "紛失"], ["point d'information", "案内所"],
+    ["arrêt de bus", "バス停"], ["médicament", "薬"], ["interprète", "通訳"], ["ouvert", "営業中"], ["complet", "満席 / 売り切れ"]
+  ]
+};
+
+const frenchPhraseBoost2 = {
+  basic: [
+    ["Aujourd'hui, je veux me reposer à la maison.", "今日は家で休みたいです"], ["J'aime cette chanson.", "この歌が好きです"], ["On se retrouve au parc.", "公園で会いましょう"],
+    ["Achetez du lait, s'il vous plaît.", "牛乳を買ってください"], ["Je vais lire lentement.", "ゆっくり読みます"], ["J'écris d'abord.", "私が先に書きます"],
+    ["Mon frère n'est pas encore arrivé.", "兄 / 弟がまだ来ていません"], ["Où est le marché ?", "市場はどこですか"], ["Je fais souvent du sport.", "よく運動します"], ["Cette rue est calme.", "この通りは静かです"]
+  ],
+  practical: [
+    ["Je peux désactiver les notifications ?", "通知を切ってもいいですか"], ["Je vais le noter.", "メモしておきます"], ["Je n'arrive pas à me connecter.", "ログインできません"],
+    ["Enregistrez encore le fichier, s'il vous plaît.", "ファイルをもう一度保存してください"], ["Vérifiez avant de supprimer.", "削除する前に確認してください"], ["Affichez ce que je dois réviser.", "復習する内容を表示してください"],
+    ["J'écoute la même phrase plusieurs fois.", "同じ文を何度も聞きます"], ["La connexion Internet est coupée.", "ネット接続が切れました"], ["Dites-moi ce qui a bien marché.", "うまくいった方法を教えてください"], ["Je ne suis pas encore habitué.", "まだ慣れていません"]
+  ],
+  business: [
+    ["Renvoyez le devis, s'il vous plaît.", "見積書を送り直してください"], ["Je vais vérifier la date de la facture.", "請求書の日付を確認します"], ["Il faut ajuster la date de livraison.", "納品日を調整する必要があります"],
+    ["Vérifiez les autorisations.", "権限を確認してください"], ["On ne peut pas partager cela pour des raisons de sécurité.", "セキュリティ上、共有できません"], ["Le stock est insuffisant.", "在庫が足りません"],
+    ["Je vais faire une demande d'approbation.", "承認依頼を出します"], ["Je n'ai pas encore reçu de réponse.", "返信をまだ受け取っていません"], ["Le planning prend du retard.", "予定が遅れています"], ["Je vais vérifier avec l'équipe opérationnelle.", "運用チームに確認します"]
+  ],
+  travel: [
+    ["La porte d'embarquement a changé.", "搭乗口が変わりました"], ["Où récupère-t-on les bagages enregistrés ?", "預け荷物はどこで受け取りますか"], ["Peut-on faire du change près d'ici ?", "近くで両替できますか"],
+    ["Je voudrais connaître l'heure de départ de l'hôtel.", "チェックアウト時間を知りたいです"], ["Il n'y a pas d'eau chaude dans la chambre.", "部屋でお湯が出ません"], ["Puis-je changer pour une chambre plus calme ?", "もっと静かな部屋に変えられますか"],
+    ["Je voudrais déclarer un objet perdu.", "忘れ物を届け出たいです"], ["Où est l'arrêt de bus ?", "バス停はどこですか"], ["Y a-t-il un hôpital près d'ici ?", "近くに病院はありますか"], ["Les billets d'aujourd'hui sont complets ?", "今日のチケットは売り切れですか"],
+    ["Combien coûte environ le taxi ?", "タクシー代はだいたいいくらですか"]
+  ]
+};
+
+const expandedKoreanWords = mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2);
+const expandedKoreanPhrases = mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2);
+const expandedChineseWords = mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2);
+const expandedChinesePhrases = mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2);
+const expandedFrenchWords = mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2);
+const expandedFrenchPhrases = mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2);
 
 export const languagePacks = {
   en: {
