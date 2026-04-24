@@ -1,5 +1,5 @@
-import { vocabulary } from "./vocabulary.js?v=20260424-feature20";
-import { phrases } from "./phrases.js?v=20260424-feature20";
+import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
+import { phrases } from "./phrases.js?v=20260424-feature21";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -59,8 +59,6 @@ const saveDailyGoalButton = document.querySelector("#saveDailyGoalButton");
 const dailyGoalStatus = document.querySelector("#dailyGoalStatus");
 const weeklyCalendar = document.querySelector("#weeklyCalendar");
 const showGoalHistoryButton = document.querySelector("#showGoalHistoryButton");
-const goalHistoryPanel = document.querySelector("#goalHistoryPanel");
-const goalHistoryGrid = document.querySelector("#goalHistoryGrid");
 const activeProfileName = document.querySelector("#activeProfileName");
 const profileIdInput = document.querySelector("#profileIdInput");
 const profilePasswordInput = document.querySelector("#profilePasswordInput");
@@ -123,7 +121,7 @@ const gapValue = document.querySelector("#gapValue");
 const walkStartButton = document.querySelector("#walkStartButton");
 const walkStopButton = document.querySelector("#walkStopButton");
 const walkPreviousButton = document.querySelector("#walkPreviousButton");
-const walkResetButton = document.querySelector("#walkResetButton");
+const walkNextButton = document.querySelector("#walkNextButton");
 const walkReplayButton = document.querySelector("#walkReplayButton");
 
 const state = {
@@ -922,7 +920,7 @@ function renderCategories() {
 }
 
 function renderWeeklyGoalCalendar(profile) {
-  if (!weeklyCalendar || !dailyGoalStatus || !goalHistoryGrid) {
+  if (!weeklyCalendar || !dailyGoalStatus) {
     return;
   }
 
@@ -949,22 +947,6 @@ function renderWeeklyGoalCalendar(profile) {
     `;
   }).join("");
 
-  goalHistoryGrid.innerHTML = weekDates.map((day) => {
-    const stats = getDailySnapshot(profile, day.key);
-    const achieved = stats.studyCount >= goal;
-
-    return `
-      <article class="goal-history-day ${achieved ? "achieved" : ""}">
-        <div>
-          <strong>${day.label} ${day.shortDate}</strong>
-          <span>${achieved ? "達成" : "未達成"}</span>
-        </div>
-        <p>学習数 ${stats.studyCount} / ${goal}</p>
-        <p>回答数 ${stats.quizAttempts}・正解数 ${stats.quizCorrect}・正答率 ${stats.accuracy}%</p>
-        <p>再生回数 ${stats.playCount}</p>
-      </article>
-    `;
-  }).join("");
 }
 
 function updateSnapshot() {
@@ -1904,6 +1886,8 @@ function setupMediaSessionControls() {
   const handlers = {
     previoustrack: () => goToPreviousWalkingItem(),
     seekbackward: () => goToPreviousWalkingItem(),
+    nexttrack: () => goToNextWalkingItem(),
+    seekforward: () => goToNextWalkingItem(),
     pause: () => stopWalking(true),
     play: () => startWalking()
   };
@@ -2110,10 +2094,29 @@ function goToPreviousWalkingItem() {
   }
 }
 
-function resetWalking() {
-  stopWalking(true);
-  rebuildWalkingQueue();
+function goToNextWalkingItem() {
+  if (!state.walking.queue.length) {
+    return;
+  }
+
+  const wasActive = state.walking.active;
+  state.walking.position += 1;
+  if (state.walking.position >= state.walking.queue.length) {
+    rebuildWalkingQueue();
+  }
+
+  state.walking.token += 1;
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
   updateWalkingDisplay();
+
+  if (wasActive) {
+    state.walking.active = true;
+    runWalking(state.walking.token);
+  }
 }
 
 function syncControls() {
@@ -2146,8 +2149,7 @@ function saveDailyGoal() {
 }
 
 function toggleGoalHistory() {
-  const isHidden = goalHistoryPanel.classList.toggle("hidden");
-  showGoalHistoryButton.textContent = isHidden ? "達成日を確認" : "達成日を閉じる";
+  window.location.href = "./calendar.html";
 }
 
 function setStudyType(studyType, answerMode = "jpToEn") {
@@ -2411,8 +2413,8 @@ walkPreviousButton.addEventListener("click", () => {
   goToPreviousWalkingItem();
 });
 
-walkResetButton.addEventListener("click", () => {
-  resetWalking();
+walkNextButton.addEventListener("click", () => {
+  goToNextWalkingItem();
 });
 
 walkReplayButton.addEventListener("click", () => {

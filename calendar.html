@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="google-adsense-account" content="ca-pub-3121682237695422">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StrideWords | 達成カレンダー</title>
+  <meta
+    name="description"
+    content="StrideWordsの学習目標達成日を月別カレンダーで確認できます。"
+  >
+  <link rel="stylesheet" href="./styles.css?v=20260424-feature21">
+</head>
+<body>
+  <div class="page-shell">
+    <main class="page-card">
+      <p class="eyebrow">Study Goal Calendar</p>
+      <h1>達成カレンダー</h1>
+      <p id="calendarSummary" class="hero-text">
+        2026年4月1日以降の学習目標達成状況を月別で確認できます。
+      </p>
+
+      <div class="calendar-toolbar">
+        <button id="prevMonthButton" class="ghost-button" type="button">前の月</button>
+        <h2 id="calendarMonthTitle">読み込み中...</h2>
+        <button id="nextMonthButton" class="ghost-button" type="button">次の月</button>
+      </div>
+
+      <div class="snapshot-grid">
+        <div>
+          <span class="snapshot-label">現在のID</span>
+          <strong id="calendarProfileName">guest</strong>
+        </div>
+        <div>
+          <span class="snapshot-label">一日の目標数</span>
+          <strong id="calendarDailyGoal">20</strong>
+        </div>
+        <div>
+          <span class="snapshot-label">月内達成日</span>
+          <strong id="calendarAchievedCount">0日</strong>
+        </div>
+      </div>
+
+      <div id="calendarGrid" class="calendar-month-grid" aria-label="月別の目標達成状況"></div>
+
+      <div class="inline-actions">
+        <a class="ghost-button" href="./index.html">学習画面へ戻る</a>
+      </div>
+    </main>
+  </div>
+  <script src="./calendar.js?v=20260424-feature21"></script>
+</body>
+</html>
