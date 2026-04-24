@@ -9,7 +9,12 @@
     name="description"
     content="StrideWordsの学習目標達成日を月別カレンダーで確認できます。"
   >
-  <link rel="stylesheet" href="./styles.css?v=20260424-feature21">
+  <link rel="stylesheet" href="./styles.css?v=20260424-feature22">
+  <script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3121682237695422"
+    crossorigin="anonymous"
+  ></script>
 </head>
 <body>
   <div class="page-shell">
@@ -43,11 +48,32 @@
 
       <div id="calendarGrid" class="calendar-month-grid" aria-label="月別の目標達成状況"></div>
 
+      <section id="calendarDetailPanel" class="calendar-detail-panel hidden" aria-live="polite">
+        <p class="section-label">Daily Detail</p>
+        <h3 id="calendarDetailTitle">日付を選択してください</h3>
+        <div id="calendarDetailBody" class="calendar-detail-grid"></div>
+      </section>
+
       <div class="inline-actions">
         <a class="ghost-button" href="./index.html">学習画面へ戻る</a>
       </div>
+
+      <section class="calendar-bottom-ad" aria-label="広告">
+        <p class="section-label">Advertisement</p>
+        <ins
+          class="adsbygoogle responsive-ad-slot"
+          style="display:block"
+          data-ad-client="ca-pub-3121682237695422"
+          data-ad-slot="4937437411"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </section>
     </main>
   </div>
-  <script src="./calendar.js?v=20260424-feature21"></script>
+  <script src="./calendar.js?v=20260424-feature22"></script>
 </body>
 </html>

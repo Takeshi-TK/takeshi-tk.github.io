@@ -1185,13 +1185,17 @@ body.dark-mode .quiz-panel .quiz-footer {
 }
 
 .month-day-card {
+  border: 1px solid rgba(31, 42, 55, 0.08);
+  color: var(--ink);
+  cursor: pointer;
   display: grid;
-  gap: 6px;
-  min-height: 128px;
-  padding: 10px;
+  gap: 4px;
+  min-height: 76px;
+  padding: 10px 8px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(31, 42, 55, 0.08);
+  text-align: left;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
 .month-day-card.blank {
@@ -1201,6 +1205,16 @@ body.dark-mode .quiz-panel .quiz-footer {
 
 .month-day-card.future {
   opacity: 0.55;
+}
+
+.month-day-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(31, 42, 55, 0.1);
+}
+
+.month-day-card:focus-visible {
+  outline: 3px solid rgba(219, 108, 50, 0.3);
+  outline-offset: 2px;
 }
 
 .month-day-card.today {
@@ -1227,6 +1241,8 @@ body.dark-mode .quiz-panel .quiz-footer {
 .month-day-mark {
   color: var(--success);
   font-weight: 900;
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .month-day-status {
@@ -1248,7 +1264,48 @@ body.dark-mode .quiz-panel .quiz-footer {
   line-height: 1.35;
 }
 
-body.dark-mode .month-day-card {
+.calendar-detail-panel,
+.calendar-bottom-ad {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(31, 42, 55, 0.08);
+}
+
+.calendar-detail-panel h3 {
+  margin: 8px 0 0;
+  font-size: clamp(1.1rem, 3vw, 1.45rem);
+}
+
+.calendar-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.calendar-detail-grid > div {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.calendar-detail-grid strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1rem;
+}
+
+.calendar-bottom-ad {
+  min-height: 148px;
+}
+
+body.dark-mode .month-day-card,
+body.dark-mode .calendar-detail-panel,
+body.dark-mode .calendar-detail-grid > div,
+body.dark-mode .calendar-bottom-ad {
   background: rgba(15, 23, 42, 0.42);
   border-color: rgba(148, 163, 184, 0.18);
 }
@@ -1683,7 +1740,7 @@ body.dark-mode .month-day-card.achieved {
   }
 
   .month-day-card {
-    min-height: 112px;
+    min-height: 58px;
     padding: 7px;
     border-radius: 12px;
   }
@@ -1691,5 +1748,14 @@ body.dark-mode .month-day-card.achieved {
   .month-day-stats,
   .month-day-status {
     font-size: 0.68rem;
+  }
+
+  .calendar-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .calendar-detail-grid > div {
+    padding: 8px;
   }
 }

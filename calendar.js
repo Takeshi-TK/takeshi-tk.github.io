@@ -13,8 +13,13 @@ const calendarProfileName = document.querySelector("#calendarProfileName");
 const calendarDailyGoal = document.querySelector("#calendarDailyGoal");
 const calendarAchievedCount = document.querySelector("#calendarAchievedCount");
 const calendarGrid = document.querySelector("#calendarGrid");
+const calendarDetailPanel = document.querySelector("#calendarDetailPanel");
+const calendarDetailTitle = document.querySelector("#calendarDetailTitle");
+const calendarDetailBody = document.querySelector("#calendarDetailBody");
 
 let visibleMonth = new Date(currentMonth);
+let activeProfile = null;
+let activeGoal = 20;
 
 function formatDateKey(date) {
   const year = date.getFullYear();
@@ -92,6 +97,8 @@ function renderCalendar() {
   const goal = Math.max(1, Number(profile.stats.dailyGoal || 20));
   const monthDays = getMonthDays(visibleMonth);
   let achievedCount = 0;
+  activeProfile = profile;
+  activeGoal = goal;
 
   calendarMonthTitle.textContent = `${visibleMonth.getFullYear()}年${visibleMonth.getMonth() + 1}月`;
   calendarProfileName.textContent = profile.id || "guest";
@@ -120,18 +127,17 @@ function renderCalendar() {
     }
 
     return `
-      <article class="month-day-card ${achieved ? "achieved" : ""} ${isToday ? "today" : ""} ${isFuture ? "future" : ""}">
+      <button
+        class="month-day-card ${achieved ? "achieved" : ""} ${isToday ? "today" : ""} ${isFuture ? "future" : ""}"
+        type="button"
+        data-date-key="${dateKey}"
+        aria-label="${visibleMonth.getFullYear()}年${visibleMonth.getMonth() + 1}月${date.getDate()}日 ${status}"
+      >
         <div class="month-day-header">
           <span class="month-day-number">${date.getDate()}</span>
           <span class="month-day-mark">${achieved ? "◎" : ""}</span>
         </div>
-        <span class="month-day-status">${status}</span>
-        <p class="month-day-stats">
-          <span>学習 ${stats.studyCount} / ${goal}</span>
-          <span>回答 ${stats.quizAttempts}・正解 ${stats.quizCorrect}</span>
-          <span>正答率 ${stats.accuracy}%・再生 ${stats.playCount}</span>
-        </p>
-      </article>
+      </button>
     `;
   }).join("");
 
@@ -139,6 +145,47 @@ function renderCalendar() {
   calendarAchievedCount.textContent = `${achievedCount}日`;
   prevMonthButton.disabled = isSameMonth(visibleMonth, MIN_MONTH) || visibleMonth < MIN_MONTH;
   nextMonthButton.disabled = isSameMonth(visibleMonth, currentMonth) || visibleMonth > currentMonth;
+  calendarDetailPanel.classList.add("hidden");
+}
+
+function showDayDetail(dateKey) {
+  if (!activeProfile || !dateKey) {
+    return;
+  }
+
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const stats = getDailyStats(activeProfile, dateKey);
+  const achieved = stats.studyCount >= activeGoal;
+
+  calendarDetailTitle.textContent = `${year}/${month}/${day} の学習状況`;
+  calendarDetailBody.innerHTML = `
+    <div>
+      <span class="snapshot-label">達成状況</span>
+      <strong>${achieved ? "達成 ◎" : "未達成"}</strong>
+    </div>
+    <div>
+      <span class="snapshot-label">学習数</span>
+      <strong>${stats.studyCount} / ${activeGoal}</strong>
+    </div>
+    <div>
+      <span class="snapshot-label">回答数</span>
+      <strong>${stats.quizAttempts}</strong>
+    </div>
+    <div>
+      <span class="snapshot-label">正解数</span>
+      <strong>${stats.quizCorrect}</strong>
+    </div>
+    <div>
+      <span class="snapshot-label">正答率</span>
+      <strong>${stats.accuracy}%</strong>
+    </div>
+    <div>
+      <span class="snapshot-label">再生回数</span>
+      <strong>${stats.playCount}</strong>
+    </div>
+  `;
+  calendarDetailPanel.classList.remove("hidden");
+  calendarDetailPanel.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
 prevMonthButton.addEventListener("click", () => {
@@ -155,6 +202,15 @@ nextMonthButton.addEventListener("click", () => {
     visibleMonth = nextMonth;
     renderCalendar();
   }
+});
+
+calendarGrid.addEventListener("click", (event) => {
+  const button = event.target.closest(".month-day-card[data-date-key]");
+  if (!button) {
+    return;
+  }
+
+  showDayDetail(button.dataset.dateKey);
 });
 
 applyTheme();
