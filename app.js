@@ -1142,6 +1142,324 @@ function buildPracticalWordExample(word, meaning) {
         ["They helped me yesterday.", "彼らは昨日私を助けてくれました。"]
       ]
     },
+    forget: {
+      examples: [
+        ["I sometimes forget my keys.", "私はときどき鍵を忘れます。"],
+        ["Don't forget your phone.", "スマホを忘れないでください。"]
+      ]
+    },
+    remember: {
+      examples: [
+        ["I remember your name.", "あなたの名前を覚えています。"],
+        ["Please remember this address.", "この住所を覚えておいてください。"]
+      ]
+    },
+    use: {
+      examples: [
+        ["Can I use your pen?", "あなたのペンを使ってもいいですか。"],
+        ["I use this app every day.", "私はこのアプリを毎日使います。"]
+      ]
+    },
+    need: {
+      examples: [
+        ["I need some water.", "水が少し必要です。"],
+        ["Do you need help?", "助けが必要ですか。"]
+      ]
+    },
+    want: {
+      examples: [
+        ["I want a cup of coffee.", "コーヒーを一杯ほしいです。"],
+        ["What do you want to do?", "何をしたいですか。"]
+      ]
+    },
+    like: {
+      examples: [
+        ["I like this song.", "私はこの歌が好きです。"],
+        ["Do you like Japanese food?", "日本食は好きですか。"]
+      ]
+    },
+    think: {
+      examples: [
+        ["I think this is important.", "これは重要だと思います。"],
+        ["What do you think about it?", "それについてどう思いますか。"]
+      ]
+    },
+    see: {
+      examples: [
+        ["I can see the station.", "駅が見えます。"],
+        ["See you tomorrow.", "また明日会いましょう。"]
+      ]
+    },
+    hear: {
+      examples: [
+        ["I can hear music.", "音楽が聞こえます。"],
+        ["I heard the news this morning.", "今朝そのニュースを聞きました。"]
+      ]
+    },
+    speak: {
+      examples: [
+        ["I speak English a little.", "私は英語を少し話します。"],
+        ["Please speak slowly.", "ゆっくり話してください。"]
+      ]
+    },
+    say: {
+      examples: [
+        ["What did you say?", "何と言いましたか。"],
+        ["Please say that again.", "もう一度それを言ってください。"]
+      ]
+    },
+    ask: {
+      examples: [
+        ["Can I ask a question?", "質問してもいいですか。"],
+        ["I asked him for help.", "私は彼に助けを求めました。"]
+      ]
+    },
+    answer: {
+      examples: [
+        ["Please answer the question.", "質問に答えてください。"],
+        ["I don't know the answer.", "答えがわかりません。"]
+      ]
+    },
+    help: {
+      examples: [
+        ["Can you help me?", "手伝ってもらえますか。"],
+        ["This map helps a lot.", "この地図はとても役に立ちます。"]
+      ]
+    },
+    find: {
+      examples: [
+        ["I can't find my wallet.", "財布が見つかりません。"],
+        ["Let's find a restaurant nearby.", "近くのレストランを探しましょう。"]
+      ]
+    },
+    give: {
+      examples: [
+        ["Please give me a receipt.", "レシートをください。"],
+        ["I gave her my number.", "私は彼女に自分の番号を渡しました。"]
+      ]
+    },
+    show: {
+      examples: [
+        ["Please show me the menu.", "メニューを見せてください。"],
+        ["I can show you the way.", "道案内できます。"]
+      ]
+    },
+    bring: {
+      examples: [
+        ["Please bring your passport.", "パスポートを持ってきてください。"],
+        ["I brought some snacks.", "軽食を少し持ってきました。"]
+      ]
+    },
+    send: {
+      examples: [
+        ["Please send me the file.", "そのファイルを送ってください。"],
+        ["I sent an email yesterday.", "昨日メールを送りました。"]
+      ]
+    },
+    open: {
+      examples: [
+        ["Please open the window.", "窓を開けてください。"],
+        ["The store opens at nine.", "その店は9時に開きます。"]
+      ]
+    },
+    close: {
+      examples: [
+        ["Please close the door.", "ドアを閉めてください。"],
+        ["The shop closes at eight.", "その店は8時に閉まります。"]
+      ]
+    },
+    start: {
+      examples: [
+        ["Let's start the meeting.", "会議を始めましょう。"],
+        ["The class starts at ten.", "授業は10時に始まります。"]
+      ]
+    },
+    finish: {
+      examples: [
+        ["I finished my homework.", "宿題を終えました。"],
+        ["What time does it finish?", "それは何時に終わりますか。"]
+      ]
+    },
+    try: {
+      examples: [
+        ["Please try this cake.", "このケーキを試してみてください。"],
+        ["I will try again tomorrow.", "明日もう一度やってみます。"]
+      ]
+    },
+    wait: {
+      examples: [
+        ["Please wait here.", "ここで待ってください。"],
+        ["I waited for the bus.", "バスを待ちました。"]
+      ]
+    },
+    keep: {
+      examples: [
+        ["Please keep the receipt.", "レシートを保管してください。"],
+        ["Keep the door closed.", "ドアを閉めたままにしてください。"]
+      ]
+    },
+    know: {
+      examples: [
+        ["I know this place.", "私はこの場所を知っています。"],
+        ["Do you know her name?", "彼女の名前を知っていますか。"]
+      ]
+    },
+    order: {
+      examples: [
+        ["I'd like to order coffee.", "コーヒーを注文したいです。"],
+        ["Can we order now?", "今注文できますか。"]
+      ]
+    },
+    cancel: {
+      examples: [
+        ["I need to cancel my reservation.", "予約をキャンセルする必要があります。"],
+        ["Can I cancel this order?", "この注文を取り消せますか。"]
+      ]
+    },
+    avoid: {
+      examples: [
+        ["Please avoid this road.", "この道は避けてください。"],
+        ["I try to avoid busy trains.", "混んだ電車を避けるようにしています。"]
+      ]
+    },
+    repeat: {
+      examples: [
+        ["Please repeat that.", "それをもう一度言ってください。"],
+        ["I repeated the sentence aloud.", "その文を声に出して繰り返しました。"]
+      ]
+    },
+    discuss: {
+      examples: [
+        ["Let's discuss the plan.", "その計画について話し合いましょう。"],
+        ["We discussed the problem yesterday.", "昨日その問題について話し合いました。"]
+      ]
+    },
+    explain: {
+      examples: [
+        ["Can you explain this word?", "この単語を説明してもらえますか。"],
+        ["I explained the rule again.", "そのルールをもう一度説明しました。"]
+      ]
+    },
+    increase: {
+      examples: [
+        ["Prices may increase next month.", "来月、価格が上がるかもしれません。"],
+        ["We need to increase sales.", "売上を増やす必要があります。"]
+      ]
+    },
+    decrease: {
+      examples: [
+        ["The number decreased last year.", "その数は昨年減りました。"],
+        ["We need to decrease waste.", "無駄を減らす必要があります。"]
+      ]
+    },
+    move: {
+      examples: [
+        ["Can you move this chair?", "この椅子を動かしてもらえますか。"],
+        ["We moved to a new house.", "私たちは新しい家に引っ越しました。"]
+      ]
+    },
+    walk: {
+      examples: [
+        ["I walk to the station.", "駅まで歩きます。"],
+        ["Let's walk together.", "一緒に歩きましょう。"]
+      ]
+    },
+    run: {
+      examples: [
+        ["I run every morning.", "私は毎朝走ります。"],
+        ["The train is running late.", "電車が遅れています。"]
+      ]
+    },
+    sit: {
+      examples: [
+        ["Please sit here.", "ここに座ってください。"],
+        ["I sat by the window.", "窓のそばに座りました。"]
+      ]
+    },
+    stand: {
+      examples: [
+        ["Please stand here.", "ここに立ってください。"],
+        ["I stood near the door.", "ドアの近くに立っていました。"]
+      ]
+    },
+    turn: {
+      examples: [
+        ["Turn left at the corner.", "角で左に曲がってください。"],
+        ["Please turn on the light.", "電気をつけてください。"]
+      ]
+    },
+    cross: {
+      examples: [
+        ["Cross the street carefully.", "注意して通りを渡ってください。"],
+        ["We crossed the bridge.", "私たちは橋を渡りました。"]
+      ]
+    },
+    buy: {
+      examples: [
+        ["I want to buy this.", "これを買いたいです。"],
+        ["Where can I buy a ticket?", "どこで切符を買えますか。"]
+      ]
+    },
+    pay: {
+      examples: [
+        ["Can I pay by card?", "カードで支払えますか。"],
+        ["I paid at the register.", "レジで支払いました。"]
+      ]
+    },
+    eat: {
+      examples: [
+        ["I eat breakfast at seven.", "私は7時に朝食を食べます。"],
+        ["Let's eat lunch together.", "一緒に昼食を食べましょう。"]
+      ]
+    },
+    drink: {
+      examples: [
+        ["I drink water every morning.", "私は毎朝水を飲みます。"],
+        ["Would you like something to drink?", "何か飲み物はいかがですか。"]
+      ]
+    },
+    choose: {
+      examples: [
+        ["Please choose one.", "一つ選んでください。"],
+        ["I chose the cheaper option.", "安いほうの選択肢を選びました。"]
+      ]
+    },
+    change: {
+      examples: [
+        ["Can I change my reservation?", "予約を変更できますか。"],
+        ["The weather changed suddenly.", "天気が急に変わりました。"]
+      ]
+    },
+    have: {
+      examples: [
+        ["I have a question.", "質問があります。"],
+        ["Do you have time now?", "今、時間がありますか。"]
+      ]
+    },
+    make: {
+      examples: [
+        ["I made breakfast.", "朝食を作りました。"],
+        ["Can you make a reservation?", "予約を取ってもらえますか。"]
+      ]
+    },
+    do: {
+      examples: [
+        ["What do you do on weekends?", "週末は何をしますか。"],
+        ["I need to do my homework.", "宿題をしなければなりません。"]
+      ]
+    },
+    take: {
+      examples: [
+        ["Please take this seat.", "この席に座ってください。"],
+        ["I took a taxi to the hotel.", "ホテルまでタクシーに乗りました。"]
+      ]
+    },
+    put: {
+      examples: [
+        ["Please put it here.", "それをここに置いてください。"],
+        ["I put my phone on the table.", "スマホをテーブルの上に置きました。"]
+      ]
+    },
     finger: {
       examples: [
         ["This is my finger.", "これは私の指です。"],
@@ -1706,8 +2024,8 @@ function buildPracticalWordExample(word, meaning) {
   if (/する|使う|作る|取る|置く|欲しい|好き|思う|見る|聞く|聞こえる|話す|言う|たずねる|答える|助ける|見つける|与える|見せる|持ってくる|送る|開ける|閉める|始める|終える|試す|待つ|保つ|動く|歩く|走る|座る|立つ|曲がる|渡る|乗る|運転する|旅行する|訪れる|滞在する|戻る|買う|支払う|売る|食べる|飲む|料理する|洗う|掃除する|切る|注文する|選ぶ|着る|変える|運ぶ|持つ|書く|読む|勉強する|学ぶ|教える|覚えている|忘れる|会う|ついていく|確認する|予約する|到着する|出発する|休む|眠る|目覚める|ほほえむ|笑う|泣く|楽しむ|願う|準備する|共有する|借りる|貸す/.test(meaning)) {
     return {
       examples: [
-        [`I want to ${word}.`, `私は${meaning}ことをしたいです。`],
-        [`Please ${word} it.`, `それを${meaning}してください。`]
+        [`I need to ${word} this today.`, `今日はこれについて「${meaning}」という動作が必要です。`],
+        [`Can you ${word} this?`, `これは「${meaning}」できますか。`]
       ]
     };
   }
@@ -1841,8 +2159,8 @@ function buildPracticalWordExample(word, meaning) {
   if (/注文|知っている|取り消す|温める|凍らせる|ゆでる|焼く|混ぜる|注ぐ|飾る|くつろぐ|伸ばす|繰り返す|謝る|許す|話し合う|励ます|祝う|避ける|示す|見積もる|割り当てる|導き出す|詳しく調べる|組み立てる|明確に言葉で表す|伝える|高める|減らす/.test(meaning)) {
     return {
       examples: [
-        [`Please ${word} this.`, `これを${meaning}してください。`],
-        [`I need to ${word} it carefully.`, `それを注意して${meaning}必要があります。`]
+        [`Please ${word} this.`, `これについて「${meaning}」をしてください。`],
+        [`I need to ${word} it carefully.`, `それを注意して「${meaning}」する必要があります。`]
       ]
     };
   }

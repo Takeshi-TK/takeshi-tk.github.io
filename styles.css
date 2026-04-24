@@ -1111,7 +1111,7 @@ body.dark-mode .hero {
   }
 
   .quiz-panel .choice-card {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: 1fr;
   }
 
   .quiz-panel .choice-button {
@@ -1119,6 +1119,11 @@ body.dark-mode .hero {
     border-radius: 14px;
     font-size: 0.94rem;
     line-height: 1.35;
+  }
+
+  .quiz-panel .choice-audio-button {
+    width: 100%;
+    min-height: 36px;
   }
 
   .quiz-panel .quiz-footer {
@@ -1190,7 +1195,7 @@ body.dark-mode .hero {
   }
 
   .quiz-panel .choice-card {
-    grid-template-columns: minmax(0, 1fr) 64px;
+    grid-template-columns: 1fr;
   }
 
   .quiz-panel .choice-button {
