@@ -1,5 +1,5 @@
-import { vocabulary } from "./vocabulary.js?v=20260424-feature17";
-import { phrases } from "./phrases.js?v=20260424-feature17";
+import { vocabulary } from "./vocabulary.js?v=20260424-feature18";
+import { phrases } from "./phrases.js?v=20260424-feature18";
 
 const PROFILES_KEY = "stridewords-profiles-v4";
 const ACTIVE_PROFILE_KEY = "stridewords-active-profile-v4";
@@ -82,6 +82,7 @@ const sessionCorrectCount = document.querySelector("#sessionCorrectCount");
 const sessionAttemptCount = document.querySelector("#sessionAttemptCount");
 const sessionSkipCount = document.querySelector("#sessionSkipCount");
 const sessionAccuracyRate = document.querySelector("#sessionAccuracyRate");
+const sessionSummaryAdSlot = document.querySelector("#sessionSummaryAdSlot");
 const sessionContinueButton = document.querySelector("#sessionContinueButton");
 const sessionReviewWrongButton = document.querySelector("#sessionReviewWrongButton");
 const sessionStopButton = document.querySelector("#sessionStopButton");
@@ -117,6 +118,8 @@ const state = {
   settings: loadSettings(),
   usageExamples: new Map(),
   reviewMode: null,
+  sessionSummaryAdLoaded: false,
+  sessionSummaryAdAttempts: 0,
   wakeLock: {
     sentinel: null,
     supported: "wakeLock" in navigator
@@ -622,6 +625,30 @@ function hideSessionSummary() {
   sessionSummaryCard.classList.add("hidden");
 }
 
+function loadSessionSummaryAd() {
+  if (state.sessionSummaryAdLoaded || !sessionSummaryAdSlot) {
+    return;
+  }
+
+  if (!window.adsbygoogle) {
+    if (state.sessionSummaryAdAttempts < 3) {
+      state.sessionSummaryAdAttempts += 1;
+      window.setTimeout(loadSessionSummaryAd, 700);
+    }
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    try {
+      sessionSummaryAdSlot.classList.add("adsbygoogle");
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      state.sessionSummaryAdLoaded = true;
+    } catch {
+      // Ad blockers or pending AdSense review can prevent this slot from loading.
+    }
+  });
+}
+
 function renderSessionSummary() {
   const accuracy = getQuizSessionAccuracy();
   const categoryLabel = getCurrentCategory().label;
@@ -635,6 +662,7 @@ function renderSessionSummary() {
   sessionAccuracyRate.textContent = `${accuracy}%`;
   sessionReviewWrongButton.disabled = getSessionWrongItems().length === 0;
   sessionSummaryCard.classList.remove("hidden");
+  loadSessionSummaryAd();
 }
 
 function completeQuizSessionItem(result) {

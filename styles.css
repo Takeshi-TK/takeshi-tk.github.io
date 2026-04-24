@@ -778,6 +778,18 @@ body.dark-mode .hero {
   margin-top: 12px;
 }
 
+.session-summary-ad {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid rgba(31, 42, 55, 0.07);
+}
+
+.session-ad-slot {
+  min-height: 72px;
+}
+
 .feedback.neutral {
   color: var(--muted);
 }
@@ -1119,6 +1131,15 @@ body.dark-mode .hero {
     font-size: 0.9rem;
   }
 
+  .session-summary-ad {
+    margin-top: 10px;
+    padding: 8px 9px;
+  }
+
+  .session-ad-slot {
+    min-height: 58px;
+  }
+
   .hero-category-list {
     grid-template-columns: 1fr;
   }
@@ -1293,5 +1314,10 @@ body.dark-mode .hero {
 
   .session-summary .meta-chip span {
     font-size: 0.68rem;
+  }
+
+  .session-summary-ad .section-label {
+    margin-bottom: 6px;
+    font-size: 0.58rem;
   }
 }
