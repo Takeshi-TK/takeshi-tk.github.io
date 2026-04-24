@@ -1,6 +1,6 @@
 ﻿import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature34";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature35";
 
 const categoryMeta = {
   basic: {
@@ -901,14 +901,83 @@ const frenchPhraseBoost3 = {
   ]
 };
 
+const koreanPhraseBoost4 = {
+  practical: [
+    ["알림이 너무 많아요.", "通知が多すぎます"], ["설정을 바꾸고 싶어요.", "設定を変えたいです"], ["비밀번호를 잊어버렸어요.", "パスワードを忘れました"],
+    ["화면이 잘 안 보여요.", "画面がよく見えません"], ["파일이 열리지 않아요.", "ファイルが開きません"], ["인터넷 연결을 확인해 주세요.", "ネット接続を確認してください"],
+    ["배터리가 거의 없어요.", "バッテリーがほとんどありません"], ["충전기를 빌릴 수 있나요?", "充電器を借りられますか"], ["메모에 적어 둘게요.", "メモに書いておきます"],
+    ["주소를 다시 보내 주세요.", "住所をもう一度送ってください"], ["먼저 이유를 설명해 주세요.", "先に理由を説明してください"], ["이 방법으로 해 볼게요.", "この方法でやってみます"],
+    ["어떤 선택이 좋아요?", "どの選択がいいですか"], ["검색어를 바꿔 볼게요.", "検索語を変えてみます"], ["기록이 남아 있나요?", "記録は残っていますか"],
+    ["오늘 배운 내용을 복습할게요.", "今日学んだ内容を復習します"], ["발음을 천천히 들려 주세요.", "発音をゆっくり聞かせてください"], ["문장을 짧게 만들어 주세요.", "文を短くしてください"],
+    ["단어를 예문으로 외울게요.", "単語を例文で覚えます"], ["차이를 표로 정리해 주세요.", "違いを表で整理してください"], ["실수한 부분을 표시해 주세요.", "間違えた部分を表示してください"],
+    ["저장이 완료됐어요.", "保存が完了しました"], ["삭제해도 괜찮나요?", "削除しても大丈夫ですか"], ["잠깐 쉬었다가 계속할게요.", "少し休んでから続けます"],
+    ["목표를 조금 낮출게요.", "目標を少し下げます"], ["다시 시작해도 될까요?", "もう一度始めてもいいですか"], ["천천히 따라 말할게요.", "ゆっくりまねして話します"],
+    ["같은 문제를 다시 풀고 싶어요.", "同じ問題をもう一度解きたいです"], ["답을 보기 전에 생각할게요.", "答えを見る前に考えます"], ["어려운 단어만 모아 주세요.", "難しい単語だけ集めてください"]
+  ],
+  business: [
+    ["회의 시간을 다시 잡겠습니다.", "会議時間を調整します"], ["자료를 회의 전에 공유하겠습니다.", "資料を会議前に共有します"], ["담당자를 정해 주세요.", "担当者を決めてください"],
+    ["고객에게 보낼 문장을 확인해 주세요.", "顧客に送る文を確認してください"], ["계약 조건을 다시 보겠습니다.", "契約条件を見直します"], ["견적 금액을 비교해 보겠습니다.", "見積金額を比較します"],
+    ["청구서 번호를 알려 주세요.", "請求書番号を教えてください"], ["재고가 언제 들어오나요?", "在庫はいつ入りますか"], ["예산 안에서 진행하겠습니다.", "予算内で進めます"],
+    ["마감 전에 초안을 보내겠습니다.", "締切前に下書きを送ります"], ["위험 요소를 먼저 공유하겠습니다.", "リスクを先に共有します"], ["최종본을 오늘 보내겠습니다.", "最終版を今日送ります"],
+    ["승인 여부를 오늘 확인하겠습니다.", "承認可否を今日確認します"], ["수정한 파일을 다시 보내겠습니다.", "修正したファイルを送り直します"], ["운영 절차를 문서로 남기겠습니다.", "運用手順を文書に残します"],
+    ["공개 일정을 미리 공유하겠습니다.", "公開日程を事前に共有します"], ["검수 결과를 정리하겠습니다.", "検収結果を整理します"]
+  ]
+};
+
+const chinesePhraseBoost4 = {
+  practical: [
+    ["通知太多了。", "通知が多すぎます"], ["我想改设置。", "設定を変えたいです"], ["我忘了密码。", "パスワードを忘れました"],
+    ["屏幕看不太清楚。", "画面がよく見えません"], ["文件打不开。", "ファイルが開きません"], ["请确认网络连接。", "ネット接続を確認してください"],
+    ["电池快没了。", "バッテリーがほとんどありません"], ["可以借充电器吗？", "充電器を借りられますか"], ["我先记在笔记里。", "メモに書いておきます"],
+    ["请再发一次地址。", "住所をもう一度送ってください"], ["请先说明理由。", "先に理由を説明してください"], ["我试试这个方法。", "この方法でやってみます"],
+    ["哪个选择比较好？", "どの選択がいいですか"], ["我换个搜索词试试。", "検索語を変えてみます"], ["记录还在吗？", "記録は残っていますか"],
+    ["我复习今天学的内容。", "今日学んだ内容を復習します"], ["请慢慢播放发音。", "発音をゆっくり再生してください"], ["请把句子改短一点。", "文を短くしてください"],
+    ["我用例句记单词。", "単語を例文で覚えます"], ["请用表格整理区别。", "違いを表で整理してください"], ["请标出错的地方。", "間違えた部分を表示してください"],
+    ["保存完成了。", "保存が完了しました"], ["可以删除吗？", "削除しても大丈夫ですか"], ["我休息一下再继续。", "少し休んでから続けます"],
+    ["我把目标调低一点。", "目標を少し下げます"], ["可以重新开始吗？", "もう一度始めてもいいですか"], ["我慢慢跟着说。", "ゆっくりまねして話します"],
+    ["我想再做一次同样的问题。", "同じ問題をもう一度解きたいです"], ["我看答案前先想一下。", "答えを見る前に考えます"], ["请只整理难的单词。", "難しい単語だけ集めてください"]
+  ],
+  business: [
+    ["我会重新安排会议时间。", "会議時間を調整します"], ["我会在会议前共享资料。", "資料を会議前に共有します"], ["请确定负责人。", "担当者を決めてください"],
+    ["请确认发给客户的句子。", "顧客に送る文を確認してください"], ["我会重新看合同条件。", "契約条件を見直します"], ["我比较一下报价金额。", "見積金額を比較します"],
+    ["请告诉我发票号码。", "請求書番号を教えてください"], ["库存什么时候到？", "在庫はいつ入りますか"], ["我会在预算内推进。", "予算内で進めます"],
+    ["我会在截止日期前发送草稿。", "締切前に下書きを送ります"], ["我先共享风险点。", "リスクを先に共有します"], ["我今天发送最终版。", "最終版を今日送ります"],
+    ["我今天确认是否批准。", "承認可否を今日確認します"], ["我会重新发送修改后的文件。", "修正したファイルを送り直します"], ["我把运营流程写成文档。", "運用手順を文書に残します"],
+    ["我会提前共享发布时间。", "公開日程を事前に共有します"], ["我整理验收结果。", "検収結果を整理します"]
+  ]
+};
+
+const frenchPhraseBoost4 = {
+  practical: [
+    ["Il y a trop de notifications.", "通知が多すぎます"], ["Je voudrais changer les réglages.", "設定を変えたいです"], ["J'ai oublié le mot de passe.", "パスワードを忘れました"],
+    ["L'écran est difficile à voir.", "画面がよく見えません"], ["Le fichier ne s'ouvre pas.", "ファイルが開きません"], ["Vérifiez la connexion Internet, s'il vous plaît.", "ネット接続を確認してください"],
+    ["La batterie est presque vide.", "バッテリーがほとんどありません"], ["Puis-je emprunter un chargeur ?", "充電器を借りられますか"], ["Je vais le noter dans le mémo.", "メモに書いておきます"],
+    ["Renvoyez l'adresse, s'il vous plaît.", "住所をもう一度送ってください"], ["Expliquez d'abord la raison, s'il vous plaît.", "先に理由を説明してください"], ["Je vais essayer avec cette méthode.", "この方法でやってみます"],
+    ["Quel choix est le meilleur ?", "どの選択がいいですか"], ["Je vais essayer un autre mot-clé.", "検索語を変えてみます"], ["L'historique est encore disponible ?", "記録は残っていますか"],
+    ["Je vais réviser ce que j'ai appris aujourd'hui.", "今日学んだ内容を復習します"], ["Faites écouter la prononciation lentement.", "発音をゆっくり聞かせてください"], ["Raccourcissez la phrase, s'il vous plaît.", "文を短くしてください"],
+    ["Je vais retenir le mot avec une phrase d'exemple.", "単語を例文で覚えます"], ["Mettez les différences dans un tableau.", "違いを表で整理してください"], ["Indiquez la partie incorrecte.", "間違えた部分を表示してください"],
+    ["L'enregistrement est terminé.", "保存が完了しました"], ["Puis-je supprimer cela ?", "削除しても大丈夫ですか"], ["Je fais une petite pause puis je continue.", "少し休んでから続けます"],
+    ["Je vais baisser un peu l'objectif.", "目標を少し下げます"], ["Puis-je recommencer ?", "もう一度始めてもいいですか"], ["Je vais répéter lentement.", "ゆっくりまねして話します"],
+    ["Je voudrais refaire le même exercice.", "同じ問題をもう一度解きたいです"], ["Je vais réfléchir avant de voir la réponse.", "答えを見る前に考えます"], ["Regroupez seulement les mots difficiles.", "難しい単語だけ集めてください"]
+  ],
+  business: [
+    ["Je vais réorganiser l'heure de la réunion.", "会議時間を調整します"], ["Je partagerai les documents avant la réunion.", "資料を会議前に共有します"], ["Désignez le responsable, s'il vous plaît.", "担当者を決めてください"],
+    ["Vérifiez le message à envoyer au client.", "顧客に送る文を確認してください"], ["Je vais revoir les conditions du contrat.", "契約条件を見直します"], ["Je vais comparer les montants des devis.", "見積金額を比較します"],
+    ["Donnez-moi le numéro de facture, s'il vous plaît.", "請求書番号を教えてください"], ["Quand le stock sera-t-il disponible ?", "在庫はいつ入りますか"], ["Nous avancerons dans le budget.", "予算内で進めます"],
+    ["J'enverrai le brouillon avant la date limite.", "締切前に下書きを送ります"], ["Je partagerai d'abord les risques.", "リスクを先に共有します"], ["J'enverrai la version finale aujourd'hui.", "最終版を今日送ります"],
+    ["Je vérifierai l'approbation aujourd'hui.", "承認可否を今日確認します"], ["Je renverrai le fichier corrigé.", "修正したファイルを送り直します"], ["Je garderai la procédure d'exploitation par écrit.", "運用手順を文書に残します"],
+    ["Je partagerai le calendrier de publication à l'avance.", "公開日程を事前に共有します"], ["Je vais résumer les résultats de recette.", "検収結果を整理します"]
+  ]
+};
+
 const wordTargetCounts = targetCountsFrom(vocabulary);
 const phraseTargetCounts = targetCountsFrom(phrases);
 const expandedKoreanWords = topUpLanguageGroups("ko", "word", mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), wordTargetCounts);
-const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), phraseTargetCounts);
+const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), koreanPhraseBoost4), phraseTargetCounts);
 const expandedChineseWords = topUpLanguageGroups("zh", "word", mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), wordTargetCounts);
-const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), phraseTargetCounts);
+const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), phraseTargetCounts);
 const expandedFrenchWords = topUpLanguageGroups("fr", "word", mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), wordTargetCounts);
-const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), phraseTargetCounts);
+const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), phraseTargetCounts);
 
 export const languagePacks = {
   en: {

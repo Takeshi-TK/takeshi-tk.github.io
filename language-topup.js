@@ -866,27 +866,47 @@ function phrasePatterns(lang, category) {
 
 function practicalPhrasePatterns(lang) {
   const all = () => true;
+  const aboutable = ({ jp }) => new Set([
+    "予定", "約束", "理由", "方法", "内容", "住所", "メール", "メッセージ", "通知", "設定", "パスワード",
+    "画面", "ファイル", "記録", "生活", "健康", "気分", "心配", "ミス", "違い", "選択", "検索",
+    "保存", "削除", "接続", "充電", "バッテリー", "手順", "優先順位", "進み具合"
+  ]).has(jp);
+  const attentionCheckable = ({ jp }) => new Set([
+    "予定", "約束", "方法", "内容", "住所", "メール", "メッセージ", "通知", "設定", "パスワード",
+    "画面", "ファイル", "記録", "健康", "心配", "ミス", "違い", "選択", "検索", "保存", "削除",
+    "接続", "充電", "バッテリー", "手順", "優先順位", "進み具合"
+  ]).has(jp);
+  const reconfirmable = ({ jp }) => new Set([
+    "予定", "約束", "理由", "方法", "説明", "質問", "答え", "内容", "情報", "住所", "メール",
+    "メッセージ", "通知", "設定", "パスワード", "画面", "ファイル", "記録", "文", "会話",
+    "健康", "気分", "心配", "ミス", "違い", "選択", "検索", "保存", "削除", "接続",
+    "充電", "バッテリー", "手順", "優先順位", "進み具合"
+  ]).has(jp);
+  const simplyExplainable = ({ jp }) => new Set([
+    "理由", "方法", "説明", "質問", "答え", "意味", "内容", "情報", "住所", "設定", "画面",
+    "手順", "違い", "選択", "検索", "接続", "優先順位", "進み具合"
+  ]).has(jp);
   const definitions = {
     ko: [
       { target: ({ target }) => `${target}${koObject(target)} 확인해 주세요.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
-      { target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
-      { target: ({ target }) => `${target}의 주의점을 확인할게요.`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: all },
-      { target: ({ target }) => `${target}${koObject(target)} 다시 확인할게요.`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: all },
-      { target: ({ target }) => `${target}에 대해 쉽게 설명해 주세요.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+      { target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください`, applies: aboutable },
+      { target: ({ target }) => `${target}의 주의점을 확인할게요.`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: attentionCheckable },
+      { target: ({ target }) => `${target}${koObject(target)} 다시 확인할게요.`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: reconfirmable },
+      { target: ({ target }) => `${target}에 대해 쉽게 설명해 주세요.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: simplyExplainable }
     ],
     zh: [
       { target: ({ target }) => `请确认${target}。`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
-      { target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
-      { target: ({ target }) => `我确认一下${target}的注意点。`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: all },
-      { target: ({ target }) => `我再确认一下${target}。`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: all },
-      { target: ({ target }) => `请简单说明一下${target}。`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+      { target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください`, applies: aboutable },
+      { target: ({ target }) => `我确认一下${target}的注意点。`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: attentionCheckable },
+      { target: ({ target }) => `我再确认一下${target}。`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: reconfirmable },
+      { target: ({ target }) => `请简单说明一下${target}。`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: simplyExplainable }
     ],
     fr: [
       { target: ({ target }) => `Vérifiez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
-      { target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
-      { target: ({ target }) => `Je vais vérifier les points d'attention de ${target}.`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: all },
-      { target: ({ target }) => `Je vais revérifier ${target}.`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: all },
-      { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+      { target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください`, applies: aboutable },
+      { target: ({ target }) => `Je vais vérifier les points d'attention de ${target}.`, jp: ({ jp }) => `${jp}の注意点を確認します`, applies: attentionCheckable },
+      { target: ({ target }) => `Je vais revérifier ${target}.`, jp: ({ jp }) => `${jp}をもう一度確認します`, applies: reconfirmable },
+      { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: simplyExplainable }
     ]
   };
 
@@ -895,27 +915,49 @@ function practicalPhrasePatterns(lang) {
 
 function businessPhrasePatterns(lang) {
   const all = () => true;
+  const aboutable = ({ jp }) => new Set([
+    "会議", "議題", "資料", "報告", "担当者", "部署", "チーム", "顧客", "取引先", "契約",
+    "見積もり", "請求書", "納品", "在庫", "品質", "費用", "予算", "売上", "締切", "日程",
+    "リスク", "問題点", "提案", "権限", "セキュリティ", "マニュアル",
+    "フォーム", "添付ファイル", "最終版", "修正", "返信", "依頼", "検収", "成果物", "運用", "更新", "公開"
+  ]).has(jp);
+  const statusCheckable = ({ jp }) => new Set([
+    "会議", "議題", "資料", "報告", "顧客", "取引先", "契約", "見積もり", "請求書", "納品",
+    "在庫", "品質", "費用", "予算", "売上", "締切", "日程", "リスク", "問題点",
+    "提案", "権限", "セキュリティ", "添付ファイル", "最終版", "修正", "返信", "依頼",
+    "検収", "成果物", "運用", "更新", "公開"
+  ]).has(jp);
+  const pointCheckable = ({ jp }) => new Set([
+    "会議", "議題", "資料", "報告", "契約", "見積もり", "請求書", "品質", "費用", "予算",
+    "売上", "締切", "日程", "進捗", "リスク", "問題点", "改善", "提案", "承認", "権限",
+    "セキュリティ", "マニュアル", "フォーム", "最終版", "修正", "依頼", "検収", "成果物", "運用", "更新", "公開"
+  ]).has(jp);
+  const simplyExplainable = ({ jp }) => new Set([
+    "会議", "議題", "報告", "契約", "見積もり", "請求書", "品質", "費用", "予算", "売上",
+    "日程", "進捗", "リスク", "問題点", "改善", "提案", "承認", "権限", "セキュリティ",
+    "マニュアル", "フォーム", "修正", "依頼", "運用", "更新", "公開"
+  ]).has(jp);
   const definitions = {
     ko: [
       { target: ({ target }) => `${target}${koObject(target)} 확인해 주세요.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
-      { target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
-      { target: ({ target }) => `${target}의 상황을 확인하겠습니다.`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: ({ jp }) => jp !== "進捗" },
-      { target: ({ target }) => `${target}의 요점을 확인하겠습니다.`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: all },
-      { target: ({ target }) => `${target}에 대해 쉽게 설명해 주세요.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+      { target: ({ target }) => `${target}에 대해 알려 주세요.`, jp: ({ jp }) => `${jp}について教えてください`, applies: aboutable },
+      { target: ({ target }) => `${target}의 상황을 확인하겠습니다.`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: statusCheckable },
+      { target: ({ target }) => `${target}의 요점을 확인하겠습니다.`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: pointCheckable },
+      { target: ({ target }) => `${target}에 대해 쉽게 설명해 주세요.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: simplyExplainable }
     ],
     zh: [
       { target: ({ target }) => `请确认${target}。`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
-      { target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
-      { target: ({ target }) => `我确认一下${target}的状态。`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: ({ jp }) => jp !== "進捗" },
-      { target: ({ target }) => `我确认一下${target}的要点。`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: all },
-      { target: ({ target }) => `请简单说明一下${target}。`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+      { target: ({ target }) => `请告诉我关于${target}的信息。`, jp: ({ jp }) => `${jp}について教えてください`, applies: aboutable },
+      { target: ({ target }) => `我确认一下${target}的状态。`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: statusCheckable },
+      { target: ({ target }) => `我确认一下${target}的要点。`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: pointCheckable },
+      { target: ({ target }) => `请简单说明一下${target}。`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: simplyExplainable }
     ],
     fr: [
       { target: ({ target }) => `Vérifiez ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}を確認してください`, applies: all },
-      { target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください`, applies: all },
-      { target: ({ target }) => `Je vais vérifier l'état de ${target}.`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: ({ jp }) => jp !== "進捗" },
-      { target: ({ target }) => `Je vais vérifier les points clés de ${target}.`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: all },
-      { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: all }
+      { target: ({ target }) => `Renseignez-moi sur ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について教えてください`, applies: aboutable },
+      { target: ({ target }) => `Je vais vérifier l'état de ${target}.`, jp: ({ jp }) => `${jp}の状況を確認します`, applies: statusCheckable },
+      { target: ({ target }) => `Je vais vérifier les points clés de ${target}.`, jp: ({ jp }) => `${jp}の要点を確認します`, applies: pointCheckable },
+      { target: ({ target }) => `Expliquez simplement ${target}, s'il vous plaît.`, jp: ({ jp }) => `${jp}について簡単に説明してください`, applies: simplyExplainable }
     ]
   };
 
