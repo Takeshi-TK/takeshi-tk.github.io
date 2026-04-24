@@ -1,6 +1,6 @@
 ﻿import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature36";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature37";
 
 const categoryMeta = {
   basic: {
@@ -1056,11 +1056,56 @@ const frenchPhraseBoost5 = {
 
 const wordTargetCounts = targetCountsFrom(vocabulary);
 const phraseTargetCounts = targetCountsFrom(phrases);
-const expandedKoreanWords = topUpLanguageGroups("ko", "word", mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), wordTargetCounts);
+
+const phraseLikeWordLabels = new Set([
+  "分かりません",
+  "問題ありません",
+  "お願いします",
+  "お願いします / お手数ですが",
+  "ゆっくり話す",
+  "予約を変更する",
+  "静かな部屋",
+  "カードは使えますか"
+]);
+
+function expandAllowedLabel(label) {
+  return String(label || "")
+    .split(/\s*\/\s*/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function isPhraseLikeWordLabel(japanese) {
+  const label = String(japanese || "").trim();
+  return phraseLikeWordLabels.has(label)
+    || /^(新しい|小さい|大きい|きれいな|静かな|安い|高い|安全な|急ぎの|最初の|次の|近くの|少しの).+/.test(label)
+    || /の(近く|前|後ろ|横|中|外|入口|出口|場所|写真|周り|向かい|準備|一覧|利用時間|手順|確認|修正|共有|検討|調整|管理|報告|記録|優先順位|意味|発音|練習|復習|例文|説明|質問|注意点|見直し|使い方)$/.test(label)
+    || /を(利用する|見せる|見せます|受け取る|受け取りました|預ける|預けたいです|お願いします|ください|予約したいです|変更したいです|支払う|交換する|返金する|乗り換える|注文する|借りる)$/.test(label)
+    || /.+を.+する$/.test(label)
+    || /.+は.+(ですか|ますか)$/.test(label)
+    || /で(払えますか|支払えますか)$/.test(label)
+    || /(です|ます|ました|ください|できます|できません|しました|しています|したいです|ありますか|どこですか|いくらですか)$/.test(label);
+}
+
+const wordAllowedLabels = Object.fromEntries(Object.entries(vocabulary).map(([key, category]) => [
+  key,
+  new Set(category.words
+    .flatMap((item) => [item.japanese, ...expandAllowedLabel(item.japanese)])
+    .filter((label) => !isPhraseLikeWordLabel(label)))
+]));
+
+function alignWordGroupsToEnglish(groups) {
+  return Object.fromEntries(Object.entries(groups).map(([key, rows]) => [
+    key,
+    rows.filter((row) => !isPhraseLikeWordLabel(row[1]))
+  ]));
+}
+
+const expandedKoreanWords = topUpLanguageGroups("ko", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), koreanPhraseBoost4), koreanPhraseBoost5), phraseTargetCounts);
-const expandedChineseWords = topUpLanguageGroups("zh", "word", mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), wordTargetCounts);
+const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), chinesePhraseBoost5), phraseTargetCounts);
-const expandedFrenchWords = topUpLanguageGroups("fr", "word", mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), wordTargetCounts);
+const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), frenchPhraseBoost5), phraseTargetCounts);
 
 export const languagePacks = {

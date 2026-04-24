@@ -1141,7 +1141,7 @@ function isNaturalWordModeItem(category, japanese) {
   return true;
 }
 
-function topUpGroup(baseRows, generatedRows, targetCount) {
+function topUpGroup(baseRows, generatedRows, targetCount, allowedGeneratedLabels = null) {
   const result = [];
   const seen = new Set();
   const add = (row) => {
@@ -1158,15 +1158,23 @@ function topUpGroup(baseRows, generatedRows, targetCount) {
   for (const row of baseRows) add(row);
   for (const row of generatedRows) {
     if (result.length >= targetCount) break;
+    if (allowedGeneratedLabels && !allowedGeneratedLabels.has(String(row?.[1] || "").trim())) {
+      continue;
+    }
     add(row);
   }
   return result;
 }
 
-export function topUpLanguageGroups(lang, kind, baseGroups, targetCounts) {
+export function topUpLanguageGroups(lang, kind, baseGroups, targetCounts, options = {}) {
   const generated = generatedGroupsFor(lang, kind);
   return Object.fromEntries(categories.map((category) => [
     category,
-    topUpGroup(baseGroups[category] || [], generated[category] || [], targetCounts[category] || 0)
+    topUpGroup(
+      baseGroups[category] || [],
+      generated[category] || [],
+      targetCounts[category] || 0,
+      kind === "word" ? options.allowedWordLabels?.[category] : null
+    )
   ]));
 }
