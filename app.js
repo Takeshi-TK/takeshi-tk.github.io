@@ -1,4 +1,4 @@
-import { languagePacks } from "./language-packs.js?v=20260424-feature25";
+import { languagePacks } from "./language-packs.js?v=20260424-feature26";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -69,6 +69,7 @@ const walkTab = document.querySelector("#walkTab");
 const wordTypeTab = document.querySelector("#wordTypeTab");
 const wordReverseTypeTab = document.querySelector("#wordReverseTypeTab");
 const phraseTypeTab = document.querySelector("#phraseTypeTab");
+const phraseReverseTypeTab = document.querySelector("#phraseReverseTypeTab");
 const themeToggleButton = document.querySelector("#themeToggleButton");
 const quizPanel = document.querySelector("#quizPanel");
 const walkPanel = document.querySelector("#walkPanel");
@@ -553,8 +554,8 @@ function getQuestionPool() {
   return getStudyItems();
 }
 
-function isWordReverseMode() {
-  return state.studyType === "word" && state.answerMode === "enToJp";
+function isTargetToJapaneseMode() {
+  return state.answerMode === "enToJp";
 }
 
 function getWordPriority(word) {
@@ -742,9 +743,8 @@ function updateHeroSummary() {
   const categoryLabels = Object.values(getCurrentCollection())
     .map((category) => category.label)
     .join(" / ");
-  const studyLabel = state.studyType === "word"
-    ? `単語 ${state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`}`
-    : studyTypeMeta[state.studyType].label;
+  const directionLabel = state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`;
+  const studyLabel = `${studyTypeMeta[state.studyType].label} ${directionLabel}`;
   const modeLabel = state.mode === "walk" ? "ウォーキング" : "4択クイズ";
 
   heroCategoryListSummary.textContent = categoryLabels;
@@ -904,16 +904,21 @@ function renderAdminPanel() {
 function renderStudyTypeTabs() {
   const isWordJpToEn = state.studyType === "word" && state.answerMode === "jpToEn";
   const isWordEnToJp = state.studyType === "word" && state.answerMode === "enToJp";
-  const isPhrase = state.studyType === "phrase";
+  const isPhraseJpToEn = state.studyType === "phrase" && state.answerMode === "jpToEn";
+  const isPhraseEnToJp = state.studyType === "phrase" && state.answerMode === "enToJp";
   const shortLabel = getTargetLanguageShortName();
   wordTypeTab.textContent = `単語 日→${shortLabel}`;
   wordReverseTypeTab.textContent = `単語 ${shortLabel}→日`;
+  phraseTypeTab.textContent = `フレーズ 日→${shortLabel}`;
+  phraseReverseTypeTab.textContent = `フレーズ ${shortLabel}→日`;
   wordTypeTab.classList.toggle("active", isWordJpToEn);
   wordReverseTypeTab.classList.toggle("active", isWordEnToJp);
-  phraseTypeTab.classList.toggle("active", isPhrase);
+  phraseTypeTab.classList.toggle("active", isPhraseJpToEn);
+  phraseReverseTypeTab.classList.toggle("active", isPhraseEnToJp);
   wordTypeTab.setAttribute("aria-selected", String(isWordJpToEn));
   wordReverseTypeTab.setAttribute("aria-selected", String(isWordEnToJp));
-  phraseTypeTab.setAttribute("aria-selected", String(isPhrase));
+  phraseTypeTab.setAttribute("aria-selected", String(isPhraseJpToEn));
+  phraseReverseTypeTab.setAttribute("aria-selected", String(isPhraseEnToJp));
 }
 
 function renderLanguageTabs() {
@@ -1018,10 +1023,10 @@ function updateSnapshot() {
 
   const languageLabel = getTargetLanguageName();
   const languageShort = getTargetLanguageShortName();
-  const directionLabel = state.studyType === "word" && state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`;
+  const directionLabel = state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`;
   quizHeading.textContent = state.studyType === "word"
     ? `${languageLabel} ${category.label} 単語${directionLabel}クイズ`
-    : `${languageLabel} ${category.label} ${studyMeta.label}クイズ`;
+    : `${languageLabel} ${category.label} ${studyMeta.label}${directionLabel}クイズ`;
   quizPoolBadge.textContent = activeWords
     ? `出題対象 ${activeWords}${studyMeta.countLabel}`
     : "出題対象なし";
@@ -1642,7 +1647,7 @@ function buildSkipFeedback(answer) {
 
 function renderCurrentQuestionUi() {
   const { answer } = state.currentQuestion;
-  const reverseMode = isWordReverseMode();
+  const reverseMode = isTargetToJapaneseMode();
   const targetName = getTargetLanguageName();
   hideUsageExampleCard();
   questionPromptLabel.textContent = reverseMode ? `${targetName}の表記` : "日本語の意味";
@@ -2224,7 +2229,7 @@ function setStudyType(studyType, answerMode = "jpToEn") {
 
   stopWalking(true);
   state.studyType = studyType;
-  state.answerMode = studyType === "word" ? answerMode : "jpToEn";
+  state.answerMode = answerMode;
   state.reviewMode = null;
   state.category = Object.keys(getCurrentCollection())[0];
   resetLearningFlow();
@@ -2400,7 +2405,8 @@ quizTab.addEventListener("click", () => setMode("quiz"));
 walkTab.addEventListener("click", () => setMode("walk"));
 wordTypeTab.addEventListener("click", () => setStudyType("word", "jpToEn"));
 wordReverseTypeTab.addEventListener("click", () => setStudyType("word", "enToJp"));
-phraseTypeTab.addEventListener("click", () => setStudyType("phrase"));
+phraseTypeTab.addEventListener("click", () => setStudyType("phrase", "jpToEn"));
+phraseReverseTypeTab.addEventListener("click", () => setStudyType("phrase", "enToJp"));
 skipButton.addEventListener("click", () => skipCurrentQuestion());
 questionAudioButton.addEventListener("click", () => {
   if (state.currentQuestion?.answer?.english) {
