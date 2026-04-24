@@ -838,6 +838,18 @@ function hideUsageExampleCard() {
   usageExampleBody.className = "usage-help-result ready";
 }
 
+function buildSafeWordExample(word, meaning) {
+  const label = /\s/.test(word) ? "phrase" : "word";
+  const japaneseLabel = label === "phrase" ? "表現" : "単語";
+
+  return {
+    examples: [
+      [`I learned the ${label} "${word}" today.`, `今日「${word}」という${japaneseLabel}を学びました。`],
+      [`"${word}" means "${meaning}" in Japanese.`, `「${word}」は日本語で「${meaning}」という意味です。`]
+    ]
+  };
+}
+
 function buildPracticalWordExample(word, meaning) {
   const lower = word.toLowerCase();
   const exactExamples = {
@@ -1310,6 +1322,96 @@ function buildPracticalWordExample(word, meaning) {
         ["Can we order now?", "今注文できますか。"]
       ]
     },
+    search: {
+      examples: [
+        ["I searched for a nearby cafe.", "近くのカフェを検索しました。"],
+        ["Please search for the address.", "その住所を検索してください。"]
+      ]
+    },
+    apologize: {
+      examples: [
+        ["I need to apologize to her.", "彼女に謝る必要があります。"],
+        ["Please apologize for the mistake.", "その間違いについて謝ってください。"]
+      ]
+    },
+    share: {
+      examples: [
+        ["Please share the file with me.", "そのファイルを私に共有してください。"],
+        ["I shared the notes with the team.", "チームにメモを共有しました。"]
+      ]
+    },
+    "go shopping": {
+      examples: [
+        ["I go shopping on weekends.", "週末に買い物に行きます。"],
+        ["Let's go shopping after lunch.", "昼食後に買い物に行きましょう。"]
+      ]
+    },
+    "stop doing": {
+      examples: [
+        ["Please stop doing that.", "それをするのはやめてください。"],
+        ["I want to stop doing this habit.", "この習慣をやめたいです。"]
+      ]
+    },
+    "take a break": {
+      examples: [
+        ["Let's take a break now.", "今、休憩しましょう。"],
+        ["I need to take a break.", "休憩する必要があります。"]
+      ]
+    },
+    "wait a moment": {
+      examples: [
+        ["Please wait a moment.", "少し待ってください。"],
+        ["Can you wait a moment?", "少し待ってもらえますか。"]
+      ]
+    },
+    "meet up": {
+      examples: [
+        ["Let's meet up at the station.", "駅で会いましょう。"],
+        ["We met up after school.", "放課後に会いました。"]
+      ]
+    },
+    "hang out": {
+      examples: [
+        ["We hang out after school.", "放課後に遊びます。"],
+        ["Let's hang out this weekend.", "今週末に遊びましょう。"]
+      ]
+    },
+    "go home": {
+      examples: [
+        ["I go home at six.", "6時に家に帰ります。"],
+        ["Let's go home now.", "今、家に帰りましょう。"]
+      ]
+    },
+    "come back": {
+      examples: [
+        ["Please come back soon.", "すぐに戻ってきてください。"],
+        ["I came back yesterday.", "昨日戻ってきました。"]
+      ]
+    },
+    "turn on": {
+      examples: [
+        ["Please turn on the light.", "電気をつけてください。"],
+        ["Can you turn on the TV?", "テレビをつけてもらえますか。"]
+      ]
+    },
+    "turn off": {
+      examples: [
+        ["Please turn off the light.", "電気を消してください。"],
+        ["I turned off my phone.", "スマホの電源を切りました。"]
+      ]
+    },
+    "pick up": {
+      examples: [
+        ["Please pick up your bag.", "かばんを拾ってください。"],
+        ["I will pick up the package.", "荷物を取りに行きます。"]
+      ]
+    },
+    "put down": {
+      examples: [
+        ["Please put down the box.", "箱を置いてください。"],
+        ["I put down my bag here.", "ここにかばんを置きました。"]
+      ]
+    },
     cancel: {
       examples: [
         ["I need to cancel my reservation.", "予約をキャンセルする必要があります。"],
@@ -1326,6 +1428,54 @@ function buildPracticalWordExample(word, meaning) {
       examples: [
         ["Please repeat that.", "それをもう一度言ってください。"],
         ["I repeated the sentence aloud.", "その文を声に出して繰り返しました。"]
+      ]
+    },
+    continue: {
+      examples: [
+        ["Please continue reading.", "読み続けてください。"],
+        ["We will continue tomorrow.", "明日続けます。"]
+      ]
+    },
+    begin: {
+      examples: [
+        ["The class will begin soon.", "授業はもうすぐ始まります。"],
+        ["Let's begin the lesson.", "授業を始めましょう。"]
+      ]
+    },
+    login: {
+      examples: [
+        ["Please login with your ID.", "IDでログインしてください。"],
+        ["I can't login right now.", "今ログインできません。"]
+      ]
+    },
+    logout: {
+      examples: [
+        ["Please logout after using it.", "使い終わったらログアウトしてください。"],
+        ["I forgot to logout.", "ログアウトするのを忘れました。"]
+      ]
+    },
+    refresh: {
+      examples: [
+        ["Please refresh the page.", "ページを再読み込みしてください。"],
+        ["I refreshed the browser.", "ブラウザを再読み込みしました。"]
+      ]
+    },
+    update: {
+      examples: [
+        ["Please update the app.", "アプリを更新してください。"],
+        ["I updated my profile.", "プロフィールを更新しました。"]
+      ]
+    },
+    follow: {
+      examples: [
+        ["Please follow this account.", "このアカウントをフォローしてください。"],
+        ["I follow the instructions.", "指示に従います。"]
+      ]
+    },
+    block: {
+      examples: [
+        ["You can block that account.", "そのアカウントをブロックできます。"],
+        ["The road is blocked.", "その道路はふさがっています。"]
       ]
     },
     discuss: {
@@ -1928,6 +2078,8 @@ function buildPracticalWordExample(word, meaning) {
     return exactExamples[lower];
   }
 
+  return buildSafeWordExample(word, meaning);
+
   if (/宿|ホテル|ホステル|泊/.test(meaning)) {
     return {
       meaningNote: `${meaning}は、泊まる場所や宿泊に関係する単語です。`,
@@ -2021,11 +2173,11 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/する|使う|作る|取る|置く|欲しい|好き|思う|見る|聞く|聞こえる|話す|言う|たずねる|答える|助ける|見つける|与える|見せる|持ってくる|送る|開ける|閉める|始める|終える|試す|待つ|保つ|動く|歩く|走る|座る|立つ|曲がる|渡る|乗る|運転する|旅行する|訪れる|滞在する|戻る|買う|支払う|売る|食べる|飲む|料理する|洗う|掃除する|切る|注文する|選ぶ|着る|変える|運ぶ|持つ|書く|読む|勉強する|学ぶ|教える|覚えている|忘れる|会う|ついていく|確認する|予約する|到着する|出発する|休む|眠る|目覚める|ほほえむ|笑う|泣く|楽しむ|願う|準備する|共有する|借りる|貸す/.test(meaning)) {
+  if (/\s/.test(word)) {
     return {
       examples: [
-        [`I need to ${word} this today.`, `今日はこれについて「${meaning}」という動作が必要です。`],
-        [`Can you ${word} this?`, `これは「${meaning}」できますか。`]
+        [`I learned the phrase "${word}" today.`, `今日「${word}」という表現を学びました。`],
+        [`"${word}" means "${meaning}" in Japanese.`, `「${word}」は日本語で「${meaning}」という意味です。`]
       ]
     };
   }
@@ -2156,11 +2308,11 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/注文|知っている|取り消す|温める|凍らせる|ゆでる|焼く|混ぜる|注ぐ|飾る|くつろぐ|伸ばす|繰り返す|謝る|許す|話し合う|励ます|祝う|避ける|示す|見積もる|割り当てる|導き出す|詳しく調べる|組み立てる|明確に言葉で表す|伝える|高める|減らす/.test(meaning)) {
+  if (/する|使う|作る|取る|置く|欲しい|好き|思う|見る|聞く|聞こえる|話す|言う|たずねる|答える|助ける|見つける|与える|見せる|持ってくる|送る|開ける|閉める|始める|終える|試す|待つ|保つ|動く|歩く|走る|座る|立つ|曲がる|渡る|乗る|運転する|旅行する|訪れる|滞在する|戻る|買う|支払う|売る|食べる|飲む|料理する|洗う|掃除する|切る|注文する|選ぶ|着る|変える|運ぶ|持つ|書く|読む|勉強する|学ぶ|教える|覚えている|忘れる|会う|ついていく|確認する|予約する|到着する|出発する|休む|眠る|目覚める|ほほえむ|笑う|泣く|楽しむ|願う|準備する|共有する|借りる|貸す|知っている|取り消す|温める|凍らせる|ゆでる|焼く|混ぜる|注ぐ|飾る|くつろぐ|伸ばす|繰り返す|謝る|許す|話し合う|励ます|祝う|避ける|示す|見積もる|割り当てる|導き出す|詳しく調べる|組み立てる|明確に言葉で表す|伝える|高める|減らす/.test(meaning)) {
     return {
       examples: [
-        [`Please ${word} this.`, `これについて「${meaning}」をしてください。`],
-        [`I need to ${word} it carefully.`, `それを注意して「${meaning}」する必要があります。`]
+        [`I learned how to use "${word}" today.`, `今日「${word}」の使い方を学びました。`],
+        [`"${word}" means "${meaning}" in Japanese.`, `「${word}」は日本語で「${meaning}」という意味です。`]
       ]
     };
   }
@@ -2246,19 +2398,10 @@ function buildPracticalWordExample(word, meaning) {
     };
   }
 
-  if (/\s/.test(word)) {
-    return {
-      examples: [
-        [`I need to check the ${word}.`, `${meaning}を確認する必要があります。`],
-        [`Where is the ${word}?`, `${meaning}はどこですか。`]
-      ]
-    };
-  }
-
   return {
     examples: [
-      [`This is a ${word}.`, `これは${meaning}です。`],
-      [`Where is the ${word}?`, `${meaning}はどこですか。`]
+      [`I learned the word "${word}" today.`, `今日「${word}」という単語を学びました。`],
+      [`"${word}" means "${meaning}" in Japanese.`, `「${word}」は日本語で「${meaning}」という意味です。`]
     ]
   };
 }
