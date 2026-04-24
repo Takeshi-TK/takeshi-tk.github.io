@@ -43,6 +43,7 @@ body {
     radial-gradient(circle at bottom right, rgba(42, 104, 150, 0.14), transparent 28%),
     linear-gradient(135deg, #efe4d2, #f7f2e9 42%, #ece5da);
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 body.dark-mode {
@@ -102,7 +103,7 @@ body.dark-mode .usage-help-result.ready {
   width: calc(100% - 20px);
   max-width: 1360px;
   margin: 14px auto 28px;
-  overflow-x: clip;
+  overflow-x: hidden;
 }
 
 .site-nav,
@@ -608,6 +609,7 @@ body.dark-mode .hero {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: stretch;
+  min-width: 0;
 }
 
 .choice-button {
@@ -618,6 +620,7 @@ body.dark-mode .hero {
   border: 1px solid rgba(31, 42, 55, 0.08);
   font-size: 0.96rem;
   line-height: 1.35;
+  min-width: 0;
 }
 
 .choice-text {
@@ -1111,7 +1114,7 @@ body.dark-mode .hero {
   }
 
   .quiz-panel .choice-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .quiz-panel .choice-button {
@@ -1122,8 +1125,10 @@ body.dark-mode .hero {
   }
 
   .quiz-panel .choice-audio-button {
-    width: 100%;
+    width: auto;
+    min-width: 52px;
     min-height: 36px;
+    padding-inline: 8px;
   }
 
   .quiz-panel .quiz-footer {
@@ -1136,6 +1141,7 @@ body.dark-mode .hero {
     background: rgba(255, 250, 243, 0.94);
     border: 1px solid rgba(31, 42, 55, 0.08);
     box-shadow: 0 12px 24px rgba(31, 42, 55, 0.12);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
@@ -1195,7 +1201,7 @@ body.dark-mode .hero {
   }
 
   .quiz-panel .choice-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .quiz-panel .choice-button {
