@@ -1,5 +1,6 @@
 ﻿import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
 import { phrases } from "./phrases.js?v=20260424-feature21";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260424-feature28";
 
 const categoryMeta = {
   basic: {
@@ -61,6 +62,13 @@ function mergeGroups(base, addition) {
   return Object.fromEntries(Object.keys(categoryMeta).map((key) => [
     key,
     [...(base[key] || []), ...(addition[key] || [])]
+  ]));
+}
+
+function targetCountsFrom(collection) {
+  return Object.fromEntries(Object.entries(collection).map(([key, category]) => [
+    key,
+    category.words.length
   ]));
 }
 
@@ -733,12 +741,14 @@ const frenchPhraseBoost2 = {
   ]
 };
 
-const expandedKoreanWords = mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2);
-const expandedKoreanPhrases = mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2);
-const expandedChineseWords = mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2);
-const expandedChinesePhrases = mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2);
-const expandedFrenchWords = mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2);
-const expandedFrenchPhrases = mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2);
+const wordTargetCounts = targetCountsFrom(vocabulary);
+const phraseTargetCounts = targetCountsFrom(phrases);
+const expandedKoreanWords = topUpLanguageGroups("ko", "word", mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), wordTargetCounts);
+const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), phraseTargetCounts);
+const expandedChineseWords = topUpLanguageGroups("zh", "word", mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), wordTargetCounts);
+const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), phraseTargetCounts);
+const expandedFrenchWords = topUpLanguageGroups("fr", "word", mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), wordTargetCounts);
+const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), phraseTargetCounts);
 
 export const languagePacks = {
   en: {
