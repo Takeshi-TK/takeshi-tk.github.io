@@ -1,5 +1,4 @@
-import { vocabulary } from "./vocabulary.js?v=20260424-feature21";
-import { phrases } from "./phrases.js?v=20260424-feature21";
+import { languagePacks } from "./language-packs.js?v=20260424-feature25";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -28,11 +27,6 @@ const ADMIN_ID = "TsubasaP";
 const ADMIN_ID_HASH = "6fd48e59450c59af0cb7e49a23244523486f335f7b301076568646e87414548b";
 const ADMIN_PASSWORD_HASH = "2b3a1f35eb496440d6db24f06e857668c3b8b51d6cebee9eda439eb422ed8668";
 
-const datasets = {
-  word: vocabulary,
-  phrase: phrases
-};
-
 const studyTypeMeta = {
   word: {
     label: "単語",
@@ -47,6 +41,7 @@ const studyTypeMeta = {
 };
 
 const categoryButtons = document.querySelector("#categoryButtons");
+const languageButtons = document.querySelector("#languageButtons");
 const correctCount = document.querySelector("#correctCount");
 const attemptCount = document.querySelector("#attemptCount");
 const accuracyRate = document.querySelector("#accuracyRate");
@@ -123,11 +118,13 @@ const walkStopButton = document.querySelector("#walkStopButton");
 const walkPreviousButton = document.querySelector("#walkPreviousButton");
 const walkNextButton = document.querySelector("#walkNextButton");
 const walkReplayButton = document.querySelector("#walkReplayButton");
+const initialSettings = loadSettings();
 
 const state = {
+  language: initialSettings.language,
   studyType: "word",
   answerMode: "jpToEn",
-  category: "beginner",
+  category: "basic",
   mode: "quiz",
   currentQuestion: null,
   lastAnswer: null,
@@ -137,7 +134,7 @@ const state = {
   profiles: loadProfiles(),
   activeProfileId: loadActiveProfileId(),
   role: loadActiveRole(),
-  settings: loadSettings(),
+  settings: initialSettings,
   usageExamples: new Map(),
   reviewMode: null,
   sessionSummaryAdLoaded: false,
@@ -170,9 +167,11 @@ ensureAdminProfile();
 function createEmptyProfile(id) {
   const categories = {};
 
-  for (const [type, collection] of Object.entries(datasets)) {
-    for (const key of Object.keys(collection)) {
-      categories[`${type}:${key}`] = { correct: 0, attempts: 0 };
+  for (const [languageKey, pack] of Object.entries(languagePacks)) {
+    for (const [type, collection] of Object.entries(pack.datasets)) {
+      for (const key of Object.keys(collection)) {
+        categories[`${languageKey}:${type}:${key}`] = { correct: 0, attempts: 0 };
+      }
     }
   }
 
@@ -225,17 +224,19 @@ function saveActiveRole() {
 }
 
 function loadSettings() {
-  const fallback = { speed: 0.75, gap: 2, walkStrategy: "weak", theme: "light" };
+  const fallback = { speed: 0.75, gap: 2, walkStrategy: "weak", theme: "light", language: "en" };
   const allowedSpeeds = [0.5, 0.75, 1.25, 1.5];
 
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     const speed = Number(saved?.speed ?? fallback.speed);
+    const language = languagePacks[saved?.language] ? saved.language : fallback.language;
     return {
       speed: allowedSpeeds.includes(speed) ? speed : fallback.speed,
       gap: Number(saved?.gap ?? fallback.gap),
       walkStrategy: String(saved?.walkStrategy ?? fallback.walkStrategy),
-      theme: saved?.theme === "dark" ? "dark" : "light"
+      theme: saved?.theme === "dark" ? "dark" : "light",
+      language
     };
   } catch {
     return fallback;
@@ -404,11 +405,13 @@ function ensureActiveProfile() {
   const profile = state.profiles[state.activeProfileId];
   ensureProfileStats(profile);
 
-  for (const [type, collection] of Object.entries(datasets)) {
-    for (const key of Object.keys(collection)) {
-      const progressKey = `${type}:${key}`;
-      if (!profile.categories[progressKey]) {
-        profile.categories[progressKey] = { correct: 0, attempts: 0 };
+  for (const [languageKey, pack] of Object.entries(languagePacks)) {
+    for (const [type, collection] of Object.entries(pack.datasets)) {
+      for (const key of Object.keys(collection)) {
+        const progressKey = `${languageKey}:${type}:${key}`;
+        if (!profile.categories[progressKey]) {
+          profile.categories[progressKey] = { correct: 0, attempts: 0 };
+        }
       }
     }
   }
@@ -428,8 +431,28 @@ function ensureAdminProfile() {
   saveProfiles();
 }
 
+function getCurrentLanguagePack() {
+  return languagePacks[state.language] || languagePacks.en;
+}
+
+function getTargetLanguageName() {
+  return getCurrentLanguagePack().targetName;
+}
+
+function getTargetLanguageShortName() {
+  return getCurrentLanguagePack().shortLabel;
+}
+
+function getTargetSpeechLang() {
+  return getCurrentLanguagePack().speechLang;
+}
+
+function getCurrentDatasets() {
+  return getCurrentLanguagePack().datasets;
+}
+
 function getCurrentCollection() {
-  return datasets[state.studyType];
+  return getCurrentDatasets()[state.studyType];
 }
 
 function ensureValidCategory() {
@@ -453,7 +476,7 @@ function getActiveProfile() {
 }
 
 function getProgressKey(category = state.category, studyType = state.studyType) {
-  return `${studyType}:${category}`;
+  return `${state.language}:${studyType}:${category}`;
 }
 
 function getCategoryProgress(category = state.category, studyType = state.studyType) {
@@ -468,7 +491,7 @@ function getCategoryProgress(category = state.category, studyType = state.studyT
 }
 
 function getWordKey(word, category = state.category, studyType = state.studyType) {
-  return `${studyType}::${category}::${word.english}::${word.japanese}`;
+  return `${state.language}::${studyType}::${category}::${word.english}::${word.japanese}`;
 }
 
 function getWordRecord(word, category = state.category, studyType = state.studyType) {
@@ -498,11 +521,11 @@ function isMastered(word, category = state.category, studyType = state.studyType
 }
 
 function getStudyItems(category = state.category, studyType = state.studyType) {
-  return datasets[studyType][category].words.filter((word) => !isMastered(word, category, studyType));
+  return getCurrentDatasets()[studyType][category].words.filter((word) => !isMastered(word, category, studyType));
 }
 
 function getReviewDueItems(category = state.category, studyType = state.studyType) {
-  return datasets[studyType][category].words.filter((word) => {
+  return getCurrentDatasets()[studyType][category].words.filter((word) => {
     const record = getWordRecord(word, category, studyType);
     return record.reviewDue && record.reviewStreak < 3;
   });
@@ -714,17 +737,19 @@ function updateSessionProgressBadge() {
 
 function updateHeroSummary() {
   const currentCategory = getCurrentCategory();
+  const languageLabel = getTargetLanguageName();
+  const languageShort = getTargetLanguageShortName();
   const categoryLabels = Object.values(getCurrentCollection())
     .map((category) => category.label)
     .join(" / ");
   const studyLabel = state.studyType === "word"
-    ? `単語 ${state.answerMode === "enToJp" ? "英→日" : "日→英"}`
+    ? `単語 ${state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`}`
     : studyTypeMeta[state.studyType].label;
   const modeLabel = state.mode === "walk" ? "ウォーキング" : "4択クイズ";
 
   heroCategoryListSummary.textContent = categoryLabels;
-  heroCategorySummary.textContent = `${currentCategory.label}を選択中`;
-  heroModeSummary.textContent = `${studyLabel} / ${modeLabel}`;
+  heroCategorySummary.textContent = `${languageLabel} / ${currentCategory.label}を選択中`;
+  heroModeSummary.textContent = `${languageLabel} / ${studyLabel} / ${modeLabel}`;
 }
 
 function hideSessionSummary() {
@@ -880,12 +905,33 @@ function renderStudyTypeTabs() {
   const isWordJpToEn = state.studyType === "word" && state.answerMode === "jpToEn";
   const isWordEnToJp = state.studyType === "word" && state.answerMode === "enToJp";
   const isPhrase = state.studyType === "phrase";
+  const shortLabel = getTargetLanguageShortName();
+  wordTypeTab.textContent = `単語 日→${shortLabel}`;
+  wordReverseTypeTab.textContent = `単語 ${shortLabel}→日`;
   wordTypeTab.classList.toggle("active", isWordJpToEn);
   wordReverseTypeTab.classList.toggle("active", isWordEnToJp);
   phraseTypeTab.classList.toggle("active", isPhrase);
   wordTypeTab.setAttribute("aria-selected", String(isWordJpToEn));
   wordReverseTypeTab.setAttribute("aria-selected", String(isWordEnToJp));
   phraseTypeTab.setAttribute("aria-selected", String(isPhrase));
+}
+
+function renderLanguageTabs() {
+  if (!languageButtons) {
+    return;
+  }
+
+  languageButtons.innerHTML = "";
+
+  for (const [key, pack] of Object.entries(languagePacks)) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `language-button ${key === state.language ? "active" : ""}`;
+    button.textContent = pack.label;
+    button.setAttribute("aria-pressed", String(key === state.language));
+    button.addEventListener("click", () => setLanguage(key));
+    languageButtons.appendChild(button);
+  }
 }
 
 function renderCategories() {
@@ -970,10 +1016,12 @@ function updateSnapshot() {
   renderWeeklyGoalCalendar(profile);
   reviewMistakesButton.disabled = getReviewDueItems().length === 0;
 
-  const directionLabel = state.studyType === "word" && state.answerMode === "enToJp" ? "英→日" : "日→英";
+  const languageLabel = getTargetLanguageName();
+  const languageShort = getTargetLanguageShortName();
+  const directionLabel = state.studyType === "word" && state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`;
   quizHeading.textContent = state.studyType === "word"
-    ? `${category.label} 単語${directionLabel}クイズ`
-    : `${category.label} ${studyMeta.label}クイズ`;
+    ? `${languageLabel} ${category.label} 単語${directionLabel}クイズ`
+    : `${languageLabel} ${category.label} ${studyMeta.label}クイズ`;
   quizPoolBadge.textContent = activeWords
     ? `出題対象 ${activeWords}${studyMeta.countLabel}`
     : "出題対象なし";
@@ -1364,7 +1412,7 @@ function buildPracticalWordExample(word, meaning) {
         ["The meeting starts at ten.", "会議は10時に始まります。"],
         ["I have a meeting this afternoon.", "今日の午後に会議があります。"]
       ],
-      note: "ビジネス英語では頻出です。"
+      note: "ビジネス場面では頻出です。"
     },
     schedule: {
       meaningNote: "予定、日程、スケジュールのことです。",
@@ -1595,14 +1643,15 @@ function buildSkipFeedback(answer) {
 function renderCurrentQuestionUi() {
   const { answer } = state.currentQuestion;
   const reverseMode = isWordReverseMode();
+  const targetName = getTargetLanguageName();
   hideUsageExampleCard();
-  questionPromptLabel.textContent = reverseMode ? "英単語" : "日本語の意味";
+  questionPromptLabel.textContent = reverseMode ? `${targetName}の表記` : "日本語の意味";
   questionMeaning.textContent = reverseMode ? answer.english : answer.japanese;
   questionAudioButton.classList.toggle("hidden", !reverseMode);
   questionAudioButton.setAttribute("aria-label", `${answer.english} の発音を聞く`);
   questionHint.textContent = reverseMode
     ? `${getCurrentCategory().description} 日本語として最も合うものを選んでください。`
-    : `${getCurrentCategory().description} 英語として最も合うものを選んでください。`;
+    : `${getCurrentCategory().description} ${targetName}として最も合うものを選んでください。`;
   feedbackMessage.textContent = "答えを選ぶとここに結果が表示されます。";
   feedbackMessage.className = "feedback neutral";
   nextButton.textContent = "次の問題へ";
@@ -1629,7 +1678,7 @@ function renderCurrentQuestionUi() {
       audioButton.setAttribute("aria-label", `${option.english} の発音を聞く`);
       audioButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        speakNow(option.english, "en-US", 0.75);
+        speakNow(option.english, getTargetSpeechLang(), 0.75);
       });
 
       card.append(button, audioButton);
@@ -2015,7 +2064,7 @@ async function runWalking(token) {
     walkMeaning.textContent = current.japanese;
     updateMediaSession(current);
 
-    await speak(current.english, "en-US", state.settings.speed);
+    await speak(current.english, getTargetSpeechLang(), state.settings.speed);
     if (!state.walking.active || token !== state.walking.token) {
       break;
     }
@@ -2150,6 +2199,22 @@ function saveDailyGoal() {
 
 function toggleGoalHistory() {
   window.location.href = "./calendar.html";
+}
+
+function setLanguage(language) {
+  if (!languagePacks[language] || state.language === language) {
+    return;
+  }
+
+  stopWalking(true);
+  state.language = language;
+  state.settings.language = language;
+  saveSettings();
+  state.reviewMode = null;
+  state.category = Object.keys(getCurrentCollection())[0];
+  resetLearningFlow();
+  rebuildWalkingQueue();
+  renderAll();
 }
 
 function setStudyType(studyType, answerMode = "jpToEn") {
@@ -2318,6 +2383,7 @@ function renderAll() {
   ensureValidCategory();
   renderProfiles();
   renderAdminPanel();
+  renderLanguageTabs();
   renderStudyTypeTabs();
   renderCategories();
   updateSnapshot();
@@ -2338,7 +2404,7 @@ phraseTypeTab.addEventListener("click", () => setStudyType("phrase"));
 skipButton.addEventListener("click", () => skipCurrentQuestion());
 questionAudioButton.addEventListener("click", () => {
   if (state.currentQuestion?.answer?.english) {
-    speakNow(state.currentQuestion.answer.english, "en-US", 0.75);
+    speakNow(state.currentQuestion.answer.english, getTargetSpeechLang(), 0.75);
   }
 });
 nextButton.addEventListener("click", () => {
@@ -2418,7 +2484,7 @@ walkNextButton.addEventListener("click", () => {
 });
 
 walkReplayButton.addEventListener("click", () => {
-  speakNow(walkWord.textContent, "en-US");
+  speakNow(walkWord.textContent, getTargetSpeechLang());
 });
 
 document.addEventListener("visibilitychange", () => {

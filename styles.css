@@ -93,6 +93,7 @@ body.dark-mode .choice-button,
 body.dark-mode .choice-audio-button,
 body.dark-mode .audio-button,
 body.dark-mode .mode-button,
+body.dark-mode .language-button,
 body.dark-mode .category-button {
   color: var(--ink);
   border-color: var(--line);
@@ -333,8 +334,21 @@ body.dark-mode .hero {
 }
 
 .hero-mode-switch,
+.hero-language-list,
 .hero-category-list {
   margin-top: 0;
+}
+
+.hero-language-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.category-label {
+  display: inline-block;
+  margin-top: 4px;
 }
 
 .hero-category-list {
@@ -342,6 +356,7 @@ body.dark-mode .hero {
 }
 
 .hero-category-list .category-button,
+.hero-language-list .language-button,
 .hero-mode-switch .mode-button {
   padding: 10px 12px;
   font-size: 0.9rem;
@@ -505,6 +520,7 @@ body.dark-mode .hero {
 }
 
 .category-button,
+.language-button,
 .mode-button,
 .ghost-button,
 .primary-button,
@@ -515,6 +531,7 @@ body.dark-mode .hero {
 }
 
 .category-button,
+.language-button,
 .mode-button,
 .ghost-button {
   background: rgba(255, 255, 255, 0.58);
@@ -531,7 +548,17 @@ body.dark-mode .hero {
   border: 1px solid transparent;
 }
 
+.language-button {
+  min-width: 0;
+  padding: 10px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  text-align: center;
+  font-weight: 800;
+}
+
 .category-button:hover,
+.language-button:hover,
 .mode-button:hover,
 .ghost-button:hover,
 .primary-button:hover,
@@ -545,7 +572,14 @@ body.dark-mode .hero {
   box-shadow: 0 14px 24px rgba(157, 67, 34, 0.22);
 }
 
+.language-button.active {
+  background: linear-gradient(135deg, var(--accent), #ef9256);
+  color: white;
+  box-shadow: 0 12px 20px rgba(157, 67, 34, 0.18);
+}
+
 body.dark-mode .category-button.active,
+body.dark-mode .language-button.active,
 body.dark-mode .mode-button.active {
   background: linear-gradient(135deg, rgba(154, 91, 46, 0.72), rgba(92, 58, 39, 0.9));
   color: #fff7ed;
@@ -1666,6 +1700,7 @@ body.dark-mode .month-day-card.achieved {
   .primary-button,
   .ghost-button,
   .mode-button,
+  .language-button,
   .category-button {
     width: 100%;
   }
