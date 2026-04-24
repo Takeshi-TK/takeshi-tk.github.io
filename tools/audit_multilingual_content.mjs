@@ -136,7 +136,15 @@ function auditKnownBadCombinations() {
     "記録の記録",
     "手順の手順",
     "優先順位の優先順位",
-    "駅に使う予定の"
+    "駅に使う予定の",
+    "先生の練習",
+    "家の練習",
+    "水の練習",
+    "天気の発音",
+    "きれいな台所",
+    "きれいな学校",
+    "きれいな病院",
+    "きれいな会社"
   ]);
   const exactBadTargets = new Set([
     "질문 질문",
@@ -167,6 +175,9 @@ function auditKnownBadCombinations() {
 
           if (exactBadJapanese.has(item.japanese)) fail(`known bad phrase: ${label}`);
           if (exactBadTargets.has(item.english)) fail(`known bad target: ${label}`);
+          if (kind === "word" && category === "basic" && /(?<!」)の(発音|復習|練習|例文|説明|メモ|関連表現|基本表現|聞き取り練習|発話練習)$/.test(item.japanese)) {
+            fail(`unquoted basic study label: ${label}`);
+          }
           if (awkwardRegexes.some((regex) => regex.test(item.japanese)) && !item.japanese.includes("少し考える時間をください")) {
             fail(`awkward generated Japanese: ${label}`);
           }

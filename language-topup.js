@@ -176,19 +176,21 @@ function basicWordPatterns(lang) {
   const isTransport = (item) => hasTag(item, "transport");
   const isWeather = (item) => ["天気", "雨", "雪"].includes(item.jp);
   const isClockTime = (item) => ["朝", "昼", "夜", "週末", "時間"].includes(item.jp);
+  const isCleanable = (item) => ["机", "椅子", "窓", "ドア", "本", "ノート", "ペン", "かばん", "服", "靴", "写真"].includes(item.jp);
   const all = () => true;
+  const quotedWord = (suffix) => (label) => `「${label}」${suffix}`;
 
   if (lang === "ko") {
     return [
-      ["뜻", "の意味", all], ["발음", "の発音", all], ["예문", "の例文", all], ["설명", "の説明", all],
-      ["복습", "の復習", all], ["연습", "の練習", all], ["메모", "のメモ", all], ["관련 표현", "の関連表現", all],
-      ["질문", "についての質問", all], ["기본 표현", "の基本表現", all], ["듣기 연습", "の聞き取り練習", all], ["말하기 연습", "の発話練習", all],
+      ["뜻", quotedWord("の意味"), all], ["발음", quotedWord("の発音"), all], ["예문", quotedWord("の例文"), all], ["설명", quotedWord("の説明"), all],
+      ["복습", quotedWord("の復習"), all], ["연습", quotedWord("の練習"), all], ["메모", quotedWord("のメモ"), all], ["관련 표현", quotedWord("の関連表現"), all],
+      ["질문", quotedWord("についての質問"), all], ["기본 표현", quotedWord("の基本表現"), all], ["듣기 연습", quotedWord("の聞き取り練習"), all], ["말하기 연습", quotedWord("の発話練習"), all],
       ["근처", "の近く", isPlaceOrTransport], ["앞", "の前", isPlaceOrTransport], ["뒤", "の後ろ", isPlaceOrTransport], ["옆", "の横", isPlaceOrTransport],
       ["안", "の中", isPlace], ["밖", "の外", isPlace], ["입구", "の入口", isPlace], ["출구", "の出口", isPlace],
       ["위치", "の場所", isPlaceOrTransport], ["이름", "の名前", (item) => isPerson(item) || isPlace(item)], ["사진", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
       ["시간", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
       ["새", "新しい", (item) => isPlace(item) || isTangible(item)], ["작은", "小さい", (item) => isPlace(item) || isTangible(item)],
-      ["큰", "大きい", (item) => isPlace(item) || isTangible(item)], ["깨끗한", "きれいな", (item) => isPlace(item) || isTangible(item)],
+      ["큰", "大きい", (item) => isPlace(item) || isTangible(item)], ["깨끗한", "きれいな", isCleanable],
       ["첫", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["다음", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
       ["좋아하는", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
       ["찾는", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
@@ -201,22 +203,22 @@ function basicWordPatterns(lang) {
       return {
         applies,
         target: ({ target }) => isAdjective ? `${prefixOrSuffix} ${target}` : `${target} ${prefixOrSuffix}`,
-        jp: ({ jp: label }) => isAdjective ? `${jp}${label}` : `${label}${jp}`
+        jp: ({ jp: label }) => isAdjective ? `${jp}${label}` : typeof jp === "function" ? jp(label) : `${label}${jp}`
       };
     });
   }
 
   if (lang === "zh") {
     return [
-      ["意思", "の意味", all], ["发音", "の発音", all], ["例句", "の例文", all], ["说明", "の説明", all],
-      ["复习", "の復習", all], ["练习", "の練習", all], ["笔记", "のメモ", all], ["相关表达", "の関連表現", all],
-      ["问题", "についての質問", all], ["基本表达", "の基本表現", all], ["听力练习", "の聞き取り練習", all], ["口语练习", "の発話練習", all],
+      ["意思", quotedWord("の意味"), all], ["发音", quotedWord("の発音"), all], ["例句", quotedWord("の例文"), all], ["说明", quotedWord("の説明"), all],
+      ["复习", quotedWord("の復習"), all], ["练习", quotedWord("の練習"), all], ["笔记", quotedWord("のメモ"), all], ["相关表达", quotedWord("の関連表現"), all],
+      ["问题", quotedWord("についての質問"), all], ["基本表达", quotedWord("の基本表現"), all], ["听力练习", quotedWord("の聞き取り練習"), all], ["口语练习", quotedWord("の発話練習"), all],
       ["附近", "の近く", isPlaceOrTransport], ["前面", "の前", isPlaceOrTransport], ["后面", "の後ろ", isPlaceOrTransport], ["旁边", "の横", isPlaceOrTransport],
       ["里面", "の中", isPlace], ["外面", "の外", isPlace], ["入口", "の入口", isPlace], ["出口", "の出口", isPlace],
       ["位置", "の場所", isPlaceOrTransport], ["名字", "の名前", (item) => isPerson(item) || isPlace(item)], ["照片", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
       ["时间", "の利用時間", (item) => isPublicPlace(item) || isTransport(item) || isMedia(item)],
       ["新", "新しい", (item) => isPlace(item) || isTangible(item)], ["小", "小さい", (item) => isPlace(item) || isTangible(item)],
-      ["大", "大きい", (item) => isPlace(item) || isTangible(item)], ["干净的", "きれいな", (item) => isPlace(item) || isTangible(item)],
+      ["大", "大きい", (item) => isPlace(item) || isTangible(item)], ["干净的", "きれいな", isCleanable],
       ["第一个", "最初の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)], ["下一个", "次の", (item) => isPlace(item) || isTransport(item) || isMedia(item) || isClockTime(item)],
       ["喜欢的", "好きな", (item) => isPerson(item) || isFood(item) || isMedia(item) || isTransport(item)],
       ["正在找的", "探している", (item) => isPerson(item) || isPlace(item) || isObject(item) || isTransport(item)],
@@ -229,15 +231,15 @@ function basicWordPatterns(lang) {
       return {
         applies,
         target: ({ target }) => isPrefix ? `${part}${target}` : `${target}${part}`,
-        jp: ({ jp: label }) => isPrefix ? `${jp}${label}` : `${label}${jp}`
+        jp: ({ jp: label }) => isPrefix ? `${jp}${label}` : typeof jp === "function" ? jp(label) : `${label}${jp}`
       };
     });
   }
 
   return [
-    ["le sens de", "の意味", all], ["la prononciation de", "の発音", all], ["un exemple avec", "の例文", all], ["l'explication de", "の説明", all],
-    ["la révision de", "の復習", all], ["l'exercice de", "の練習", all], ["une note sur", "のメモ", all], ["une expression liée à", "の関連表現", all],
-    ["une question sur", "についての質問", all], ["l'expression de base pour", "の基本表現", all], ["l'écoute de", "の聞き取り練習", all], ["la pratique orale de", "の発話練習", all],
+    ["le sens de", quotedWord("の意味"), all], ["la prononciation de", quotedWord("の発音"), all], ["un exemple avec", quotedWord("の例文"), all], ["l'explication de", quotedWord("の説明"), all],
+    ["la révision de", quotedWord("の復習"), all], ["l'exercice de", quotedWord("の練習"), all], ["une note sur", quotedWord("のメモ"), all], ["une expression liée à", quotedWord("の関連表現"), all],
+    ["une question sur", quotedWord("についての質問"), all], ["l'expression de base pour", quotedWord("の基本表現"), all], ["l'écoute de", quotedWord("の聞き取り練習"), all], ["la pratique orale de", quotedWord("の発話練習"), all],
     ["près de", "の近く", isPlaceOrTransport], ["devant", "の前", isPlaceOrTransport], ["derrière", "の後ろ", isPlaceOrTransport], ["à côté de", "の横", isPlaceOrTransport],
     ["dans", "の中", isPlace], ["hors de", "の外", isPlace], ["l'entrée de", "の入口", isPlace], ["la sortie de", "の出口", isPlace],
     ["l'emplacement de", "の場所", isPlaceOrTransport], ["le nom de", "の名前", (item) => isPerson(item) || isPlace(item)], ["la photo de", "の写真", (item) => isPerson(item) || isPlaceOrTransport(item) || isTangible(item)],
@@ -251,7 +253,7 @@ function basicWordPatterns(lang) {
   ].map(([prefix, jp, applies]) => ({
     applies,
     target: ({ target }) => frJoin(prefix, target),
-    jp: ({ jp: label }) => `${label}${jp}`
+    jp: ({ jp: label }) => typeof jp === "function" ? jp(label) : `${label}${jp}`
   }));
 }
 
@@ -663,8 +665,8 @@ function phrasePatterns(lang, category) {
         { applies: usable, target: ({ target }) => `${target}${koObject(target)} 사용해요.`, jp: ({ jp }) => `${jp}を使います` },
         { applies: isWeather, target: ({ target }) => `${target}${koTopic(target)} 어때요?`, jp: ({ jp }) => `${jp}はどうですか` },
         { applies: isClockTime, target: ({ target }) => `${target}에 다시 확인할게요.`, jp: ({ jp }) => `${jp}にもう一度確認します` },
-        { applies: all, target: ({ target }) => `${target} 발음을 연습해요.`, jp: ({ jp }) => `${jp}の発音を練習します` },
-        { applies: all, target: ({ target }) => `${target} 뜻을 복습해요.`, jp: ({ jp }) => `${jp}の意味を復習します` }
+        { applies: all, target: ({ target }) => `${target} 발음을 연습해요.`, jp: ({ jp }) => `「${jp}」の発音を練習します` },
+        { applies: all, target: ({ target }) => `${target} 뜻을 복습해요.`, jp: ({ jp }) => `「${jp}」の意味を復習します` }
       ];
     }
     if (lang === "zh") {
@@ -681,8 +683,8 @@ function phrasePatterns(lang, category) {
         { applies: usable, target: ({ target }) => `我会用${target}。`, jp: ({ jp }) => `${jp}を使います` },
         { applies: isWeather, target: ({ target }) => `${target}怎么样？`, jp: ({ jp }) => `${jp}はどうですか` },
         { applies: isClockTime, target: ({ target }) => `我在${target}再确认一次。`, jp: ({ jp }) => `${jp}にもう一度確認します` },
-        { applies: all, target: ({ target }) => `我练习${target}的发音。`, jp: ({ jp }) => `${jp}の発音を練習します` },
-        { applies: all, target: ({ target }) => `我复习${target}的意思。`, jp: ({ jp }) => `${jp}の意味を復習します` }
+        { applies: all, target: ({ target }) => `我练习${target}的发音。`, jp: ({ jp }) => `「${jp}」の発音を練習します` },
+        { applies: all, target: ({ target }) => `我复习${target}的意思。`, jp: ({ jp }) => `「${jp}」の意味を復習します` }
       ];
     }
     return [
@@ -698,8 +700,8 @@ function phrasePatterns(lang, category) {
       { applies: usable, target: ({ target }) => `J'utilise ${target}.`, jp: ({ jp }) => `${jp}を使います` },
       { applies: isWeather, target: ({ target }) => `Comment est ${target} ?`, jp: ({ jp }) => `${jp}はどうですか` },
       { applies: isClockTime, target: ({ target }) => `Je vérifierai encore ${target}.`, jp: ({ jp }) => `${jp}にもう一度確認します` },
-      { applies: all, target: ({ target }) => `Je pratique la prononciation ${frJoin("de", target)}.`, jp: ({ jp }) => `${jp}の発音を練習します` },
-      { applies: all, target: ({ target }) => `Je révise le sens ${frJoin("de", target)}.`, jp: ({ jp }) => `${jp}の意味を復習します` }
+      { applies: all, target: ({ target }) => `Je pratique la prononciation ${frJoin("de", target)}.`, jp: ({ jp }) => `「${jp}」の発音を練習します` },
+      { applies: all, target: ({ target }) => `Je révise le sens ${frJoin("de", target)}.`, jp: ({ jp }) => `「${jp}」の意味を復習します` }
     ];
   }
 
