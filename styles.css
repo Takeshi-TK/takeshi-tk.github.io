@@ -1194,7 +1194,10 @@ body.dark-mode .quiz-panel .quiz-footer {
   padding: 10px 8px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.55);
-  text-align: left;
+  justify-items: center;
+  overflow-wrap: normal;
+  text-align: center;
+  word-break: normal;
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
@@ -1227,22 +1230,35 @@ body.dark-mode .quiz-panel .quiz-footer {
 }
 
 .month-day-header {
-  display: flex;
+  display: grid;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  gap: 5px;
+  justify-items: center;
+  line-height: 1;
+  width: 100%;
 }
 
 .month-day-number {
+  display: block;
   font-weight: 800;
   font-size: 1rem;
+  line-height: 1;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  word-break: keep-all;
+  writing-mode: horizontal-tb;
 }
 
 .month-day-mark {
   color: var(--success);
+  display: block;
   font-weight: 900;
   font-size: 1.25rem;
   line-height: 1;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  word-break: keep-all;
+  writing-mode: horizontal-tb;
 }
 
 .month-day-status {
@@ -1302,10 +1318,21 @@ body.dark-mode .quiz-panel .quiz-footer {
   min-height: 148px;
 }
 
+.site-bottom-ad {
+  margin-top: 18px;
+  padding: 16px;
+  min-height: 148px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(31, 42, 55, 0.08);
+  box-shadow: var(--shadow);
+}
+
 body.dark-mode .month-day-card,
 body.dark-mode .calendar-detail-panel,
 body.dark-mode .calendar-detail-grid > div,
-body.dark-mode .calendar-bottom-ad {
+body.dark-mode .calendar-bottom-ad,
+body.dark-mode .site-bottom-ad {
   background: rgba(15, 23, 42, 0.42);
   border-color: rgba(148, 163, 184, 0.18);
 }
