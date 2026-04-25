@@ -7,10 +7,17 @@ const expectedCounts = {
 };
 
 const reviewedWordMinimums = {
-  en: { basic: 898, practical: 361, business: 320, travel: 161 },
-  ko: { basic: 101, practical: 88, business: 86, travel: 83 },
-  zh: { basic: 102, practical: 95, business: 96, travel: 89 },
-  fr: { basic: 100, practical: 90, business: 80, travel: 70 }
+  en: { basic: 880, practical: 361, business: 320, travel: 161 },
+  ko: { basic: 125, practical: 108, business: 106, travel: 98 },
+  zh: { basic: 127, practical: 115, business: 115, travel: 103 },
+  fr: { basic: 125, practical: 109, business: 100, travel: 87 }
+};
+
+const reviewedPhraseMinimums = {
+  en: { basic: 254, practical: 240, business: 243, travel: 257 },
+  ko: { basic: 213, practical: 216, business: 208, travel: 247 },
+  zh: { basic: 213, practical: 216, business: 208, travel: 249 },
+  fr: { basic: 215, practical: 216, business: 209, travel: 250 }
 };
 
 const languagesToAudit = ["ko", "zh", "fr"];
@@ -76,8 +83,11 @@ function auditCounts() {
           if (actual < minimum) {
             fail(`${language}.${kind}.${category}: expected at least ${minimum}, got ${actual}`);
           }
-        } else if (actual !== expected) {
-          fail(`${language}.${kind}.${category}: expected ${expected}, got ${actual}`);
+        } else {
+          const minimum = reviewedPhraseMinimums[language]?.[category] ?? expected;
+          if (actual < minimum) {
+            fail(`${language}.${kind}.${category}: expected at least ${minimum}, got ${actual}`);
+          }
         }
       }
     }

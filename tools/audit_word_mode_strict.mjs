@@ -55,10 +55,34 @@ const bannedTargets = new Set([
   "下一个自行车"
 ]);
 
+const elementaryEnglishBasicTargets = new Set([
+  "apple",
+  "banana",
+  "orange",
+  "grape",
+  "pineapple",
+  "tomato",
+  "potato",
+  "onion",
+  "carrot",
+  "egg",
+  "milk",
+  "bread",
+  "rice",
+  "fish",
+  "notebook",
+  "pen",
+  "pencil",
+  "eraser"
+]);
+
 for (const language of languages) {
   for (const [category, data] of Object.entries(languagePacks[language].datasets.word)) {
     for (const item of data.words) {
       const location = `${language}.word.${category}: ${item.english} = ${item.japanese}`;
+      if (language === "en" && category === "basic" && elementaryEnglishBasicTargets.has(String(item.english || "").trim().toLowerCase())) {
+        failures.push(`elementary noun left in English basic word mode: ${location}`);
+      }
       if (/[\s?？。.]/.test(String(item.english || "").trim())) {
         failures.push(`multi-token target in word mode: ${location}`);
       }

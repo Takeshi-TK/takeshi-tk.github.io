@@ -1,6 +1,6 @@
-﻿import { vocabulary } from "./vocabulary.js?v=20260425-feature38";
+﻿import { vocabulary } from "./vocabulary.js?v=20260425-feature39";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature38";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature39";
 
 const categoryMeta = {
   basic: {
@@ -44,6 +44,39 @@ function isSingleTargetUnit(target, language) {
   return !/\s/.test(value) && !/[?？。.]/.test(value);
 }
 
+const elementaryEnglishNounTargets = new Set([
+  "apple",
+  "banana",
+  "orange",
+  "grape",
+  "pineapple",
+  "tomato",
+  "potato",
+  "onion",
+  "carrot",
+  "egg",
+  "milk",
+  "bread",
+  "rice",
+  "fish",
+  "notebook",
+  "pen",
+  "pencil",
+  "eraser"
+]);
+
+function shouldKeepWordItem(item, language, categoryKey) {
+  if (!isSingleTargetUnit(item.english, language) || isPhraseLikeWordLabel(item.japanese)) {
+    return false;
+  }
+
+  if (language === "en" && categoryKey === "basic") {
+    return !elementaryEnglishNounTargets.has(String(item.english || "").trim().toLowerCase());
+  }
+
+  return true;
+}
+
 function hashText(text) {
   let hash = 2166136261;
   for (const char of String(text || "").normalize("NFKC")) {
@@ -81,7 +114,7 @@ function decorateCollection(collection, kind, language) {
     {
       ...category,
       words: category.words
-        .filter((item) => kind !== "word" || (isSingleTargetUnit(item.english, language) && !isPhraseLikeWordLabel(item.japanese)))
+        .filter((item) => kind !== "word" || shouldKeepWordItem(item, language, key))
         .map((item) => ({
           ...item,
           id: makeUniqueItemId(kind, key, item.english, item.japanese),
@@ -98,7 +131,7 @@ function createCollection(groups, kind, language) {
       label: meta.label,
       description: kind === "word" ? meta.wordDescription : meta.phraseDescription,
       words: dedupeEntries(buildEntries(groups[key] || []))
-        .filter((item) => kind !== "word" || (isSingleTargetUnit(item.english, language) && !isPhraseLikeWordLabel(item.japanese)))
+        .filter((item) => kind !== "word" || shouldKeepWordItem(item, language, key))
         .map((item) => ({
           ...item,
           id: makeUniqueItemId(kind, key, item.english, item.japanese),
@@ -674,9 +707,9 @@ const koreanWordBoost2 = {
 
 const koreanPhraseBoost2 = {
   basic: [
-    ["오늘은 집에서 쉬고 싶어요.", "今日は家で休みたいです"], ["이 노래를 좋아해요.", "この歌が好きです"], ["공원에서 만나요.", "公園で会いましょう"],
+    ["오늘은 집에서 쉬고 싶어요.", "今日は家で休みたいです"], ["이 노래를 좋아해요.", "この歌が好きです"], ["공원에서 조금 걸었어요.", "公園で少し歩きました"],
     ["우유를 하나 사 주세요.", "牛乳を一つ買ってください"], ["천천히 읽어 볼게요.", "ゆっくり読んでみます"], ["제가 먼저 쓸게요.", "私が先に書きます"],
-    ["동생이 아직 안 왔어요.", "弟 / 妹がまだ来ていません"], ["시장이 어디에 있어요?", "市場はどこにありますか"], ["운동을 자주 해요.", "よく運動します"], ["이 거리는 조용해요.", "この通りは静かです"]
+    ["동생이 아직 안 왔어요.", "弟 / 妹がまだ来ていません"], ["편의점이 어디에 있어요?", "コンビニはどこにありますか"], ["운동을 자주 해요.", "よく運動します"], ["이 거리는 조용해요.", "この通りは静かです"]
   ],
   practical: [
     ["알림을 꺼도 될까요?", "通知を切ってもいいですか"], ["메모로 남겨 둘게요.", "メモに残しておきます"], ["로그인이 잘 안 돼요.", "ログインがうまくできません"],
@@ -722,9 +755,9 @@ const chineseWordBoost2 = {
 
 const chinesePhraseBoost2 = {
   basic: [
-    ["今天我想在家休息。", "今日は家で休みたいです"], ["我喜欢这首歌。", "この歌が好きです"], ["我们在公园见吧。", "公園で会いましょう"],
+    ["今天我想在家休息。", "今日は家で休みたいです"], ["我喜欢这首歌。", "この歌が好きです"], ["我在公园走了一会儿。", "公園で少し歩きました"],
     ["请买一瓶牛奶。", "牛乳を1本買ってください"], ["我慢慢读一遍。", "ゆっくり一度読みます"], ["我先写。", "私が先に書きます"],
-    ["孩子还没回来。", "子どもがまだ帰っていません"], ["市场在哪里？", "市場はどこですか"], ["我经常运动。", "よく運動します"], ["这条街很安静。", "この通りは静かです"]
+    ["孩子还没回来。", "子どもがまだ帰っていません"], ["便利店在哪里？", "コンビニはどこですか"], ["我经常运动。", "よく運動します"], ["这条街很安静。", "この通りは静かです"]
   ],
   practical: [
     ["可以关掉通知吗？", "通知を切ってもいいですか"], ["我会记在笔记里。", "メモに残します"], ["我登录不了。", "ログインできません"],
@@ -769,9 +802,9 @@ const frenchWordBoost2 = {
 
 const frenchPhraseBoost2 = {
   basic: [
-    ["Aujourd'hui, je veux me reposer à la maison.", "今日は家で休みたいです"], ["J'aime cette chanson.", "この歌が好きです"], ["On se retrouve au parc.", "公園で会いましょう"],
+    ["Aujourd'hui, je veux me reposer à la maison.", "今日は家で休みたいです"], ["J'aime cette chanson.", "この歌が好きです"], ["Je me suis promené au parc.", "公園で少し歩きました"],
     ["Achetez du lait, s'il vous plaît.", "牛乳を買ってください"], ["Je vais lire lentement.", "ゆっくり読みます"], ["J'écris d'abord.", "私が先に書きます"],
-    ["Mon frère n'est pas encore arrivé.", "兄 / 弟がまだ来ていません"], ["Où est le marché ?", "市場はどこですか"], ["Je fais souvent du sport.", "よく運動します"], ["Cette rue est calme.", "この通りは静かです"]
+    ["Mon frère n'est pas encore arrivé.", "兄 / 弟がまだ来ていません"], ["Où est la supérette ?", "コンビニはどこですか"], ["Je fais souvent du sport.", "よく運動します"], ["Cette rue est calme.", "この通りは静かです"]
   ],
   practical: [
     ["Je peux désactiver les notifications ?", "通知を切ってもいいですか"], ["Je vais le noter.", "メモしておきます"], ["Je n'arrive pas à me connecter.", "ログインできません"],
@@ -914,6 +947,90 @@ const frenchWordBoost3 = {
   travel: [
     ["combien ça coûte ?", "いくらですか"], ["où est-ce ?", "どこですか"], ["aidez-moi", "助けてください"], ["j'ai réservé", "予約しました"], ["je suis perdu", "道に迷いました"],
     ["toilettes", "トイレ"], ["supérette", "コンビニ"], ["un reçu, s'il vous plaît", "レシートをください"], ["je peux payer par carte ?", "カードで払えますか"], ["de l'eau, s'il vous plaît", "水をください"]
+  ]
+};
+
+const koreanWordBoost4 = {
+  basic: [
+    ["하루", "一日"], ["주", "週"], ["달", "月"], ["해", "年 / 太陽"], ["돈", "お金"],
+    ["손", "手"], ["발", "足"], ["입", "口"], ["귀", "耳"], ["코", "鼻"],
+    ["머리", "頭"], ["고기", "肉"], ["생선", "魚"], ["과일", "果物"], ["야채", "野菜"],
+    ["모자", "帽子"], ["색", "色"], ["빨강", "赤"], ["파랑", "青"], ["초록", "緑"],
+    ["노랑", "黄色"], ["검정", "黒"], ["하양", "白"], ["곳", "場所"]
+  ],
+  practical: [
+    ["감정", "感情"], ["의견", "意見"], ["목표", "目標"], ["계획", "計画"], ["결과", "結果"],
+    ["변화", "変化"], ["상태", "状態"], ["순서", "順番"], ["규칙", "ルール"], ["기회", "機会"],
+    ["경험", "経験"], ["관계", "関係"], ["책임", "責任"], ["실력", "実力"], ["기본", "基本"],
+    ["정확하다", "正確だ"], ["충분하다", "十分だ"], ["부족하다", "足りない"], ["편하다", "楽だ / 便利だ"], ["불편하다", "不便だ"]
+  ],
+  business: [
+    ["업무량", "業務量"], ["매출액", "売上額"], ["손익", "損益"], ["성과물", "成果物"], ["기한", "期限"],
+    ["초안", "下書き"], ["확정안", "確定案"], ["계약서", "契約書"], ["제안서", "提案書"], ["견적서", "見積書"],
+    ["청구", "請求"], ["지급", "支払い"], ["검토자", "確認者"], ["회의록", "議事録"], ["요구사항", "要件"],
+    ["우려", "懸念"], ["대안", "代案"], ["효율", "効率"], ["전략", "戦略"], ["지표", "指標"]
+  ],
+  travel: [
+    ["항공권", "航空券"], ["출국", "出国"], ["입국", "入国"], ["환승", "乗り換え"], ["숙박", "宿泊"],
+    ["객실", "客室"], ["열쇠", "鍵"], ["수건", "タオル"], ["샤워", "シャワー"], ["조식", "朝食"],
+    ["저녁식사", "夕食"], ["할인", "割引"], ["계산대", "レジ"], ["진통제", "痛み止め"], ["증상", "症状"],
+    ["열", "熱"], ["두통", "頭痛"], ["상처", "けが"], ["위치", "場所"], ["방향", "方向"]
+  ]
+};
+
+const chineseWordBoost4 = {
+  basic: [
+    ["一天", "一日"], ["星期", "週"], ["月份", "月"], ["年份", "年"], ["钱", "お金"],
+    ["手", "手"], ["脚", "足"], ["眼睛", "目"], ["嘴", "口"], ["耳朵", "耳"],
+    ["鼻子", "鼻"], ["头", "頭"], ["肉", "肉"], ["鱼", "魚"], ["水果", "果物"],
+    ["蔬菜", "野菜"], ["帽子", "帽子"], ["颜色", "色"], ["红色", "赤"], ["蓝色", "青"],
+    ["绿色", "緑"], ["黄色", "黄色"], ["黑色", "黒"], ["白色", "白"], ["地方", "場所"]
+  ],
+  practical: [
+    ["情绪", "感情"], ["意见", "意見"], ["目标", "目標"], ["计划", "計画"], ["结果", "結果"],
+    ["变化", "変化"], ["状态", "状態"], ["顺序", "順番"], ["规则", "ルール"], ["机会", "機会"],
+    ["经验", "経験"], ["关系", "関係"], ["责任", "責任"], ["能力", "能力"], ["基础", "基本"],
+    ["准确", "正確だ"], ["足够", "十分だ"], ["不足", "足りない"], ["方便", "便利だ"], ["麻烦", "面倒だ"]
+  ],
+  business: [
+    ["工作量", "業務量"], ["营业额", "売上額"], ["盈亏", "損益"], ["成果", "成果"], ["期限", "期限"],
+    ["草稿", "下書き"], ["确定稿", "確定版"], ["合同书", "契約書"], ["提案书", "提案書"], ["报价单", "見積書"],
+    ["请款", "請求"], ["支付", "支払い"], ["审核人", "確認者"], ["会议记录", "議事録"], ["需求", "要件"],
+    ["顾虑", "懸念"], ["替代方案", "代案"], ["效率", "効率"], ["战略", "戦略"], ["指标", "指標"]
+  ],
+  travel: [
+    ["机票", "航空券"], ["出境", "出国"], ["入境", "入国"], ["转机", "乗り換え"], ["住宿", "宿泊"],
+    ["客房", "客室"], ["前台", "フロント"], ["钥匙", "鍵"], ["毛巾", "タオル"], ["淋浴", "シャワー"],
+    ["早餐", "朝食"], ["晚餐", "夕食"], ["收银台", "レジ"], ["止痛药", "痛み止め"], ["症状", "症状"],
+    ["发烧", "熱がある"], ["头痛", "頭痛"], ["受伤", "けが"], ["位置", "場所"], ["方向", "方向"]
+  ]
+};
+
+const frenchWordBoost4 = {
+  basic: [
+    ["jour", "一日 / 日"], ["semaine", "週"], ["mois", "月"], ["année", "年"], ["argent", "お金"],
+    ["main", "手"], ["pied", "足"], ["œil", "目"], ["bouche", "口"], ["oreille", "耳"],
+    ["nez", "鼻"], ["tête", "頭"], ["viande", "肉"], ["poisson", "魚"], ["fruit", "果物"],
+    ["légume", "野菜"], ["chapeau", "帽子"], ["couleur", "色"], ["rouge", "赤"], ["bleu", "青"],
+    ["vert", "緑"], ["jaune", "黄色"], ["noir", "黒"], ["blanc", "白"], ["endroit", "場所"]
+  ],
+  practical: [
+    ["émotion", "感情"], ["avis", "意見"], ["objectif", "目標"], ["résultat", "結果"], ["changement", "変化"],
+    ["état", "状態"], ["ordre", "順番"], ["règle", "ルール"], ["occasion", "機会"], ["expérience", "経験"],
+    ["relation", "関係"], ["responsabilité", "責任"], ["capacité", "能力"], ["base", "基本"], ["exact", "正確な"],
+    ["suffisant", "十分な"], ["insuffisant", "足りない"], ["pratique", "便利な"], ["gênant", "不便な"], ["essentiel", "大切な"]
+  ],
+  business: [
+    ["volume", "業務量"], ["rentabilité", "収益性"], ["délai", "期限"], ["brouillon", "下書き"], ["version", "版"],
+    ["paiement", "支払い"], ["validateur", "確認者"], ["compte-rendu", "議事録"], ["besoin", "要件"], ["souci", "懸念"],
+    ["solution", "解決策"], ["efficacité", "効率"], ["stratégie", "戦略"], ["indicateur", "指標"], ["processus", "手順"],
+    ["ressource", "リソース"], ["charge", "負荷"], ["marge", "利益幅"], ["signature", "署名"], ["négociation", "交渉"]
+  ],
+  travel: [
+    ["vol", "航空便"], ["correspondance", "乗り換え"], ["logement", "宿泊"], ["clé", "鍵"], ["serviette", "タオル"],
+    ["douche", "シャワー"], ["petit-déjeuner", "朝食"], ["dîner", "夕食"], ["caisse", "レジ"], ["antalgique", "痛み止め"],
+    ["symptôme", "症状"], ["fièvre", "熱"], ["migraine", "頭痛"], ["blessure", "けが"], ["emplacement", "場所"],
+    ["direction", "方向"], ["bagagerie", "荷物預かり"], ["embarquement", "搭乗"], ["annulation", "キャンセル"], ["retard", "遅延"]
   ]
 };
 
@@ -1151,11 +1268,11 @@ function alignWordGroupsToEnglish(groups) {
   ]));
 }
 
-const expandedKoreanWords = topUpLanguageGroups("ko", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedKoreanWords = topUpLanguageGroups("ko", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), koreanWordBoost4)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), koreanPhraseBoost4), koreanPhraseBoost5), phraseTargetCounts);
-const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), chineseWordBoost4)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), chinesePhraseBoost5), phraseTargetCounts);
-const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), frenchWordBoost4)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), frenchPhraseBoost5), phraseTargetCounts);
 const englishWords = decorateCollection(vocabulary, "word", "en");
 const englishPhrases = decorateCollection(phrases, "phrase", "en");
