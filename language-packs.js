@@ -1,6 +1,6 @@
 import { vocabulary } from "./vocabulary.js?v=20260425-feature40";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature40";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature42";
 
 const categoryMeta = {
   basic: {
@@ -1506,6 +1506,108 @@ function isPhraseLikeWordLabel(japanese) {
     || /(です|ます|ました|ください|できます|できません|しました|しています|したいです|ありますか|どこですか|いくらですか)$/.test(label);
 }
 
+const multilingualSafeWordRows = {
+  basic: [
+    ["心", "마음", "心", "le cœur"], ["体", "몸", "身体", "le corps"], ["頭", "머리", "头", "la tête"],
+    ["目", "눈", "眼睛", "l'œil"], ["耳", "귀", "耳朵", "l'oreille"], ["口", "입", "嘴", "la bouche"],
+    ["手", "손", "手", "la main"], ["足", "발", "脚", "le pied"], ["声", "목소리", "声音", "la voix"],
+    ["言葉", "말", "话", "la parole"], ["国", "나라", "国家", "le pays"], ["町", "마을", "城镇", "la ville"],
+    ["村", "촌", "村庄", "le village"], ["川", "강", "河", "la rivière"], ["海", "바다", "海", "la mer"],
+    ["山", "산", "山", "la montagne"], ["空", "하늘", "天空", "le ciel"], ["風", "바람", "风", "le vent"],
+    ["火", "불", "火", "le feu"], ["花", "꽃", "花", "la fleur"], ["木", "나무", "树", "l'arbre"],
+    ["犬", "개", "狗", "le chien"], ["猫", "고양이", "猫", "le chat"], ["鳥", "새", "鸟", "l'oiseau"],
+    ["肉", "고기", "肉", "la viande"], ["野菜", "채소", "蔬菜", "le légume"], ["果物", "과일", "水果", "le fruit"],
+    ["砂糖", "설탕", "糖", "le sucre"], ["塩", "소금", "盐", "le sel"], ["油", "기름", "油", "l'huile"],
+    ["皿", "접시", "盘子", "l'assiette"], ["スプーン", "숟가락", "勺子", "la cuillère"], ["ベッド", "침대", "床", "le lit"],
+    ["鍵", "열쇠", "钥匙", "la clé"], ["財布", "지갑", "钱包", "le portefeuille"], ["時計", "시계", "手表", "la montre"],
+    ["傘", "우산", "伞", "le parapluie"], ["帽子", "모자", "帽子", "le chapeau"], ["右", "오른쪽", "右边", "la droite"],
+    ["左", "왼쪽", "左边", "la gauche"], ["上", "위", "上面", "le haut"], ["下", "아래", "下面", "le bas"],
+    ["外", "밖", "外面", "l'extérieur"], ["遠く", "멀리", "远处", "loin"]
+  ],
+  practical: [
+    ["状態", "상태", "状态", "l'état"], ["場合", "경우", "情况", "le cas"], ["目的", "목적", "目的", "le but"],
+    ["結果", "결과", "结果", "le résultat"], ["原因", "원인", "原因", "la cause"], ["影響", "영향", "影响", "l'influence"],
+    ["可能", "가능", "可能", "possible"], ["不可能", "불가능", "不可能", "impossible"], ["十分", "충분", "足够", "suffisant"],
+    ["不足", "부족", "不足", "le manque"], ["余裕", "여유", "余裕", "la marge"], ["順番", "순서", "顺序", "l'ordre"],
+    ["期限", "기한", "期限", "le délai"], ["最新", "최신", "最新", "récent"], ["以前", "이전", "以前", "avant"],
+    ["次回", "다음번", "下次", "la prochaine fois"], ["全体", "전체", "整体", "l'ensemble"], ["一部", "일부", "一部分", "une partie"],
+    ["便利", "편리", "方便", "pratique"], ["不便", "불편", "不方便", "peu pratique"], ["安全", "안전", "安全", "la sécurité"],
+    ["危険", "위험", "危险", "le danger"], ["簡単", "간단", "简单", "simple"], ["複雑", "복잡", "复杂", "complexe"],
+    ["自然", "자연스러움", "自然", "naturel"], ["正確", "정확", "准确", "exact"], ["無料", "무료", "免费", "gratuit"],
+    ["有料", "유료", "收费", "payant"], ["原因", "원인", "原因", "la cause"], ["対策", "대책", "对策", "la mesure"]
+  ],
+  business: [
+    ["目標", "목표", "目标", "l'objectif"], ["方針", "방침", "方针", "la politique"], ["戦略", "전략", "战略", "la stratégie"],
+    ["計画", "계획", "计划", "le plan"], ["実績", "실적", "业绩", "les résultats"], ["分析", "분석", "分析", "l'analyse"],
+    ["課題", "과제", "课题", "le problème"], ["要件", "요건", "需求", "l'exigence"], ["仕様", "사양", "规格", "la spécification"],
+    ["納期", "납기", "交期", "le délai de livraison"], ["単価", "단가", "单价", "le prix unitaire"], ["利益", "이익", "利润", "le profit"],
+    ["損失", "손실", "损失", "la perte"], ["部署", "부서", "部门", "le service"], ["役割", "역할", "角色", "le rôle"],
+    ["責任", "책임", "责任", "la responsabilité"], ["権限", "권한", "权限", "l'autorisation"], ["連携", "연계", "协作", "la coopération"],
+    ["交渉", "협상", "谈判", "la négociation"], ["合意", "합의", "同意", "l'accord"], ["保留", "보류", "保留", "en attente"],
+    ["至急", "긴급", "紧急", "urgent"], ["通常", "일반", "通常", "normal"], ["社内", "사내", "公司内部", "interne"],
+    ["社外", "사외", "公司外部", "externe"]
+  ],
+  travel: [
+    ["観光", "관광", "观光", "le tourisme"], ["観光地", "관광지", "景点", "le site touristique"], ["広場", "광장", "广场", "la place"],
+    ["橋", "다리", "桥", "le pont"], ["港", "항구", "港口", "le port"], ["海辺", "해변", "海边", "la plage"],
+    ["温泉", "온천", "温泉", "la source chaude"], ["美術館", "미술관", "美术馆", "le musée d'art"], ["博物館", "박물관", "博物馆", "le musée"],
+    ["劇場", "극장", "剧院", "le théâtre"], ["売店", "매점", "小卖部", "le kiosque"], ["屋台", "노점", "小吃摊", "le stand"],
+    ["朝食", "아침 식사", "早餐", "le petit-déjeuner"], ["昼食", "점심", "午餐", "le déjeuner"], ["夕食", "저녁 식사", "晚餐", "le dîner"],
+    ["辛い", "맵다", "辣", "épicé"], ["甘い", "달다", "甜", "sucré"], ["寒い", "춥다", "冷", "froid"],
+    ["暑い", "덥다", "热", "chaud"], ["遅延", "지연", "延误", "le retard"], ["満席", "만석", "满座", "complet"],
+    ["片道", "편도", "单程", "l'aller simple"], ["往復", "왕복", "往返", "l'aller-retour"], ["乗車券", "승차권", "车票", "le billet"],
+    ["領収書", "영수증", "收据", "le reçu"]
+  ]
+};
+
+const frenchSafeWordAliases = new Map([
+  ["la prochaine fois", "prochainement"],
+  ["peu pratique", "impratique"],
+  ["le délai de livraison", "échéance"],
+  ["le prix unitaire", "tarif"],
+  ["en attente", "attente"],
+  ["le site touristique", "attraction"],
+  ["la source chaude", "thermes"],
+  ["le musée d'art", "galerie"],
+  ["l'aller simple", "aller-simple"]
+]);
+
+function normalizeSafeWordTarget(target, language) {
+  let value = String(target || "").trim();
+  if (!value) {
+    return "";
+  }
+
+  if (language === "ko") {
+    return value.replace(/\s+/g, "");
+  }
+
+  if (language !== "fr") {
+    return value;
+  }
+
+  value = frenchSafeWordAliases.get(value) || value;
+  value = value.replace(/^(le|la|les|un|une)\s+/i, "");
+  value = value.replace(/^l'/i, "");
+  value = value.replace(/^d'/i, "");
+
+  return value.trim().split(/\s+/)[0] || "";
+}
+
+function safeWordRowsForLanguage(language) {
+  const index = { ko: 1, zh: 2, fr: 3 }[language];
+  return Object.fromEntries(Object.entries(multilingualSafeWordRows).map(([key, rows]) => [
+    key,
+    rows
+      .map((row) => [normalizeSafeWordTarget(row[index], language), row[0]])
+      .filter((row) => row[0])
+  ]));
+}
+
+const koreanWordBoost7 = safeWordRowsForLanguage("ko");
+const chineseWordBoost7 = safeWordRowsForLanguage("zh");
+const frenchWordBoost7 = safeWordRowsForLanguage("fr");
+
 const wordAllowedLabels = Object.fromEntries(Object.entries(vocabulary).map(([key, category]) => [
   key,
   new Set(category.words
@@ -1520,11 +1622,11 @@ function alignWordGroupsToEnglish(groups) {
   ]));
 }
 
-const expandedKoreanWords = topUpLanguageGroups("ko", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), koreanWordBoost4), koreanWordBoost5), koreanWordBoost6)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedKoreanWords = topUpLanguageGroups("ko", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), koreanWordBoost4), koreanWordBoost5), koreanWordBoost6), koreanWordBoost7)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), koreanPhraseBoost4), koreanPhraseBoost5), phraseTargetCounts);
-const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), chineseWordBoost4), chineseWordBoost5), chineseWordBoost6)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), chineseWordBoost4), chineseWordBoost5), chineseWordBoost6), chineseWordBoost7)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), chinesePhraseBoost5), phraseTargetCounts);
-const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), frenchWordBoost4), frenchWordBoost5), frenchWordBoost6)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), frenchWordBoost4), frenchWordBoost5), frenchWordBoost6), frenchWordBoost7)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), frenchPhraseBoost5), phraseTargetCounts);
 const englishWords = decorateCollection(vocabulary, "word", "en");
 const englishPhrases = decorateCollection(phrases, "phrase", "en");

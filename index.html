@@ -9,7 +9,7 @@
     name="description"
     content="StrideWords は登録なしで始められる語学学習サイトです。英語・韓国語・中国語・フランス語の単語クイズ、実用フレーズ、音声学習を実用的に学べます。"
   >
-  <link rel="stylesheet" href="./styles.css?v=20260425-feature41">
+  <link rel="stylesheet" href="./styles.css?v=20260425-feature42">
   <script
     async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3121682237695422"
@@ -256,7 +256,14 @@
 
             <label class="control-block">
               <span data-i18n="gapLabel">単語間の待ち時間</span>
-              <input id="gapRange" type="range" min="1" max="5" step="1" value="2">
+              <select id="gapRange">
+                <option value="0.5">0.5秒</option>
+                <option value="1">1秒</option>
+                <option value="1.5">1.5秒</option>
+                <option value="2">2秒</option>
+                <option value="2.5">2.5秒</option>
+                <option value="3">3秒</option>
+              </select>
               <strong id="gapValue">2秒</strong>
             </label>
           </div>
@@ -339,21 +346,6 @@
       </section>
     </main>
 
-    <section class="site-bottom-ad" aria-label="広告" data-i18n-aria-label="adAria">
-      <p class="section-label" data-i18n="advertisement">Advertisement</p>
-      <ins
-        class="adsbygoogle responsive-ad-slot"
-        style="display:block"
-        data-ad-client="ca-pub-3121682237695422"
-        data-ad-slot="4937437411"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      ></ins>
-      <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-    </section>
-
     <footer class="site-footer">
       <a class="footer-brand" href="./index.html">StrideWords</a>
       <div class="footer-links">
@@ -361,9 +353,11 @@
         <a href="./privacy.html" data-i18n="privacyLink">プライバシーポリシー</a>
         <a href="./terms.html" data-i18n="termsLink">利用規約</a>
         <a href="./contact.html" data-i18n="contactLink">ご案内</a>
+        <a href="./comments.html" data-i18n="commentsLink">問い合わせ</a>
+        <a href="./threads.html" data-i18n="threadsLink">チャットページ</a>
       </div>
     </footer>
   </div>
-  <script type="module" src="./app.js?v=20260425-feature41"></script>
+  <script type="module" src="./app.js?v=20260425-feature42"></script>
 </body>
 </html>

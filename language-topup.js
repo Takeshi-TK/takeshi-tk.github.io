@@ -1043,6 +1043,12 @@ function generatedGroupsFor(lang, kind) {
 
 function isNaturalWordModeItem(category, japanese) {
   const label = String(japanese || "");
+  if (/[ぁ-んァ-ン一-龥]+(の|を|に|へ|で)[ぁ-んァ-ン一-龥]+/.test(label)) {
+    return false;
+  }
+  if (/(です|ます|ました|ください|できます|できません|したいです|ありますか|どこですか|いくらですか)$/.test(label)) {
+    return false;
+  }
   const studyOnlyParts = [
     "「",
     "について",

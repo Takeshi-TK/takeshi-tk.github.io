@@ -1,4 +1,4 @@
-import { languagePacks } from "./language-packs.js?v=20260425-feature41";
+import { languagePacks } from "./language-packs.js?v=20260425-feature42";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -125,6 +125,8 @@ const uiText = {
     privacyLink: "プライバシーポリシー",
     termsLink: "利用規約",
     contactLink: "ご案内",
+    commentsLink: "問い合わせ",
+    threadsLink: "チャットページ",
     quizTab: "4択クイズ",
     walkTab: "ウォーキング",
     quizPanelLabel: "Multiple Choice",
@@ -308,6 +310,8 @@ const uiText = {
     privacyLink: "Privacy Policy",
     termsLink: "Terms",
     contactLink: "Guide",
+    commentsLink: "Contact",
+    threadsLink: "Community Chat",
     quizTab: "Quiz",
     walkTab: "Walking",
     quizPanelLabel: "Multiple Choice",
@@ -613,6 +617,12 @@ function applyUiLocale() {
   setTextContent("#walkPanel .content-header .section-label", "walkPanelLabel");
   setTextContent("#walkPanel .content-header h2", "walkHeading");
   setTextContent("#quizPanel .content-header .section-label", "quizPanelLabel");
+
+  if (gapRange?.options) {
+    for (const option of gapRange.options) {
+      option.textContent = t("gapSeconds", { count: option.value });
+    }
+  }
 }
 
 function getStudyTypeLabel(studyType = state.studyType) {
@@ -746,15 +756,17 @@ function saveActiveRole() {
 function loadSettings() {
   const fallback = { speed: 0.75, gap: 2, walkStrategy: "weak", theme: "light", language: "en", uiLocale: "ja" };
   const allowedSpeeds = [0.5, 0.75, 1.25, 1.5];
+  const allowedGaps = [0.5, 1, 1.5, 2, 2.5, 3];
 
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     const speed = Number(saved?.speed ?? fallback.speed);
+    const gap = Number(saved?.gap ?? fallback.gap);
     const language = languagePacks[saved?.language] ? saved.language : fallback.language;
     const uiLocale = saved?.uiLocale === "en" ? "en" : fallback.uiLocale;
     return {
       speed: allowedSpeeds.includes(speed) ? speed : fallback.speed,
-      gap: Number(saved?.gap ?? fallback.gap),
+      gap: allowedGaps.includes(gap) ? gap : fallback.gap,
       walkStrategy: String(saved?.walkStrategy ?? fallback.walkStrategy),
       theme: saved?.theme === "dark" ? "dark" : "light",
       language,
@@ -3060,7 +3072,7 @@ speedSelect.addEventListener("change", (event) => {
   saveSettings();
 });
 
-gapRange.addEventListener("input", (event) => {
+gapRange.addEventListener("change", (event) => {
   state.settings.gap = Number(event.target.value);
   gapValue.textContent = t("gapSeconds", { count: state.settings.gap });
   saveSettings();
