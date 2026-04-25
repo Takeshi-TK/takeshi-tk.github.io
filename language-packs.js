@@ -1,6 +1,7 @@
 import { vocabulary } from "./vocabulary.js?v=20260425-feature40";
 import { phrases } from "./phrases.js?v=20260424-feature21";
-import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature42";
+import { topUpLanguageGroups } from "./language-topup.js?v=20260425-feature43";
+import { multilingualWordExpansionRows } from "./multilingual-word-expansion.js?v=20260425-feature43";
 
 const categoryMeta = {
   basic: {
@@ -1594,9 +1595,9 @@ function normalizeSafeWordTarget(target, language) {
   return value.trim().split(/\s+/)[0] || "";
 }
 
-function safeWordRowsForLanguage(language) {
+function safeWordRowsForLanguage(language, sourceRows = multilingualSafeWordRows) {
   const index = { ko: 1, zh: 2, fr: 3 }[language];
-  return Object.fromEntries(Object.entries(multilingualSafeWordRows).map(([key, rows]) => [
+  return Object.fromEntries(Object.entries(sourceRows).map(([key, rows]) => [
     key,
     rows
       .map((row) => [normalizeSafeWordTarget(row[index], language), row[0]])
@@ -1607,6 +1608,9 @@ function safeWordRowsForLanguage(language) {
 const koreanWordBoost7 = safeWordRowsForLanguage("ko");
 const chineseWordBoost7 = safeWordRowsForLanguage("zh");
 const frenchWordBoost7 = safeWordRowsForLanguage("fr");
+const koreanWordBoost8 = safeWordRowsForLanguage("ko", multilingualWordExpansionRows);
+const chineseWordBoost8 = safeWordRowsForLanguage("zh", multilingualWordExpansionRows);
+const frenchWordBoost8 = safeWordRowsForLanguage("fr", multilingualWordExpansionRows);
 
 const wordAllowedLabels = Object.fromEntries(Object.entries(vocabulary).map(([key, category]) => [
   key,
@@ -1622,11 +1626,11 @@ function alignWordGroupsToEnglish(groups) {
   ]));
 }
 
-const expandedKoreanWords = topUpLanguageGroups("ko", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), koreanWordBoost4), koreanWordBoost5), koreanWordBoost6), koreanWordBoost7)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedKoreanWords = topUpLanguageGroups("ko", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanWords, koreanWordBoost), koreanWordBoost2), koreanWordBoost3), koreanWordBoost4), koreanWordBoost5), koreanWordBoost6), koreanWordBoost7), koreanWordBoost8)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedKoreanPhrases = topUpLanguageGroups("ko", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(koreanPhrases, koreanPhraseBoost), koreanPhraseBoost2), koreanPhraseBoost3), koreanPhraseBoost4), koreanPhraseBoost5), phraseTargetCounts);
-const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), chineseWordBoost4), chineseWordBoost5), chineseWordBoost6), chineseWordBoost7)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedChineseWords = topUpLanguageGroups("zh", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chineseWords, chineseWordBoost), chineseWordBoost2), chineseWordBoost3), chineseWordBoost4), chineseWordBoost5), chineseWordBoost6), chineseWordBoost7), chineseWordBoost8)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedChinesePhrases = topUpLanguageGroups("zh", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(chinesePhrases, chinesePhraseBoost), chinesePhraseBoost2), chinesePhraseBoost3), chinesePhraseBoost4), chinesePhraseBoost5), phraseTargetCounts);
-const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), frenchWordBoost4), frenchWordBoost5), frenchWordBoost6), frenchWordBoost7)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
+const expandedFrenchWords = topUpLanguageGroups("fr", "word", alignWordGroupsToEnglish(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchWords, frenchWordBoost), frenchWordBoost2), frenchWordBoost3), frenchWordBoost4), frenchWordBoost5), frenchWordBoost6), frenchWordBoost7), frenchWordBoost8)), wordTargetCounts, { allowedWordLabels: wordAllowedLabels });
 const expandedFrenchPhrases = topUpLanguageGroups("fr", "phrase", mergeGroups(mergeGroups(mergeGroups(mergeGroups(mergeGroups(frenchPhrases, frenchPhraseBoost), frenchPhraseBoost2), frenchPhraseBoost3), frenchPhraseBoost4), frenchPhraseBoost5), phraseTargetCounts);
 const englishWords = decorateCollection(vocabulary, "word", "en");
 const englishPhrases = decorateCollection(phrases, "phrase", "en");
