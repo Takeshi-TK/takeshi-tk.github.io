@@ -1,4 +1,4 @@
-import { languagePacks } from "./language-packs.js?v=20260425-feature40";
+import { languagePacks } from "./language-packs.js?v=20260425-feature41";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -30,18 +30,415 @@ const ADMIN_PASSWORD_HASH = "2b3a1f35eb496440d6db24f06e857668c3b8b51d6cebee9eda4
 const studyTypeMeta = {
   word: {
     label: "単語",
+    labels: { ja: "単語", en: "Words" },
     countLabel: "語",
+    countLabels: { ja: "語", en: " words" },
+    zeroTexts: { ja: "単語", en: "items" },
     zeroText: "単語"
   },
   phrase: {
     label: "フレーズ",
+    labels: { ja: "フレーズ", en: "Phrases" },
     countLabel: "件",
+    countLabels: { ja: "件", en: " phrases" },
+    zeroTexts: { ja: "フレーズ", en: "phrases" },
     zeroText: "フレーズ"
   }
 };
 
+const uiText = {
+  ja: {
+    title: "StrideWords | 単語とフレーズを実用的に学べる語学学習サイト",
+    description: "StrideWords は登録なしで始められる語学学習サイトです。英語・韓国語・中国語・フランス語の単語クイズ、実用フレーズ、音声学習を実用的に学べます。",
+    uiLanguageLabel: "表示言語",
+    uiLocaleJapanese: "日本語",
+    uiLocaleEnglish: "English",
+    eyebrow: "Language Training Studio",
+    heroText: "StrideWordsは、単語クイズ・実用フレーズ・音声学習をまとめて使える語学学習サイトです。英語・韓国語・中国語・フランス語を、初級・実用単語・ビジネス・旅行のカテゴリ別に選べます。",
+    heroRegisterNote: "ID登録は任意です。進捗を保存したい場合だけ登録すれば、続きから再開できます。",
+    studyIdLabel: "Study ID",
+    currentId: "現在のID",
+    profileNote: "登録なしでも利用できます。ID登録は任意です。学習記録を残したい場合だけ登録してください。登録すると、正解数・復習対象・ウォーキング再生回数などを保存して、あとで続きから再開できます。ID とパスワードはどちらも6文字以上なら自由に設定できます。",
+    idInputLabel: "ID を新規登録 / ログイン",
+    idInputPlaceholder: "例: hanako01",
+    passwordLabel: "Password",
+    passwordPlaceholder: "6文字以上のパスワード",
+    registerButton: "新規登録",
+    loginButton: "ログイン",
+    resetProfileButton: "このIDの学習履歴をリセット",
+    advertisement: "Advertisement",
+    adAria: "広告",
+    studyLanguageLabel: "学習言語",
+    studyLanguageAria: "学習言語選択",
+    categoryLabel: "カテゴリー",
+    categoryAria: "カテゴリ選択",
+    studyModeLabel: "学習内容・学習モード",
+    studyContentAria: "学習内容",
+    studyModeAria: "学習モード",
+    adminMenu: "Admin Menu",
+    adminStatus: "管理者メニュー",
+    deleteAccountLabel: "削除対象アカウント",
+    adminHelp: "ここに表示されるのは一般ユーザーのアカウントのみです。",
+    deleteAccountButton: "選択アカウントを削除",
+    reviewMistakesButton: "苦手を復習",
+    previousQuestionButton: "前の問題に戻る",
+    skipButton: "この問題をスキップ",
+    nextQuestionButton: "次の問題へ",
+    usageExamples: "使用例",
+    sessionReviewLabel: "10問ごとのふり返り",
+    continueTenButton: "次の10問へ",
+    reviewWrongButton: "間違い復習",
+    finishButton: "終了",
+    correctShort: "正解",
+    attemptShort: "回答",
+    skipShort: "スキップ",
+    accuracyShort: "正答率",
+    previousQuestionLabel: "前の問題",
+    startButton: "スタート",
+    stopButton: "ストップ",
+    previousWordButton: "前の単語へ",
+    nextWordButton: "次の単語へ",
+    walkStrategyLabel: "出題方法",
+    walkStrategyUnseen: "未学習を優先",
+    walkStrategyWeak: "苦手を優先",
+    walkStrategyRandom: "ランダム",
+    speedLabel: "再生スピード",
+    gapLabel: "単語間の待ち時間",
+    selectedLevel: "選択中レベル",
+    walkPool: "出題対象",
+    prioritySetting: "優先設定",
+    currentWord: "現在の単語",
+    listenButton: "発音",
+    listenCurrentAria: "現在の単語を読み上げる",
+    walkNote: "ウォーキングモードは登録なしでも使えます。苦手な単語や未学習の内容を優先して、耳から反復学習できます。",
+    correctCount: "正解数",
+    attemptCount: "回答数",
+    accuracyRate: "正答率",
+    todayStudyCount: "今日の学習数",
+    totalPlayCount: "合計再生回数",
+    learningStreakCount: "連続学習日数",
+    dailyGoalLabel: "一日の目標数",
+    saveGoalButton: "目標を保存",
+    goalHistoryButton: "達成日を確認",
+    weeklyCalendarAria: "直近1週間の目標達成状況",
+    homeLink: "ホーム",
+    privacyLink: "プライバシーポリシー",
+    termsLink: "利用規約",
+    contactLink: "ご案内",
+    quizTab: "4択クイズ",
+    walkTab: "ウォーキング",
+    quizPanelLabel: "Multiple Choice",
+    quizDefaultHeading: "4択クイズ",
+    walkPanelLabel: "Walking Mode",
+    walkHeading: "耳で覚えるウォーキングモード",
+    questionPromptJapanese: "日本語の意味",
+    questionPromptTarget: "{language}の表記",
+    answerHintJapanese: "{description} 日本語として最も合うものを選んでください。",
+    answerHintTarget: "{description} {language}として最も合うものを選んでください。",
+    feedbackWaiting: "答えを選ぶとここに結果が表示されます。",
+    selectedSummary: "{language} / {category}を選択中",
+    modeSummary: "{language} / {study} / {mode}",
+    quizModeLabel: "4択クイズ",
+    walkModeLabel: "ウォーキング",
+    selectedCategorySuffix: "を選択中",
+    noAccountToDelete: "削除できるアカウントがありません",
+    adminAccountCount: "{count}件のアカウント",
+    todayGoal: "今日 {count} / {goal}",
+    streakDays: "{count}日",
+    quizTitleWord: "{language} {category} 単語{direction}クイズ",
+    quizTitlePhrase: "{language} {category} {study}{direction}クイズ",
+    poolNone: "出題対象なし",
+    poolReview: "復習中 {count}{unit}",
+    poolFull: "出題対象 {active}{unit} / 全体 {total}{unit}",
+    completed: "完了",
+    levelCompletePriority: "このレベルは完了",
+    levelCompleteTitle: "このレベルは3連続正解で学習完了です",
+    levelCompleteHint: "次のレベルに切り替えるか、このIDの学習記録をリセットしてもう一度取り組めます。",
+    noItems: "このIDでは現在、出題対象の{zeroText}がありません。",
+    noPreviousQuestion: "前の問題はまだありません。",
+    sessionChecking: "{size} / {size} 結果確認",
+    sessionPaused: "10問区切りで一時停止中",
+    sessionProgress: "10問区切り {asked} / {size}",
+    sessionResultHeading: "{size}問の結果",
+    sessionResultText: "{category}の{study}を {size}問確認しました。正答率を見て、次の10問へ進むかここで一区切りにするか選べます。",
+    noSessionWrong: "この10問で復習対象になる間違いはありません。",
+    noMistakes: "現在、復習対象の単語・フレーズはありません。",
+    stoppedBreak: "ここで一区切りにしました。再開すると次の10問を始めます。",
+    reviewFinished: "復習対象は完了しました。通常学習に戻ります。",
+    sessionBreakTitle: "{size}問ごとのふり返り",
+    sessionBreakHint: "結果を見て、次の10問へ進むかここで一区切りにするか選んでください。",
+    sessionBreakFeedback: "10問ごとに正答率を確認できます。",
+    nextResultButton: "10問の結果を見る",
+    correctFeedback: "正解です。",
+    wrongFeedback: "不正解です。",
+    selectedAnswer: "選んだ答え",
+    correctAnswer: "正解",
+    supplement: "補足",
+    explanation: "解説",
+    selectedExpressionExplanation: "選んだ表現の解説",
+    correctExpressionExplanation: "正解の解説",
+    optionMeanings: "選択肢の意味:",
+    skippedQuestion: "この問題をスキップしました。",
+    skippedAnswer: "正解は {answer} です。",
+    usageButton: "使用例を見る",
+    exampleTitle: "使用例",
+    exampleLine: "例{number}: {text}",
+    translationLine: "訳{number}: {text}",
+    wrongChoice: "間違えた選択肢: {text}",
+    audioUnsupported: "このブラウザでは読み上げ機能が使えません。",
+    audioBusy: "ウォーキング再生中は自動読み上げが優先です。止めてから発音ボタンを使ってください。",
+    walkAudioUnsupportedBadge: "音声非対応",
+    walkCompleteBadge: "完了",
+    walkPlayingWake: "再生中 / 画面オン",
+    walkPlaying: "再生中",
+    walkStopped: "停止中",
+    walkPreparingWake: "再生準備 / 画面オン",
+    walkPreparing: "再生準備",
+    walkLevelComplete: "このレベルは3連続正解で学習完了です。別のレベルに切り替えるか、記録をリセットしてもう一度学習できます。",
+    walkNoQueueTitle: "level complete",
+    walkMeaningJa: "{japanese} を音読しながら覚えましょう。",
+    walkMeaningEn: "Listen to the Japanese first, then check the English meaning: {english}",
+    walkAlbum: "StrideWords ウォーキングモード",
+    questionAudioAria: "{text} の発音を聞く",
+    choiceAudioAria: "{text} の発音を聞く",
+    weekMon: "月",
+    weekTue: "火",
+    weekWed: "水",
+    weekThu: "木",
+    weekFri: "金",
+    weekSat: "土",
+    weekSun: "日",
+    goalAchieved: "目標達成",
+    goalNotAchieved: "未達成",
+    lightMode: "ライトモード",
+    darkMode: "ダークモード",
+    gapSeconds: "{count}秒",
+    registerMissingId: "ID を入力してください。",
+    registerAdminReserved: "このIDは管理者専用です。別のIDを入力してください。",
+    registerInvalidId: "ID は6文字以上で入力してください。英字だけ、数字だけ、記号入りでも使えます。",
+    invalidPassword: "パスワードは 6 文字以上で入力してください。",
+    duplicateId: "そのIDはすでに登録されています。別のIDを使うかログインしてください。",
+    registerConfirm: "ID「{id}」を新規登録します。よろしいですか？",
+    loginMissingId: "ログインするIDを入力してください。",
+    loginPasswordRequired: "ログインにはパスワードを入力してください。",
+    profileNotFound: "そのIDの学習記録が見つかりません。新規登録してください。",
+    wrongLogin: "ID またはパスワードが違います。",
+    resetPasswordRequired: "このIDの学習履歴をリセットするには、現在のパスワードを入力してください。",
+    resetConfirm: "ID「{id}」の学習履歴をリセットします。正解数や進捗保存も初期化されます。よろしいですか？",
+    resetWrongPassword: "パスワードが違うため、このIDの学習履歴をリセットできません。",
+    adminOnly: "管理者のみ実行できます。",
+    deleteAccountMissing: "削除するアカウントを選んでください。",
+    deleteAccountConfirm: "アカウント「{id}」を削除します。よろしいですか？"
+  },
+  en: {
+    title: "StrideWords | Practical Japanese vocabulary and phrase practice",
+    description: "StrideWords lets you study Japanese with multiple-choice quizzes, practical phrases, and audio walking practice. You can start without an account and save progress later if you want.",
+    uiLanguageLabel: "Site language",
+    uiLocaleJapanese: "Japanese",
+    uiLocaleEnglish: "English",
+    eyebrow: "Japanese Training Studio",
+    heroText: "StrideWords helps you study Japanese through word quizzes, practical phrases, and audio walking practice. Choose a reference language, category, and mode, then practice at your own pace.",
+    heroRegisterNote: "No account is required. Create an ID only if you want to save progress and continue later.",
+    studyIdLabel: "Study ID",
+    currentId: "Current ID",
+    profileNote: "You can use StrideWords without signing up. Registration is optional. Create an ID only if you want to save correct answers, review targets, walking-play counts, and resume later. Your ID and password can be any 6+ characters.",
+    idInputLabel: "Create ID / Log in",
+    idInputPlaceholder: "Example: hanako01",
+    passwordLabel: "Password",
+    passwordPlaceholder: "Password, 6+ characters",
+    registerButton: "Create ID",
+    loginButton: "Log in",
+    resetProfileButton: "Reset this ID's progress",
+    advertisement: "Advertisement",
+    adAria: "Advertisement",
+    studyLanguageLabel: "Reference language",
+    studyLanguageAria: "Choose reference language",
+    categoryLabel: "Category",
+    categoryAria: "Choose category",
+    studyModeLabel: "Content and mode",
+    studyContentAria: "Study content",
+    studyModeAria: "Study mode",
+    adminMenu: "Admin Menu",
+    adminStatus: "Admin tools",
+    deleteAccountLabel: "Account to delete",
+    adminHelp: "Only regular user accounts are shown here.",
+    deleteAccountButton: "Delete selected account",
+    reviewMistakesButton: "Review weak items",
+    previousQuestionButton: "Previous question",
+    skipButton: "Skip this question",
+    nextQuestionButton: "Next question",
+    usageExamples: "Examples",
+    sessionReviewLabel: "10-question review",
+    continueTenButton: "Next 10 questions",
+    reviewWrongButton: "Review mistakes",
+    finishButton: "Finish",
+    correctShort: "Correct",
+    attemptShort: "Answered",
+    skipShort: "Skipped",
+    accuracyShort: "Accuracy",
+    previousQuestionLabel: "Previous question",
+    startButton: "Start",
+    stopButton: "Stop",
+    previousWordButton: "Previous item",
+    nextWordButton: "Next item",
+    walkStrategyLabel: "Playback plan",
+    walkStrategyUnseen: "Unseen first",
+    walkStrategyWeak: "Weak items first",
+    walkStrategyRandom: "Random",
+    speedLabel: "Playback speed",
+    gapLabel: "Pause between items",
+    selectedLevel: "Selected level",
+    walkPool: "Practice pool",
+    prioritySetting: "Priority",
+    currentWord: "Current Japanese",
+    listenButton: "Listen",
+    listenCurrentAria: "Listen to the current Japanese",
+    walkNote: "Walking Mode works without an account. It can prioritize weak or unseen items so you can repeat Japanese by ear.",
+    correctCount: "Correct",
+    attemptCount: "Answered",
+    accuracyRate: "Accuracy",
+    todayStudyCount: "Today",
+    totalPlayCount: "Total plays",
+    learningStreakCount: "Streak",
+    dailyGoalLabel: "Daily goal",
+    saveGoalButton: "Save goal",
+    goalHistoryButton: "View achievement days",
+    weeklyCalendarAria: "Goal achievement for the last week",
+    homeLink: "Home",
+    privacyLink: "Privacy Policy",
+    termsLink: "Terms",
+    contactLink: "Guide",
+    quizTab: "Quiz",
+    walkTab: "Walking",
+    quizPanelLabel: "Multiple Choice",
+    quizDefaultHeading: "Multiple-choice quiz",
+    walkPanelLabel: "Walking Mode",
+    walkHeading: "Walking Mode: learn by listening",
+    questionPromptJapanese: "Japanese meaning",
+    questionPromptTarget: "{language} text",
+    answerHintJapanese: "{description} Choose the best Japanese meaning.",
+    answerHintTarget: "{description} Choose the best {language} answer.",
+    feedbackWaiting: "Your result will appear here after you choose an answer.",
+    selectedSummary: "{language} / {category} selected",
+    modeSummary: "{language} / {study} / {mode}",
+    quizModeLabel: "Quiz",
+    walkModeLabel: "Walking",
+    selectedCategorySuffix: "selected",
+    noAccountToDelete: "No user accounts can be deleted",
+    adminAccountCount: "{count} account{plural}",
+    todayGoal: "Today {count} / {goal}",
+    streakDays: "{count} days",
+    quizTitleWord: "{language} {category} {direction} word quiz",
+    quizTitlePhrase: "{language} {category} {direction} phrase quiz",
+    poolNone: "No items available",
+    poolReview: "Reviewing {count}{unit}",
+    poolFull: "Pool {active}{unit} / Total {total}{unit}",
+    completed: "Complete",
+    levelCompletePriority: "This level is complete",
+    levelCompleteTitle: "This level is complete after 3 correct answers in a row",
+    levelCompleteHint: "Switch to another level, or reset this ID's progress if you want to practice again.",
+    noItems: "There are currently no {zeroText} available for this ID.",
+    noPreviousQuestion: "There is no previous question yet.",
+    sessionChecking: "{size} / {size} Review results",
+    sessionPaused: "Paused after a 10-question set",
+    sessionProgress: "10-question set {asked} / {size}",
+    sessionResultHeading: "{size}-question results",
+    sessionResultText: "You practiced {size} {study} in {category}. Check your accuracy, then continue or stop here.",
+    noSessionWrong: "There are no mistakes to review from this 10-question set.",
+    noMistakes: "There are currently no words or phrases due for review.",
+    stoppedBreak: "You stopped here. Resume to start the next 10-question set.",
+    reviewFinished: "Review items are complete. Returning to normal practice.",
+    sessionBreakTitle: "{size}-question review",
+    sessionBreakHint: "Check your results and choose whether to continue or stop here.",
+    sessionBreakFeedback: "You can check your accuracy every 10 questions.",
+    nextResultButton: "View 10-question results",
+    correctFeedback: "Correct.",
+    wrongFeedback: "Not quite.",
+    selectedAnswer: "Your answer",
+    correctAnswer: "Correct answer",
+    supplement: "Note",
+    explanation: "Explanation",
+    selectedExpressionExplanation: "About your choice",
+    correctExpressionExplanation: "About the correct answer",
+    optionMeanings: "Option meanings:",
+    skippedQuestion: "You skipped this question.",
+    skippedAnswer: "The correct answer is {answer}.",
+    usageButton: "Show examples",
+    exampleTitle: "Examples",
+    exampleLine: "Example {number}: {text}",
+    translationLine: "Translation {number}: {text}",
+    wrongChoice: "Incorrect choice: {text}",
+    audioUnsupported: "This browser does not support text-to-speech.",
+    audioBusy: "Walking Mode is currently playing. Stop it before using the listen button.",
+    walkAudioUnsupportedBadge: "No audio support",
+    walkCompleteBadge: "Complete",
+    walkPlayingWake: "Playing / screen on",
+    walkPlaying: "Playing",
+    walkStopped: "Stopped",
+    walkPreparingWake: "Preparing / screen on",
+    walkPreparing: "Preparing",
+    walkLevelComplete: "This level is complete after 3 correct answers in a row. Switch levels or reset progress to practice again.",
+    walkNoQueueTitle: "level complete",
+    walkMeaningJa: "Read {japanese} aloud as you practice.",
+    walkMeaningEn: "Listen to the Japanese first, then check the English meaning: {english}",
+    walkAlbum: "StrideWords Walking Mode",
+    questionAudioAria: "Listen to {text}",
+    choiceAudioAria: "Listen to {text}",
+    weekMon: "Mon",
+    weekTue: "Tue",
+    weekWed: "Wed",
+    weekThu: "Thu",
+    weekFri: "Fri",
+    weekSat: "Sat",
+    weekSun: "Sun",
+    goalAchieved: "Goal achieved",
+    goalNotAchieved: "Not achieved",
+    lightMode: "Light mode",
+    darkMode: "Dark mode",
+    gapSeconds: "{count}s",
+    registerMissingId: "Please enter an ID.",
+    registerAdminReserved: "This ID is reserved for the admin. Please use another ID.",
+    registerInvalidId: "Use an ID with at least 6 characters. Letters, numbers, and symbols are all allowed.",
+    invalidPassword: "Please enter a password with at least 6 characters.",
+    duplicateId: "That ID already exists. Use another ID or log in.",
+    registerConfirm: "Create a new ID: \"{id}\"?",
+    loginMissingId: "Please enter the ID to log in.",
+    loginPasswordRequired: "Please enter your password to log in.",
+    profileNotFound: "No study record was found for that ID. Please create a new ID.",
+    wrongLogin: "The ID or password is incorrect.",
+    resetPasswordRequired: "Enter the current password to reset this ID's progress.",
+    resetConfirm: "Reset progress for \"{id}\"? Correct counts and saved progress will be cleared.",
+    resetWrongPassword: "The password is incorrect, so this ID's progress cannot be reset.",
+    adminOnly: "Only the admin can do this.",
+    deleteAccountMissing: "Please choose an account to delete.",
+    deleteAccountConfirm: "Delete the account \"{id}\"?"
+  }
+};
+
+const categoryUi = {
+  ja: {
+    labels: { basic: "初級", practical: "実用単語", business: "ビジネス", travel: "旅行" },
+    descriptions: {}
+  },
+  en: {
+    labels: { basic: "Beginner", practical: "Practical", business: "Business", travel: "Travel" },
+    descriptions: {
+      basic: "Basic Japanese for first-time learners.",
+      practical: "Useful Japanese for daily life, checking, and explaining things.",
+      business: "Japanese for meetings, documents, progress, and work communication.",
+      travel: "Japanese for transport, hotels, food, shopping, and trouble support."
+    }
+  }
+};
+
+const languageUiLabels = {
+  ja: { en: "英語", ko: "韓国語", zh: "中国語", fr: "フランス語" },
+  en: { en: "English", ko: "Korean", zh: "Chinese", fr: "French" }
+};
+
 const categoryButtons = document.querySelector("#categoryButtons");
 const languageButtons = document.querySelector("#languageButtons");
+const uiLanguageButtons = [...document.querySelectorAll("[data-ui-locale]")];
 const correctCount = document.querySelector("#correctCount");
 const attemptCount = document.querySelector("#attemptCount");
 const accuracyRate = document.querySelector("#accuracyRate");
@@ -124,7 +521,7 @@ const initialSettings = loadSettings();
 const state = {
   language: initialSettings.language,
   studyType: "word",
-  answerMode: "jpToEn",
+  answerMode: initialSettings.uiLocale === "en" ? "enToJp" : "jpToEn",
   category: "basic",
   mode: "quiz",
   currentQuestion: null,
@@ -164,6 +561,128 @@ const state = {
 
 ensureActiveProfile();
 ensureAdminProfile();
+
+function getUiLocale() {
+  return state.settings.uiLocale === "en" ? "en" : "ja";
+}
+
+function isEnglishUi() {
+  return getUiLocale() === "en";
+}
+
+function t(key, values = {}) {
+  const locale = getUiLocale();
+  const text = uiText[locale]?.[key] ?? uiText.ja[key] ?? key;
+  return String(text).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+}
+
+function setTextContent(selector, key) {
+  const element = typeof selector === "string" ? document.querySelector(selector) : selector;
+  if (element) {
+    element.textContent = t(key);
+  }
+}
+
+function applyUiLocale() {
+  const locale = getUiLocale();
+  document.documentElement.lang = locale;
+  document.title = t("title");
+  document.querySelector('meta[name="description"]')?.setAttribute("content", t("description"));
+
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = t(element.dataset.i18n);
+  }
+
+  for (const element of document.querySelectorAll("[data-i18n-placeholder]")) {
+    element.setAttribute("placeholder", t(element.dataset.i18nPlaceholder));
+  }
+
+  for (const element of document.querySelectorAll("[data-i18n-aria-label]")) {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  }
+
+  for (const button of uiLanguageButtons) {
+    const active = button.dataset.uiLocale === locale;
+    button.textContent = button.dataset.uiLocale === "ja" ? t("uiLocaleJapanese") : t("uiLocaleEnglish");
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+
+  setTextContent("#quizTab", "quizTab");
+  setTextContent("#walkTab", "walkTab");
+  setTextContent("#walkPanel .content-header .section-label", "walkPanelLabel");
+  setTextContent("#walkPanel .content-header h2", "walkHeading");
+  setTextContent("#quizPanel .content-header .section-label", "quizPanelLabel");
+}
+
+function getStudyTypeLabel(studyType = state.studyType) {
+  return studyTypeMeta[studyType]?.labels?.[getUiLocale()] ?? studyTypeMeta[studyType]?.label ?? studyType;
+}
+
+function getStudyTypeCountLabel(studyType = state.studyType) {
+  return studyTypeMeta[studyType]?.countLabels?.[getUiLocale()] ?? studyTypeMeta[studyType]?.countLabel ?? "";
+}
+
+function getStudyTypeZeroText(studyType = state.studyType) {
+  return studyTypeMeta[studyType]?.zeroTexts?.[getUiLocale()] ?? studyTypeMeta[studyType]?.zeroText ?? "items";
+}
+
+function formatCount(count, studyType = state.studyType) {
+  if (isEnglishUi()) {
+    const unit = studyType === "phrase" ? "phrase" : "word";
+    return `${count} ${unit}${Number(count) === 1 ? "" : "s"}`;
+  }
+
+  return `${count}${getStudyTypeCountLabel(studyType)}`;
+}
+
+function getLocalizedLanguageLabel(languageKey = state.language) {
+  const pack = languagePacks[languageKey] || languagePacks.en;
+  return languageUiLabels[getUiLocale()]?.[languageKey] ?? pack.label;
+}
+
+function getLocalizedTargetName(languageKey = state.language) {
+  if (isEnglishUi()) {
+    return getLocalizedLanguageLabel(languageKey);
+  }
+
+  return (languagePacks[languageKey] || languagePacks.en).targetName;
+}
+
+function getLocalizedTargetShortName(languageKey = state.language) {
+  if (isEnglishUi()) {
+    return getLocalizedLanguageLabel(languageKey);
+  }
+
+  return (languagePacks[languageKey] || languagePacks.en).shortLabel;
+}
+
+function getCategoryLabel(categoryKey = state.category) {
+  return categoryUi[getUiLocale()]?.labels?.[categoryKey] ?? getCurrentCollection()[categoryKey]?.label ?? categoryKey;
+}
+
+function getCategoryDescription(categoryKey = state.category) {
+  if (isEnglishUi()) {
+    return categoryUi.en.descriptions[categoryKey] ?? "";
+  }
+
+  return getCurrentCollection()[categoryKey]?.description ?? "";
+}
+
+function getDirectionLabel() {
+  if (isEnglishUi()) {
+    return state.answerMode === "enToJp"
+      ? `${getLocalizedTargetShortName()} → Japanese`
+      : `Japanese → ${getLocalizedTargetShortName()}`;
+  }
+
+  const languageShort = getTargetLanguageShortName();
+  return state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`;
+}
+
+function isJapaneseFirstWalking() {
+  return isEnglishUi();
+}
 
 function createEmptyProfile(id) {
   const categories = {};
@@ -225,19 +744,21 @@ function saveActiveRole() {
 }
 
 function loadSettings() {
-  const fallback = { speed: 0.75, gap: 2, walkStrategy: "weak", theme: "light", language: "en" };
+  const fallback = { speed: 0.75, gap: 2, walkStrategy: "weak", theme: "light", language: "en", uiLocale: "ja" };
   const allowedSpeeds = [0.5, 0.75, 1.25, 1.5];
 
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     const speed = Number(saved?.speed ?? fallback.speed);
     const language = languagePacks[saved?.language] ? saved.language : fallback.language;
+    const uiLocale = saved?.uiLocale === "en" ? "en" : fallback.uiLocale;
     return {
       speed: allowedSpeeds.includes(speed) ? speed : fallback.speed,
       gap: Number(saved?.gap ?? fallback.gap),
       walkStrategy: String(saved?.walkStrategy ?? fallback.walkStrategy),
       theme: saved?.theme === "dark" ? "dark" : "light",
-      language
+      language,
+      uiLocale
     };
   } catch {
     return fallback;
@@ -280,13 +801,14 @@ function getCurrentWeekDates() {
   const dayOfWeek = today.getDay();
   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
   const monday = addDays(today, mondayOffset);
+  const weekLabels = ["weekMon", "weekTue", "weekWed", "weekThu", "weekFri", "weekSat", "weekSun"];
 
   return Array.from({ length: 7 }, (_, index) => {
     const date = addDays(monday, index);
     return {
       date,
       key: formatDateKey(date),
-      label: ["月", "火", "水", "木", "金", "土", "日"][index],
+      label: t(weekLabels[index]),
       shortDate: `${date.getMonth() + 1}/${date.getDate()}`
     };
   });
@@ -437,11 +959,11 @@ function getCurrentLanguagePack() {
 }
 
 function getTargetLanguageName() {
-  return getCurrentLanguagePack().targetName;
+  return getLocalizedTargetName();
 }
 
 function getTargetLanguageShortName() {
-  return getCurrentLanguagePack().shortLabel;
+  return getLocalizedTargetShortName();
 }
 
 function getTargetSpeechLang() {
@@ -724,32 +1246,39 @@ function getQuizSessionAccuracy() {
 
 function updateSessionProgressBadge() {
   if (state.quizSession.breakPending) {
-    sessionProgressBadge.textContent = `${state.quizSession.size} / ${state.quizSession.size} 結果確認`;
+    sessionProgressBadge.textContent = t("sessionChecking", { size: state.quizSession.size });
     return;
   }
 
   if (state.quizSession.stopped) {
-    sessionProgressBadge.textContent = "10問区切りで一時停止中";
+    sessionProgressBadge.textContent = t("sessionPaused");
     return;
   }
 
-  sessionProgressBadge.textContent = `10問区切り ${state.quizSession.asked} / ${state.quizSession.size}`;
+  sessionProgressBadge.textContent = t("sessionProgress", {
+    asked: state.quizSession.asked,
+    size: state.quizSession.size
+  });
 }
 
 function updateHeroSummary() {
-  const currentCategory = getCurrentCategory();
   const languageLabel = getTargetLanguageName();
-  const languageShort = getTargetLanguageShortName();
-  const categoryLabels = Object.values(getCurrentCollection())
-    .map((category) => category.label)
+  const categoryLabels = Object.keys(getCurrentCollection())
+    .map((key) => getCategoryLabel(key))
     .join(" / ");
-  const directionLabel = state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`;
-  const studyLabel = `${studyTypeMeta[state.studyType].label} ${directionLabel}`;
-  const modeLabel = state.mode === "walk" ? "ウォーキング" : "4択クイズ";
+  const studyLabel = `${getStudyTypeLabel()} ${getDirectionLabel()}`;
+  const modeLabel = state.mode === "walk" ? t("walkModeLabel") : t("quizModeLabel");
 
   heroCategoryListSummary.textContent = categoryLabels;
-  heroCategorySummary.textContent = `${languageLabel} / ${currentCategory.label}を選択中`;
-  heroModeSummary.textContent = `${languageLabel} / ${studyLabel} / ${modeLabel}`;
+  heroCategorySummary.textContent = t("selectedSummary", {
+    language: languageLabel,
+    category: getCategoryLabel()
+  });
+  heroModeSummary.textContent = t("modeSummary", {
+    language: languageLabel,
+    study: studyLabel,
+    mode: modeLabel
+  });
 }
 
 function hideSessionSummary() {
@@ -782,11 +1311,15 @@ function loadSessionSummaryAd() {
 
 function renderSessionSummary() {
   const accuracy = getQuizSessionAccuracy();
-  const categoryLabel = getCurrentCategory().label;
-  const studyLabel = state.studyType === "phrase" ? "フレーズ" : "単語";
+  const categoryLabel = getCategoryLabel();
+  const studyLabel = getStudyTypeLabel();
 
-  sessionSummaryHeading.textContent = `${state.quizSession.size}問の結果`;
-  sessionSummaryText.textContent = `${categoryLabel}の${studyLabel}を ${state.quizSession.size}問確認しました。正答率を見て、次の10問へ進むかここで一区切りにするか選べます。`;
+  sessionSummaryHeading.textContent = t("sessionResultHeading", { size: state.quizSession.size });
+  sessionSummaryText.textContent = t("sessionResultText", {
+    category: categoryLabel,
+    study: studyLabel.toLowerCase?.() || studyLabel,
+    size: state.quizSession.size
+  });
   sessionCorrectCount.textContent = String(state.quizSession.correct);
   sessionAttemptCount.textContent = String(state.quizSession.attempts);
   sessionSkipCount.textContent = String(state.quizSession.skipped);
@@ -825,7 +1358,7 @@ function continueQuizSession() {
 
 function startSessionWrongReview() {
   if (!getSessionWrongItems().length) {
-    window.alert("この10問で復習対象になる間違いはありません。");
+    window.alert(t("noSessionWrong"));
     return;
   }
 
@@ -842,7 +1375,7 @@ function startSessionWrongReview() {
 
 function startMistakesReview() {
   if (!getReviewDueItems().length) {
-    window.alert("現在、復習対象の単語・フレーズはありません。");
+    window.alert(t("noMistakes"));
     return;
   }
 
@@ -858,7 +1391,7 @@ function stopQuizSessionBreak() {
   state.quizSession.stopped = true;
   updateSessionProgressBadge();
   renderSessionSummary();
-  feedbackMessage.textContent = "ここで一区切りにしました。再開すると次の10問を始めます。";
+  feedbackMessage.textContent = t("stoppedBreak");
   feedbackMessage.className = "feedback neutral";
   nextButton.classList.add("hidden");
   skipButton.disabled = true;
@@ -882,13 +1415,16 @@ function renderAdminPanel() {
     .filter((id) => id !== ADMIN_ID)
     .sort((left, right) => left.localeCompare(right, "ja"));
 
-  adminStatusText.textContent = `${ids.length} account${ids.length === 1 ? "" : "s"}`;
+  adminStatusText.textContent = t("adminAccountCount", {
+    count: ids.length,
+    plural: ids.length === 1 ? "" : "s"
+  });
   adminAccountSelect.innerHTML = "";
 
   if (!ids.length) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "削除できるアカウントがありません";
+    option.textContent = t("noAccountToDelete");
     adminAccountSelect.appendChild(option);
     return;
   }
@@ -907,10 +1443,10 @@ function renderStudyTypeTabs() {
   const isPhraseJpToEn = state.studyType === "phrase" && state.answerMode === "jpToEn";
   const isPhraseEnToJp = state.studyType === "phrase" && state.answerMode === "enToJp";
   const shortLabel = getTargetLanguageShortName();
-  wordTypeTab.textContent = `単語 日→${shortLabel}`;
-  wordReverseTypeTab.textContent = `単語 ${shortLabel}→日`;
-  phraseTypeTab.textContent = `フレーズ 日→${shortLabel}`;
-  phraseReverseTypeTab.textContent = `フレーズ ${shortLabel}→日`;
+  wordTypeTab.textContent = isEnglishUi() ? `Words Japanese → ${shortLabel}` : `単語 日→${shortLabel}`;
+  wordReverseTypeTab.textContent = isEnglishUi() ? `Words ${shortLabel} → Japanese` : `単語 ${shortLabel}→日`;
+  phraseTypeTab.textContent = isEnglishUi() ? `Phrases Japanese → ${shortLabel}` : `フレーズ 日→${shortLabel}`;
+  phraseReverseTypeTab.textContent = isEnglishUi() ? `Phrases ${shortLabel} → Japanese` : `フレーズ ${shortLabel}→日`;
   wordTypeTab.classList.toggle("active", isWordJpToEn);
   wordReverseTypeTab.classList.toggle("active", isWordEnToJp);
   phraseTypeTab.classList.toggle("active", isPhraseJpToEn);
@@ -932,7 +1468,7 @@ function renderLanguageTabs() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `language-button ${key === state.language ? "active" : ""}`;
-    button.textContent = pack.label;
+    button.textContent = getLocalizedLanguageLabel(key);
     button.setAttribute("aria-pressed", String(key === state.language));
     button.addEventListener("click", () => setLanguage(key));
     languageButtons.appendChild(button);
@@ -949,8 +1485,8 @@ function renderCategories() {
     button.type = "button";
     button.className = `category-button ${key === state.category ? "active" : ""}`;
     button.innerHTML = `
-      <span>${category.label}</span>
-      <small>${category.words.length}${studyMeta.countLabel}</small>
+      <span>${getCategoryLabel(key)}</span>
+      <small>${formatCount(category.words.length, state.studyType)}</small>
     `;
 
     button.addEventListener("click", () => {
@@ -979,7 +1515,7 @@ function renderWeeklyGoalCalendar(profile) {
   const todayKey = getTodayKey();
   const todayStats = getDailySnapshot(profile, todayKey);
   dailyGoalInput.value = String(goal);
-  dailyGoalStatus.textContent = `今日 ${todayStats.studyCount} / ${goal}`;
+  dailyGoalStatus.textContent = t("todayGoal", { count: todayStats.studyCount, goal });
   dailyGoalStatus.classList.toggle("achieved", todayStats.studyCount >= goal);
 
   const weekDates = getCurrentWeekDates();
@@ -993,7 +1529,7 @@ function renderWeeklyGoalCalendar(profile) {
       <div class="calendar-day ${achieved ? "achieved" : ""} ${isToday ? "today" : ""}">
         <span>${day.label}</span>
         <strong>${day.shortDate}</strong>
-        <em aria-label="${achieved ? "目標達成" : "未達成"}">${mark}</em>
+        <em aria-label="${achieved ? t("goalAchieved") : t("goalNotAchieved")}">${mark}</em>
       </div>
     `;
   }).join("");
@@ -1007,7 +1543,6 @@ function updateSnapshot() {
   const accuracy = attempts ? Math.round((progress.correct / attempts) * 100) : 0;
   const activeWords = getStudyItems().length;
   const totalWords = category.words.length;
-  const studyMeta = studyTypeMeta[state.studyType];
   const profile = getActiveProfile();
   ensureProfileStats(profile);
 
@@ -1017,31 +1552,32 @@ function updateSnapshot() {
   accuracyBar.style.width = `${accuracy}%`;
   todayStudyCount.textContent = String(profile.stats.todayStudyCount);
   totalPlayCount.textContent = String(profile.stats.totalPlayCount);
-  learningStreakCount.textContent = `${profile.stats.learningStreak}日`;
+  learningStreakCount.textContent = t("streakDays", { count: profile.stats.learningStreak });
   renderWeeklyGoalCalendar(profile);
   reviewMistakesButton.disabled = getReviewDueItems().length === 0;
 
   const languageLabel = getTargetLanguageName();
-  const languageShort = getTargetLanguageShortName();
-  const directionLabel = state.answerMode === "enToJp" ? `${languageShort}→日` : `日→${languageShort}`;
+  const directionLabel = getDirectionLabel();
   quizHeading.textContent = state.studyType === "word"
-    ? `${languageLabel} ${category.label} 単語${directionLabel}クイズ`
-    : `${languageLabel} ${category.label} ${studyMeta.label}${directionLabel}クイズ`;
+    ? t("quizTitleWord", { language: languageLabel, category: getCategoryLabel(), direction: directionLabel })
+    : t("quizTitlePhrase", { language: languageLabel, category: getCategoryLabel(), study: getStudyTypeLabel(), direction: directionLabel });
   quizPoolBadge.textContent = activeWords
-    ? `出題対象 ${activeWords}${studyMeta.countLabel}`
-    : "出題対象なし";
+    ? t("poolFull", { active: activeWords, total: totalWords, unit: getStudyTypeCountLabel() })
+    : t("poolNone");
 
-  walkLevelName.textContent = category.label;
+  walkLevelName.textContent = getCategoryLabel();
   walkLevelCount.textContent = activeWords
-    ? `${activeWords}${studyMeta.countLabel}`
-    : "完了";
+    ? formatCount(activeWords)
+    : t("completed");
   quizPoolBadge.textContent = state.reviewMode
-    ? `復習中 ${getQuestionPool().length}${studyMeta.countLabel}`
-    : `出題対象 ${activeWords}${studyMeta.countLabel} / 全体 ${totalWords}${studyMeta.countLabel}`;
-  walkLevelCount.textContent = `${activeWords} / ${totalWords}${studyMeta.countLabel}`;
+    ? t("poolReview", { count: getQuestionPool().length, unit: getStudyTypeCountLabel() })
+    : t("poolFull", { active: activeWords, total: totalWords, unit: getStudyTypeCountLabel() });
+  walkLevelCount.textContent = isEnglishUi()
+    ? `${activeWords} / ${formatCount(totalWords)}`
+    : `${activeWords} / ${totalWords}${getStudyTypeCountLabel()}`;
   walkPriorityText.textContent = activeWords
     ? getWalkingStrategyLabel()
-    : "このレベルは完了";
+    : t("levelCompletePriority");
 
   updateSessionProgressBadge();
 }
@@ -1051,9 +1587,9 @@ function renderQuizCompletion() {
   state.answered = true;
   hideUsageExampleCard();
   hideSessionSummary();
-  questionMeaning.textContent = "このレベルは3連続正解で学習完了です";
-  questionHint.textContent = "次のレベルに切り替えるか、このIDの学習記録をリセットしてもう一度取り組めます。";
-  feedbackMessage.textContent = `このIDでは現在、出題対象の${studyTypeMeta[state.studyType].zeroText}がありません。`;
+  questionMeaning.textContent = t("levelCompleteTitle");
+  questionHint.textContent = t("levelCompleteHint");
+  feedbackMessage.textContent = t("noItems", { zeroText: getStudyTypeZeroText() });
   feedbackMessage.className = "feedback neutral";
   choices.innerHTML = "";
   nextButton.classList.add("hidden");
@@ -1067,7 +1603,7 @@ function renderPreviousAnswerState() {
   showPreviousAnswerButton.disabled = !state.previousQuestion;
 
   if (!state.previousQuestion) {
-    previousAnswerBody.textContent = "前の問題はまだありません。";
+    previousAnswerBody.textContent = t("noPreviousQuestion");
     previousAnswerBody.className = "feedback neutral";
   }
 }
@@ -1519,25 +2055,25 @@ function buildLocalUsageExamples(context, reason = "") {
 
   if (state.studyType === "phrase") {
     const mistakeNote = selectedOption && selectedOption.english !== answer.english
-      ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
+      ? `\n\n${t("wrongChoice", { text: `${selectedOption.english} = ${selectedOption.japanese}` })}`
       : "";
     const phraseLines = example.examples
-      .map(([english, japanese], index) => `例${index + 1}: ${english}\n訳${index + 1}: ${japanese}`)
+      .map(([english, japanese], index) => `${t("exampleLine", { number: index + 1, text: english })}\n${t("translationLine", { number: index + 1, text: japanese })}`)
       .join("\n");
 
-    return `${prefix}使用例\n${phraseLines}${mistakeNote}`;
+    return `${prefix}${t("exampleTitle")}\n${phraseLines}${mistakeNote}`;
   }
 
   const word = answer.english;
   const meaning = answer.japanese;
   const mistakeNote = selectedOption && selectedOption.english !== answer.english
-    ? `\n\n間違えた選択肢: ${selectedOption.english} = ${selectedOption.japanese}`
+    ? `\n\n${t("wrongChoice", { text: `${selectedOption.english} = ${selectedOption.japanese}` })}`
     : "";
   const exampleLines = example.examples
-    .map(([english, japanese], index) => `例${index + 1}: ${english}\n訳${index + 1}: ${japanese}`)
+    .map(([english, japanese], index) => `${t("exampleLine", { number: index + 1, text: english })}\n${t("translationLine", { number: index + 1, text: japanese })}`)
     .join("\n");
 
-  return `${prefix}使用例\n${exampleLines}${mistakeNote}`;
+  return `${prefix}${t("exampleTitle")}\n${exampleLines}${mistakeNote}`;
 }
 
 function hasLocalUsageExample(context) {
@@ -1556,7 +2092,7 @@ function renderUsageHelpActions(container, context) {
   const usageButton = document.createElement("button");
   usageButton.type = "button";
   usageButton.className = "usage-help-button";
-  usageButton.textContent = "使用例を見る";
+  usageButton.textContent = t("usageButton");
 
   usageButton.addEventListener("click", () => {
     const usageText = buildLocalUsageExamples(context);
@@ -1584,18 +2120,18 @@ function buildCorrectFeedback(answer) {
   if (state.studyType === "word") {
     return `
       <span class="feedback-lines">
-        <strong>正解です。</strong>
+        <strong>${t("correctFeedback")}</strong>
         <span>${answer.english} = ${answer.japanese}</span>
-        ${explanation ? `<span><strong>補足:</strong> ${explanation}</span>` : ""}
+        ${explanation ? `<span><strong>${t("supplement")}:</strong> ${explanation}</span>` : ""}
       </span>
     `;
   }
 
   return `
       <span class="feedback-lines">
-        <strong>正解です。</strong>
+        <strong>${t("correctFeedback")}</strong>
         <span>${answer.english} = ${answer.japanese}</span>
-        ${explanation ? `<span><strong>解説:</strong> ${explanation}</span>` : ""}
+        ${explanation ? `<span><strong>${t("explanation")}:</strong> ${explanation}</span>` : ""}
       </span>
     `;
 }
@@ -1610,11 +2146,11 @@ function buildWrongFeedback(selectedOption, options, answer) {
   if (state.studyType === "word") {
     return `
       <span class="feedback-lines">
-        <strong>不正解です。</strong>
-        <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
-        <span>正解: ${answer.english} = ${answer.japanese}</span>
-        ${answerExplanation ? `<span><strong>補足:</strong> ${answerExplanation}</span>` : ""}
-        <span>選択肢の意味:</span>
+        <strong>${t("wrongFeedback")}</strong>
+        <span>${t("selectedAnswer")}: ${selectedOption.english} = ${selectedOption.japanese}</span>
+        <span>${t("correctAnswer")}: ${answer.english} = ${answer.japanese}</span>
+        ${answerExplanation ? `<span><strong>${t("supplement")}:</strong> ${answerExplanation}</span>` : ""}
+        <span>${t("optionMeanings")}</span>
         <span>${optionMeanings}</span>
       </span>
     `;
@@ -1622,12 +2158,12 @@ function buildWrongFeedback(selectedOption, options, answer) {
 
   return `
     <span class="feedback-lines">
-      <strong>不正解です。</strong>
-      <span>選んだ答え: ${selectedOption.english} = ${selectedOption.japanese}</span>
-      ${selectedExplanation ? `<span><strong>選んだ表現の解説:</strong> ${selectedExplanation}</span>` : ""}
-      <span>正解: ${answer.english} = ${answer.japanese}</span>
-      ${answerExplanation ? `<span><strong>正解の解説:</strong> ${answerExplanation}</span>` : ""}
-      <span>選択肢の意味:</span>
+      <strong>${t("wrongFeedback")}</strong>
+      <span>${t("selectedAnswer")}: ${selectedOption.english} = ${selectedOption.japanese}</span>
+      ${selectedExplanation ? `<span><strong>${t("selectedExpressionExplanation")}:</strong> ${selectedExplanation}</span>` : ""}
+      <span>${t("correctAnswer")}: ${answer.english} = ${answer.japanese}</span>
+      ${answerExplanation ? `<span><strong>${t("correctExpressionExplanation")}:</strong> ${answerExplanation}</span>` : ""}
+      <span>${t("optionMeanings")}</span>
       <span>${optionMeanings}</span>
     </span>
   `;
@@ -1638,9 +2174,9 @@ function buildSkipFeedback(answer) {
 
   return `
     <span class="feedback-lines">
-      <strong>この問題をスキップしました。</strong>
-      <span>正解は ${answer.english} = ${answer.japanese} です。</span>
-      ${explanation ? `<span><strong>${state.studyType === "word" ? "補足" : "解説"}:</strong> ${explanation}</span>` : ""}
+      <strong>${t("skippedQuestion")}</strong>
+      <span>${t("skippedAnswer", { answer: `${answer.english} = ${answer.japanese}` })}</span>
+      ${explanation ? `<span><strong>${state.studyType === "word" ? t("supplement") : t("explanation")}:</strong> ${explanation}</span>` : ""}
     </span>
   `;
 }
@@ -1649,17 +2185,21 @@ function renderCurrentQuestionUi() {
   const { answer } = state.currentQuestion;
   const reverseMode = isTargetToJapaneseMode();
   const targetName = getTargetLanguageName();
+  const categoryDescription = getCategoryDescription();
   hideUsageExampleCard();
-  questionPromptLabel.textContent = reverseMode ? `${targetName}の表記` : "日本語の意味";
+  questionPromptLabel.textContent = reverseMode
+    ? t("questionPromptTarget", { language: targetName })
+    : t("questionPromptJapanese");
   questionMeaning.textContent = reverseMode ? answer.english : answer.japanese;
   questionAudioButton.classList.toggle("hidden", !reverseMode);
-  questionAudioButton.setAttribute("aria-label", `${answer.english} の発音を聞く`);
+  questionAudioButton.textContent = t("listenButton");
+  questionAudioButton.setAttribute("aria-label", t("questionAudioAria", { text: answer.english }));
   questionHint.textContent = reverseMode
-    ? `${getCurrentCategory().description} 日本語として最も合うものを選んでください。`
-    : `${getCurrentCategory().description} ${targetName}として最も合うものを選んでください。`;
-  feedbackMessage.textContent = "答えを選ぶとここに結果が表示されます。";
+    ? t("answerHintJapanese", { description: categoryDescription })
+    : t("answerHintTarget", { description: categoryDescription, language: targetName });
+  feedbackMessage.textContent = t("feedbackWaiting");
   feedbackMessage.className = "feedback neutral";
-  nextButton.textContent = "次の問題へ";
+  nextButton.textContent = t("nextQuestionButton");
   nextButton.classList.add("hidden");
   skipButton.disabled = false;
   choices.innerHTML = "";
@@ -1675,15 +2215,17 @@ function renderCurrentQuestionUi() {
     button.innerHTML = `<span class="choice-text">${reverseMode ? option.japanese : option.english}</span>`;
     button.addEventListener("click", () => submitAnswer(option, button));
 
-    if (!reverseMode) {
+    if (!reverseMode || isEnglishUi()) {
+      const audioText = reverseMode ? option.japanese : option.english;
+      const audioLang = reverseMode ? "ja-JP" : getTargetSpeechLang();
       const audioButton = document.createElement("button");
       audioButton.type = "button";
       audioButton.className = "choice-audio-button";
-      audioButton.textContent = "発音";
-      audioButton.setAttribute("aria-label", `${option.english} の発音を聞く`);
+      audioButton.textContent = t("listenButton");
+      audioButton.setAttribute("aria-label", t("choiceAudioAria", { text: audioText }));
       audioButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        speakNow(option.english, getTargetSpeechLang(), 0.75);
+        speakNow(audioText, audioLang, 0.75);
       });
 
       card.append(button, audioButton);
@@ -1702,12 +2244,12 @@ function createQuestion() {
     renderSessionSummary();
     state.currentQuestion = null;
     state.answered = true;
-    questionMeaning.textContent = `${state.quizSession.size}問ごとのふり返り`;
-    questionHint.textContent = "結果を見て、次の10問へ進むかここで一区切りにするか選んでください。";
+    questionMeaning.textContent = t("sessionBreakTitle", { size: state.quizSession.size });
+    questionHint.textContent = t("sessionBreakHint");
     choices.innerHTML = "";
     nextButton.classList.add("hidden");
     skipButton.disabled = true;
-    feedbackMessage.textContent = "10問ごとに正答率を確認できます。";
+    feedbackMessage.textContent = t("sessionBreakFeedback");
     feedbackMessage.className = "feedback neutral";
     return;
   }
@@ -1718,7 +2260,7 @@ function createQuestion() {
   if (!studyWords.length) {
     if (state.reviewMode) {
       state.reviewMode = null;
-      feedbackMessage.textContent = "復習対象は完了しました。通常学習に戻ります。";
+      feedbackMessage.textContent = t("reviewFinished");
       feedbackMessage.className = "feedback correct";
     }
     renderQuizCompletion();
@@ -1832,7 +2374,7 @@ function submitAnswer(option, selectedButton) {
     completeQuizSessionItem("wrong");
   }
 
-  nextButton.textContent = state.quizSession.breakPending ? "10問の結果を見る" : "次の問題へ";
+  nextButton.textContent = state.quizSession.breakPending ? t("nextResultButton") : t("nextQuestionButton");
   nextButton.classList.remove("hidden");
 
   saveProfiles();
@@ -1896,25 +2438,47 @@ function rebuildWalkingQueue() {
 function getWalkingStrategyLabel() {
   switch (state.settings.walkStrategy) {
     case "unseen":
-      return "未学習を優先";
+      return t("walkStrategyUnseen");
     case "random":
-      return "ランダム";
+      return t("walkStrategyRandom");
     default:
-      return "苦手を優先";
+      return t("walkStrategyWeak");
   }
+}
+
+function getWalkingPrimaryText(item) {
+  return isJapaneseFirstWalking() ? item.japanese : item.english;
+}
+
+function getWalkingSecondaryText(item) {
+  return isJapaneseFirstWalking() ? item.english : item.japanese;
+}
+
+function getWalkingPrimaryLang() {
+  return isJapaneseFirstWalking() ? "ja-JP" : getTargetSpeechLang();
+}
+
+function getWalkingSecondaryLang() {
+  return isJapaneseFirstWalking() ? getTargetSpeechLang() : "ja-JP";
+}
+
+function getWalkingMeaningText(item) {
+  return isJapaneseFirstWalking()
+    ? t("walkMeaningEn", { english: item.english })
+    : t("walkMeaningJa", { japanese: item.japanese });
 }
 
 function updateWalkingDisplay() {
   if (!state.walking.queue.length) {
-    walkWord.textContent = "level complete";
-    walkMeaning.textContent = "このレベルは3連続正解で学習完了です。別のレベルに切り替えるか、記録をリセットしてもう一度学習できます。";
+    walkWord.textContent = t("walkNoQueueTitle");
+    walkMeaning.textContent = t("walkLevelComplete");
     updateMediaSession();
     return;
   }
 
   const current = state.walking.queue[state.walking.position] ?? state.walking.queue[0];
-  walkWord.textContent = current.english;
-  walkMeaning.textContent = `${current.japanese} を音読しながら覚えましょう。`;
+  walkWord.textContent = getWalkingPrimaryText(current);
+  walkMeaning.textContent = getWalkingMeaningText(current);
   updateMediaSession(current);
 }
 
@@ -1925,9 +2489,9 @@ function updateMediaSession(current = state.walking.queue[state.walking.position
 
   if ("MediaMetadata" in window) {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: current.english,
-      artist: current.japanese,
-      album: "StrideWords Walking Mode"
+      title: getWalkingPrimaryText(current),
+      artist: getWalkingSecondaryText(current),
+      album: t("walkAlbum")
     });
   }
 }
@@ -1973,12 +2537,12 @@ function speak(text, lang, rate) {
 
 function speakNow(text, lang = "en-US", rate = state.settings.speed) {
   if (!("speechSynthesis" in window)) {
-    window.alert("このブラウザでは読み上げ機能が使えません。");
+    window.alert(t("audioUnsupported"));
     return;
   }
 
   if (state.walking.active) {
-    window.alert("ウォーキング再生中は自動読み上げが優先です。止めてから発音ボタンを使ってください。");
+    window.alert(t("audioBusy"));
     return;
   }
 
@@ -2035,22 +2599,22 @@ async function releaseScreenWakeLock() {
 
 async function runWalking(token) {
   if (!("speechSynthesis" in window)) {
-    walkBadge.textContent = "音声非対応";
-    walkMeaning.textContent = "このブラウザでは読み上げ機能が使えません。";
+    walkBadge.textContent = t("walkAudioUnsupportedBadge");
+    walkMeaning.textContent = t("audioUnsupported");
     state.walking.active = false;
     await releaseScreenWakeLock();
     return;
   }
 
   if (!state.walking.queue.length) {
-    walkBadge.textContent = "完了";
+    walkBadge.textContent = t("walkCompleteBadge");
     updateWalkingDisplay();
     state.walking.active = false;
     await releaseScreenWakeLock();
     return;
   }
 
-  walkBadge.textContent = state.wakeLock.sentinel ? "再生中 / 画面オン" : "再生中";
+  walkBadge.textContent = state.wakeLock.sentinel ? t("walkPlayingWake") : t("walkPlaying");
 
   while (state.walking.active && token === state.walking.token) {
     if (!state.walking.queue.length) {
@@ -2065,17 +2629,17 @@ async function runWalking(token) {
     }
 
     const current = state.walking.queue[state.walking.position];
-    walkWord.textContent = current.english;
-    walkMeaning.textContent = current.japanese;
+    walkWord.textContent = getWalkingPrimaryText(current);
+    walkMeaning.textContent = getWalkingMeaningText(current);
     updateMediaSession(current);
 
-    await speak(current.english, getTargetSpeechLang(), state.settings.speed);
+    await speak(getWalkingPrimaryText(current), getWalkingPrimaryLang(), state.settings.speed);
     if (!state.walking.active || token !== state.walking.token) {
       break;
     }
 
     await wait(350);
-    await speak(current.japanese, "ja-JP", state.settings.speed);
+    await speak(getWalkingSecondaryText(current), getWalkingSecondaryLang(), state.settings.speed);
     if (!state.walking.active || token !== state.walking.token) {
       break;
     }
@@ -2088,7 +2652,7 @@ async function runWalking(token) {
   }
 
   if (!state.walking.active) {
-    walkBadge.textContent = "停止中";
+    walkBadge.textContent = t("walkStopped");
   }
 
   await releaseScreenWakeLock();
@@ -2098,7 +2662,7 @@ async function startWalking() {
   rebuildWalkingQueue();
 
   if (!state.walking.queue.length) {
-    walkBadge.textContent = "完了";
+    walkBadge.textContent = t("walkCompleteBadge");
     updateWalkingDisplay();
     return;
   }
@@ -2107,7 +2671,7 @@ async function startWalking() {
   state.walking.active = true;
   state.walking.token += 1;
   const wakeLockEnabled = await requestScreenWakeLock();
-  walkBadge.textContent = wakeLockEnabled ? "再生準備 / 画面オン" : "再生準備";
+  walkBadge.textContent = wakeLockEnabled ? t("walkPreparingWake") : t("walkPreparing");
   runWalking(state.walking.token);
 }
 
@@ -2120,7 +2684,7 @@ function stopWalking(resetBadge = true) {
   }
 
   if (resetBadge) {
-    walkBadge.textContent = "停止中";
+    walkBadge.textContent = t("walkStopped");
   }
 
   releaseScreenWakeLock();
@@ -2177,14 +2741,17 @@ function syncControls() {
   walkStrategySelect.value = state.settings.walkStrategy;
   speedSelect.value = String(state.settings.speed);
   gapRange.value = String(state.settings.gap);
-  gapValue.textContent = `${state.settings.gap}秒`;
+  gapValue.textContent = t("gapSeconds", { count: state.settings.gap });
+  if (!state.walking.active) {
+    walkBadge.textContent = t("walkStopped");
+  }
   applyTheme();
 }
 
 function applyTheme() {
   const isDark = state.settings.theme === "dark";
   document.body.classList.toggle("dark-mode", isDark);
-  themeToggleButton.textContent = isDark ? "ライトモード" : "ダークモード";
+  themeToggleButton.textContent = isDark ? t("lightMode") : t("darkMode");
 }
 
 function toggleTheme() {
@@ -2222,6 +2789,29 @@ function setLanguage(language) {
   renderAll();
 }
 
+function setUiLocale(locale) {
+  if (!uiText[locale] || state.settings.uiLocale === locale) {
+    return;
+  }
+
+  stopWalking(true);
+  state.settings.uiLocale = locale;
+
+  // English UI is aimed at learners using English as the reference language.
+  if (locale === "en") {
+    state.language = "en";
+    state.settings.language = "en";
+    state.answerMode = "enToJp";
+  }
+
+  saveSettings();
+  state.reviewMode = null;
+  ensureValidCategory();
+  resetLearningFlow();
+  rebuildWalkingQueue();
+  renderAll();
+}
+
 function setStudyType(studyType, answerMode = "jpToEn") {
   if (state.studyType === studyType && state.answerMode === answerMode) {
     return;
@@ -2240,31 +2830,31 @@ async function registerProfile(id, password) {
   const normalized = normalizeProfileId(id);
 
   if (!normalized) {
-    window.alert("ID を入力してください。");
+    window.alert(t("registerMissingId"));
     return false;
   }
 
   if (normalized === ADMIN_ID) {
-    window.alert("このIDは管理者専用です。別のIDを入力してください。");
+    window.alert(t("registerAdminReserved"));
     return false;
   }
 
   if (!isValidProfileId(normalized)) {
-    window.alert("ID は6文字以上で入力してください。英字だけ、数字だけ、記号入りでも使えます。");
+    window.alert(t("registerInvalidId"));
     return false;
   }
 
   if (!isValidPassword(password)) {
-    window.alert("パスワードは 6 文字以上で入力してください。");
+    window.alert(t("invalidPassword"));
     return false;
   }
 
   if (state.profiles[normalized]) {
-    window.alert("そのIDはすでに登録されています。別のIDを使うかログインしてください。");
+    window.alert(t("duplicateId"));
     return false;
   }
 
-  const confirmed = window.confirm(`ID「${normalized}」を新規登録します。よろしいですか？`);
+  const confirmed = window.confirm(t("registerConfirm", { id: normalized }));
   if (!confirmed) {
     return false;
   }
@@ -2286,12 +2876,12 @@ async function resumeProfile(id, password) {
   const normalized = normalizeProfileId(id);
 
   if (!normalized) {
-    window.alert("ログインするIDを入力してください。");
+    window.alert(t("loginMissingId"));
     return false;
   }
 
   if (!isValidPassword(password)) {
-    window.alert("ログインにはパスワードを入力してください。");
+    window.alert(t("loginPasswordRequired"));
     return false;
   }
 
@@ -2310,12 +2900,12 @@ async function resumeProfile(id, password) {
   }
 
   if (!state.profiles[normalized]) {
-    window.alert("そのIDの学習記録が見つかりません。新規登録してください。");
+    window.alert(t("profileNotFound"));
     return false;
   }
 
   if (state.profiles[normalized].passwordHash && state.profiles[normalized].passwordHash !== enteredPasswordHash) {
-    window.alert("ID またはパスワードが違います。");
+    window.alert(t("wrongLogin"));
     return false;
   }
 
@@ -2333,11 +2923,11 @@ async function resetCurrentProfile() {
   const password = profilePasswordInput.value;
 
   if (!isValidPassword(password)) {
-    window.alert("このIDの学習履歴をリセットするには、現在のパスワードを入力してください。");
+    window.alert(t("resetPasswordRequired"));
     return;
   }
 
-  const confirmed = window.confirm(`ID「${state.activeProfileId}」の学習履歴をリセットします。正解数や進捗保存も初期化されます。よろしいですか？`);
+  const confirmed = window.confirm(t("resetConfirm", { id: state.activeProfileId }));
   if (!confirmed) {
     return;
   }
@@ -2349,7 +2939,7 @@ async function resetCurrentProfile() {
 
   const passwordHash = await sha256(password);
   if (profile.passwordHash && profile.passwordHash !== passwordHash) {
-    window.alert("パスワードが違うため、このIDの学習履歴をリセットできません。");
+    window.alert(t("resetWrongPassword"));
     return;
   }
 
@@ -2364,17 +2954,17 @@ async function resetCurrentProfile() {
 
 function deleteSelectedAccount() {
   if (!(state.role === "admin" && state.activeProfileId === ADMIN_ID)) {
-    window.alert("管理者のみ実行できます。");
+    window.alert(t("adminOnly"));
     return;
   }
 
   const target = adminAccountSelect.value;
   if (!target) {
-    window.alert("削除するアカウントを選んでください。");
+    window.alert(t("deleteAccountMissing"));
     return;
   }
 
-  const confirmed = window.confirm(`アカウント「${target}」を削除します。よろしいですか？`);
+  const confirmed = window.confirm(t("deleteAccountConfirm", { id: target }));
   if (!confirmed) {
     return;
   }
@@ -2385,6 +2975,7 @@ function deleteSelectedAccount() {
 }
 
 function renderAll() {
+  applyUiLocale();
   ensureValidCategory();
   renderProfiles();
   renderAdminPanel();
@@ -2403,6 +2994,9 @@ function renderAll() {
 
 quizTab.addEventListener("click", () => setMode("quiz"));
 walkTab.addEventListener("click", () => setMode("walk"));
+for (const button of uiLanguageButtons) {
+  button.addEventListener("click", () => setUiLocale(button.dataset.uiLocale));
+}
 wordTypeTab.addEventListener("click", () => setStudyType("word", "jpToEn"));
 wordReverseTypeTab.addEventListener("click", () => setStudyType("word", "enToJp"));
 phraseTypeTab.addEventListener("click", () => setStudyType("phrase", "jpToEn"));
@@ -2468,7 +3062,7 @@ speedSelect.addEventListener("change", (event) => {
 
 gapRange.addEventListener("input", (event) => {
   state.settings.gap = Number(event.target.value);
-  gapValue.textContent = `${state.settings.gap}秒`;
+  gapValue.textContent = t("gapSeconds", { count: state.settings.gap });
   saveSettings();
 });
 
@@ -2490,7 +3084,10 @@ walkNextButton.addEventListener("click", () => {
 });
 
 walkReplayButton.addEventListener("click", () => {
-  speakNow(walkWord.textContent, getTargetSpeechLang());
+  const current = state.walking.queue[state.walking.position] ?? state.walking.queue[0];
+  if (current) {
+    speakNow(getWalkingPrimaryText(current), getWalkingPrimaryLang());
+  }
 });
 
 document.addEventListener("visibilitychange", () => {

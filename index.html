@@ -9,7 +9,7 @@
     name="description"
     content="StrideWords は登録なしで始められる語学学習サイトです。英語・韓国語・中国語・フランス語の単語クイズ、実用フレーズ、音声学習を実用的に学べます。"
   >
-  <link rel="stylesheet" href="./styles.css?v=20260425-feature40">
+  <link rel="stylesheet" href="./styles.css?v=20260425-feature41">
   <script
     async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3121682237695422"
@@ -18,15 +18,23 @@
 </head>
 <body>
   <div class="page-shell">
+    <div class="ui-language-bar" aria-label="表示言語" data-i18n-aria-label="uiLanguageLabel">
+      <span data-i18n="uiLanguageLabel">表示言語</span>
+      <div class="ui-language-switch">
+        <button class="ui-language-button" type="button" data-ui-locale="ja" aria-pressed="true">日本語</button>
+        <button class="ui-language-button" type="button" data-ui-locale="en" aria-pressed="false">English</button>
+      </div>
+    </div>
+
     <header class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Language Training Studio</p>
+        <p class="eyebrow" data-i18n="eyebrow">Language Training Studio</p>
         <h1>StrideWords</h1>
-        <p class="hero-text">
+        <p class="hero-text" data-i18n="heroText">
           StrideWordsは、単語クイズ・実用フレーズ・音声学習をまとめて使える語学学習サイトです。
           英語・韓国語・中国語・フランス語を、初級・実用単語・ビジネス・旅行のカテゴリ別に選べます。
         </p>
-        <p class="hero-register-note">ID登録は任意です。進捗を保存したい場合だけ登録すれば、続きから再開できます。</p>
+        <p class="hero-register-note" data-i18n="heroRegisterNote">ID登録は任意です。進捗を保存したい場合だけ登録すれば、続きから再開できます。</p>
       </div>
     </header>
 
@@ -34,12 +42,12 @@
       <aside class="control-panel">
         <div class="hero-stats">
           <section class="stat-card hero-id-card">
-            <p class="section-label">Study ID</p>
+            <p class="section-label" data-i18n="studyIdLabel">Study ID</p>
             <div class="profile-top">
-              <span class="status-badge">現在のID</span>
+              <span class="status-badge" data-i18n="currentId">現在のID</span>
               <strong id="activeProfileName" class="profile-name">guest</strong>
             </div>
-            <p class="profile-note profile-note-strong">
+            <p class="profile-note profile-note-strong" data-i18n="profileNote">
               登録なしでも利用できます。ID登録は任意です。
               学習記録を残したい場合だけ登録してください。
               登録すると、正解数・復習対象・ウォーキング再生回数などを保存して、あとで続きから再開できます。
@@ -47,22 +55,22 @@
             </p>
 
             <label class="field-block">
-              <span>ID を新規登録 / ログイン</span>
-              <input id="profileIdInput" type="text" placeholder="例: hanako01">
+              <span data-i18n="idInputLabel">ID を新規登録 / ログイン</span>
+              <input id="profileIdInput" type="text" placeholder="例: hanako01" data-i18n-placeholder="idInputPlaceholder">
             </label>
             <label class="field-block">
-              <span>Password</span>
-              <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード">
+              <span data-i18n="passwordLabel">Password</span>
+              <input id="profilePasswordInput" type="password" placeholder="6文字以上のパスワード" data-i18n-placeholder="passwordPlaceholder">
             </label>
             <div class="inline-actions">
-              <button id="registerProfileButton" class="primary-button" type="button">新規登録</button>
-              <button id="resumeProfileButton" class="ghost-button" type="button">ログイン</button>
-              <button id="resetProfileButton" class="ghost-button danger-button" type="button">このIDの学習履歴をリセット</button>
+              <button id="registerProfileButton" class="primary-button" type="button" data-i18n="registerButton">新規登録</button>
+              <button id="resumeProfileButton" class="ghost-button" type="button" data-i18n="loginButton">ログイン</button>
+              <button id="resetProfileButton" class="ghost-button danger-button" type="button" data-i18n="resetProfileButton">このIDの学習履歴をリセット</button>
             </div>
           </section>
 
-          <section class="stat-card control-ad-card" aria-label="広告">
-            <p class="section-label">Advertisement</p>
+          <section class="stat-card control-ad-card" aria-label="広告" data-i18n-aria-label="adAria">
+            <p class="section-label" data-i18n="advertisement">Advertisement</p>
             <ins
               class="adsbygoogle responsive-ad-slot"
               style="display:block"
@@ -77,24 +85,24 @@
           </section>
 
           <div class="stat-card interactive-stat-card">
-            <span class="stat-label">学習言語</span>
-            <div id="languageButtons" class="language-list hero-language-list" aria-label="学習言語選択"></div>
-            <span class="stat-label category-label">カテゴリー</span>
+            <span class="stat-label" data-i18n="studyLanguageLabel">学習言語</span>
+            <div id="languageButtons" class="language-list hero-language-list" aria-label="学習言語選択" data-i18n-aria-label="studyLanguageAria"></div>
+            <span class="stat-label category-label" data-i18n="categoryLabel">カテゴリー</span>
             <strong id="heroCategoryListSummary">初級 / 実用単語 / ビジネス / 旅行</strong>
             <p id="heroCategorySummary" class="hero-selection-text">初級を選択中</p>
-            <div id="categoryButtons" class="category-list hero-category-list" aria-label="カテゴリ選択"></div>
+            <div id="categoryButtons" class="category-list hero-category-list" aria-label="カテゴリ選択" data-i18n-aria-label="categoryAria"></div>
           </div>
           <div class="stat-card interactive-stat-card">
-            <span class="stat-label">学習内容・学習モード</span>
+            <span class="stat-label" data-i18n="studyModeLabel">学習内容・学習モード</span>
             <strong id="heroModeSummary">単語 / 4択クイズ</strong>
             <div class="hero-switch-stack">
-              <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習内容">
+              <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習内容" data-i18n-aria-label="studyContentAria">
                 <button id="wordTypeTab" class="mode-button active" type="button" role="tab" aria-selected="true">単語 日→英</button>
                 <button id="wordReverseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">単語 英→日</button>
                 <button id="phraseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ 日→英</button>
                 <button id="phraseReverseTypeTab" class="mode-button" type="button" role="tab" aria-selected="false">フレーズ 英→日</button>
               </div>
-              <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習モード">
+              <div class="mode-switch hero-mode-switch" role="tablist" aria-label="学習モード" data-i18n-aria-label="studyModeAria">
                 <button id="quizTab" class="mode-button active" type="button" role="tab" aria-selected="true">4択クイズ</button>
                 <button id="walkTab" class="mode-button" type="button" role="tab" aria-selected="false">ウォーキング</button>
               </div>
@@ -103,22 +111,22 @@
         </div>
 
         <section id="adminPanel" class="panel-card hidden">
-          <p class="section-label">Admin Menu</p>
+          <p class="section-label" data-i18n="adminMenu">Admin Menu</p>
           <div class="profile-top">
-            <span class="status-badge">管理者メニュー</span>
+            <span class="status-badge" data-i18n="adminStatus">管理者メニュー</span>
             <strong id="adminStatusText" class="profile-name">account control</strong>
           </div>
 
           <label class="field-block">
-            <span>削除対象アカウント</span>
+            <span data-i18n="deleteAccountLabel">削除対象アカウント</span>
             <select id="adminAccountSelect"></select>
           </label>
-          <p class="field-help">
+          <p class="field-help" data-i18n="adminHelp">
             ここに表示されるのは一般ユーザーのアカウントのみです。
           </p>
 
           <div class="inline-actions">
-            <button id="deleteAccountButton" class="ghost-button danger-button" type="button">選択アカウントを削除</button>
+            <button id="deleteAccountButton" class="ghost-button danger-button" type="button" data-i18n="deleteAccountButton">選択アカウントを削除</button>
           </div>
         </section>
 
@@ -134,9 +142,9 @@
             <div class="header-actions">
               <span id="quizPoolBadge" class="status-badge">出題対象 0件</span>
               <span id="sessionProgressBadge" class="status-badge">10問区切り 0 / 10</span>
-              <button id="reviewMistakesButton" class="ghost-button" type="button">苦手を復習</button>
-              <button id="showPreviousAnswerButton" class="ghost-button" type="button">前の問題に戻る</button>
-              <button id="skipButton" class="ghost-button" type="button">この問題をスキップ</button>
+              <button id="reviewMistakesButton" class="ghost-button" type="button" data-i18n="reviewMistakesButton">苦手を復習</button>
+              <button id="showPreviousAnswerButton" class="ghost-button" type="button" data-i18n="previousQuestionButton">前の問題に戻る</button>
+              <button id="skipButton" class="ghost-button" type="button" data-i18n="skipButton">この問題をスキップ</button>
             </div>
           </div>
 
@@ -153,45 +161,45 @@
 
           <div class="quiz-footer">
             <p id="feedbackMessage" class="feedback neutral">答えを選ぶとここに結果が表示されます。</p>
-            <button id="nextButton" class="primary-button hidden" type="button">次の問題へ</button>
+            <button id="nextButton" class="primary-button hidden" type="button" data-i18n="nextQuestionButton">次の問題へ</button>
           </div>
 
           <div id="usageExampleCard" class="review-card hidden">
-            <p class="section-label">使用例</p>
+            <p class="section-label" data-i18n="usageExamples">使用例</p>
             <div id="usageExampleBody" class="usage-help-result ready"></div>
           </div>
 
           <div id="sessionSummaryCard" class="review-card session-summary hidden">
-            <p class="section-label">10問ごとのふり返り</p>
+            <p class="section-label" data-i18n="sessionReviewLabel">10問ごとのふり返り</p>
             <h3 id="sessionSummaryHeading">10問おつかれさまです</h3>
             <p id="sessionSummaryText" class="panel-note">
               結果を確認して次へ進めます。
             </p>
             <div class="inline-actions session-summary-actions">
-              <button id="sessionContinueButton" class="primary-button" type="button">次の10問へ</button>
-              <button id="sessionReviewWrongButton" class="ghost-button" type="button">間違い復習</button>
-              <button id="sessionStopButton" class="ghost-button" type="button">終了</button>
+              <button id="sessionContinueButton" class="primary-button" type="button" data-i18n="continueTenButton">次の10問へ</button>
+              <button id="sessionReviewWrongButton" class="ghost-button" type="button" data-i18n="reviewWrongButton">間違い復習</button>
+              <button id="sessionStopButton" class="ghost-button" type="button" data-i18n="finishButton">終了</button>
             </div>
             <div class="session-summary-grid">
               <div class="meta-chip">
-                <span>正解</span>
+                <span data-i18n="correctShort">正解</span>
                 <strong id="sessionCorrectCount">0</strong>
               </div>
               <div class="meta-chip">
-                <span>回答</span>
+                <span data-i18n="attemptShort">回答</span>
                 <strong id="sessionAttemptCount">0</strong>
               </div>
               <div class="meta-chip">
-                <span>スキップ</span>
+                <span data-i18n="skipShort">スキップ</span>
                 <strong id="sessionSkipCount">0</strong>
               </div>
               <div class="meta-chip">
-                <span>正答率</span>
+                <span data-i18n="accuracyShort">正答率</span>
                 <strong id="sessionAccuracyRate">0%</strong>
               </div>
             </div>
-            <div class="session-summary-ad" aria-label="広告">
-              <p class="section-label">Advertisement</p>
+            <div class="session-summary-ad" aria-label="広告" data-i18n-aria-label="adAria">
+              <p class="section-label" data-i18n="advertisement">Advertisement</p>
               <ins
                 id="sessionSummaryAdSlot"
                 class="responsive-ad-slot session-ad-slot"
@@ -205,7 +213,7 @@
           </div>
 
           <div id="previousAnswerCard" class="review-card hidden">
-            <p class="section-label">前の問題</p>
+            <p class="section-label" data-i18n="previousQuestionLabel">前の問題</p>
             <div id="previousAnswerBody" class="feedback neutral">前の問題はまだありません。</div>
           </div>
         </section>
@@ -220,24 +228,24 @@
           </div>
 
           <div class="walk-actions top-actions">
-            <button id="walkStartButton" class="primary-button" type="button">スタート</button>
-            <button id="walkStopButton" class="ghost-button" type="button">ストップ</button>
-            <button id="walkPreviousButton" class="ghost-button" type="button">前の単語へ</button>
-            <button id="walkNextButton" class="ghost-button" type="button">次の単語へ</button>
+            <button id="walkStartButton" class="primary-button" type="button" data-i18n="startButton">スタート</button>
+            <button id="walkStopButton" class="ghost-button" type="button" data-i18n="stopButton">ストップ</button>
+            <button id="walkPreviousButton" class="ghost-button" type="button" data-i18n="previousWordButton">前の単語へ</button>
+            <button id="walkNextButton" class="ghost-button" type="button" data-i18n="nextWordButton">次の単語へ</button>
           </div>
 
           <div class="walk-controls">
             <label class="control-block">
-              <span>出題方法</span>
+              <span data-i18n="walkStrategyLabel">出題方法</span>
               <select id="walkStrategySelect">
-                <option value="unseen">未学習を優先</option>
-                <option value="weak">苦手を優先</option>
-                <option value="random">ランダム</option>
+                <option value="unseen" data-i18n="walkStrategyUnseen">未学習を優先</option>
+                <option value="weak" data-i18n="walkStrategyWeak">苦手を優先</option>
+                <option value="random" data-i18n="walkStrategyRandom">ランダム</option>
               </select>
             </label>
 
             <label class="control-block">
-              <span>再生スピード</span>
+              <span data-i18n="speedLabel">再生スピード</span>
               <select id="speedSelect">
                 <option value="0.5">0.5x</option>
                 <option value="0.75">0.75x</option>
@@ -247,7 +255,7 @@
             </label>
 
             <label class="control-block">
-              <span>単語間の待ち時間</span>
+              <span data-i18n="gapLabel">単語間の待ち時間</span>
               <input id="gapRange" type="range" min="1" max="5" step="1" value="2">
               <strong id="gapValue">2秒</strong>
             </label>
@@ -255,29 +263,29 @@
 
           <div class="walk-meta">
             <div class="meta-chip">
-              <span>選択中レベル</span>
+              <span data-i18n="selectedLevel">選択中レベル</span>
               <strong id="walkLevelName">初級</strong>
             </div>
             <div class="meta-chip">
-              <span>出題対象</span>
+              <span data-i18n="walkPool">出題対象</span>
               <strong id="walkLevelCount">0件</strong>
             </div>
             <div class="meta-chip">
-              <span>優先設定</span>
+              <span data-i18n="prioritySetting">優先設定</span>
               <strong id="walkPriorityText">苦手を優先</strong>
             </div>
           </div>
 
           <div class="walking-display">
-            <p class="prompt-label">現在の単語</p>
+            <p class="prompt-label" data-i18n="currentWord">現在の単語</p>
             <div class="word-audio-row">
               <h3 id="walkWord">press start</h3>
-              <button id="walkReplayButton" class="audio-button" type="button" aria-label="現在の単語を読み上げる">発音</button>
+              <button id="walkReplayButton" class="audio-button" type="button" aria-label="現在の単語を読み上げる" data-i18n="listenButton" data-i18n-aria-label="listenCurrentAria">発音</button>
             </div>
             <p id="walkMeaning" class="walk-meaning">スタートすると学習語と日本語を音声で読み上げます。</p>
           </div>
 
-          <p class="panel-note">
+          <p class="panel-note" data-i18n="walkNote">
             ウォーキングモードは登録なしでも使えます。苦手な単語や未学習の内容を優先して、耳から反復学習できます。
           </p>
         </section>
@@ -286,27 +294,27 @@
           <p class="section-label">Study Snapshot</p>
           <div class="snapshot-grid">
             <div class="snapshot-primary">
-              <span class="snapshot-label">正解数</span>
+              <span class="snapshot-label" data-i18n="correctCount">正解数</span>
               <strong id="correctCount">0</strong>
             </div>
             <div class="snapshot-primary">
-              <span class="snapshot-label">回答数</span>
+              <span class="snapshot-label" data-i18n="attemptCount">回答数</span>
               <strong id="attemptCount">0</strong>
             </div>
             <div class="snapshot-primary">
-              <span class="snapshot-label">正答率</span>
+              <span class="snapshot-label" data-i18n="accuracyRate">正答率</span>
               <strong id="accuracyRate">0%</strong>
             </div>
             <div>
-              <span class="snapshot-label">今日の学習数</span>
+              <span class="snapshot-label" data-i18n="todayStudyCount">今日の学習数</span>
               <strong id="todayStudyCount">0</strong>
             </div>
             <div>
-              <span class="snapshot-label">合計再生回数</span>
+              <span class="snapshot-label" data-i18n="totalPlayCount">合計再生回数</span>
               <strong id="totalPlayCount">0</strong>
             </div>
             <div>
-              <span class="snapshot-label">連続学習日数</span>
+              <span class="snapshot-label" data-i18n="learningStreakCount">連続学習日数</span>
               <strong id="learningStreakCount">0</strong>
             </div>
           </div>
@@ -315,14 +323,14 @@
           </div>
           <div class="daily-goal-panel">
             <label class="daily-goal-control" for="dailyGoalInput">
-              <span>一日の目標数</span>
+              <span data-i18n="dailyGoalLabel">一日の目標数</span>
               <input id="dailyGoalInput" type="number" min="1" max="999" step="1" value="20">
             </label>
-            <button id="saveDailyGoalButton" class="ghost-button" type="button">目標を保存</button>
+            <button id="saveDailyGoalButton" class="ghost-button" type="button" data-i18n="saveGoalButton">目標を保存</button>
             <span id="dailyGoalStatus" class="goal-status">今日 0 / 20</span>
           </div>
-          <div id="weeklyCalendar" class="weekly-calendar" aria-label="直近1週間の目標達成状況"></div>
-          <button id="showGoalHistoryButton" class="ghost-button goal-history-button" type="button">達成日を確認</button>
+          <div id="weeklyCalendar" class="weekly-calendar" aria-label="直近1週間の目標達成状況" data-i18n-aria-label="weeklyCalendarAria"></div>
+          <button id="showGoalHistoryButton" class="ghost-button goal-history-button" type="button" data-i18n="goalHistoryButton">達成日を確認</button>
           <div class="theme-control-row">
             <button id="themeToggleButton" class="ghost-button nav-theme-button" type="button">ダークモード</button>
           </div>
@@ -331,8 +339,8 @@
       </section>
     </main>
 
-    <section class="site-bottom-ad" aria-label="広告">
-      <p class="section-label">Advertisement</p>
+    <section class="site-bottom-ad" aria-label="広告" data-i18n-aria-label="adAria">
+      <p class="section-label" data-i18n="advertisement">Advertisement</p>
       <ins
         class="adsbygoogle responsive-ad-slot"
         style="display:block"
@@ -349,13 +357,13 @@
     <footer class="site-footer">
       <a class="footer-brand" href="./index.html">StrideWords</a>
       <div class="footer-links">
-        <a href="./index.html">ホーム</a>
-        <a href="./privacy.html">プライバシーポリシー</a>
-        <a href="./terms.html">利用規約</a>
-        <a href="./contact.html">ご案内</a>
+        <a href="./index.html" data-i18n="homeLink">ホーム</a>
+        <a href="./privacy.html" data-i18n="privacyLink">プライバシーポリシー</a>
+        <a href="./terms.html" data-i18n="termsLink">利用規約</a>
+        <a href="./contact.html" data-i18n="contactLink">ご案内</a>
       </div>
     </footer>
   </div>
-  <script type="module" src="./app.js?v=20260425-feature40"></script>
+  <script type="module" src="./app.js?v=20260425-feature41"></script>
 </body>
 </html>
