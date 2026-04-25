@@ -8,9 +8,9 @@ const expectedCounts = {
 
 const reviewedWordMinimums = {
   en: { basic: 880, practical: 361, business: 320, travel: 161 },
-  ko: { basic: 125, practical: 108, business: 106, travel: 98 },
-  zh: { basic: 127, practical: 115, business: 115, travel: 103 },
-  fr: { basic: 125, practical: 109, business: 100, travel: 87 }
+  ko: { basic: 207, practical: 186, business: 176, travel: 168 },
+  zh: { basic: 208, practical: 182, business: 183, travel: 172 },
+  fr: { basic: 201, practical: 172, business: 149, travel: 125 }
 };
 
 const reviewedPhraseMinimums = {

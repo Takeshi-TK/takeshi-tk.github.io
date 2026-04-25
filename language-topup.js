@@ -958,7 +958,7 @@ function travelPhrasePatterns(lang) {
       { applies: ({ jp }) => requestGiveable.has(jp), target: ({ target }) => `${target}${koObject(target)} 주세요.`, jp: ({ jp }) => `${jp}をください` },
       { applies: ({ jp }) => lostable.has(jp), target: ({ target }) => `${target}${koObject(target)} 잃어버렸어요.`, jp: ({ jp }) => `${jp}をなくしました` },
       { applies: ({ jp }) => bookable.has(jp), target: ({ target }) => `${target}${koObject(target)} 예약하고 싶어요.`, jp: ({ jp }) => `${jp}を予約したいです` },
-      { applies: ({ jp }) => changeable.has(jp), target: ({ target }) => `${target}${koObject(target)} 바꾸고 싶어요.`, jp: ({ jp }) => `${jp}を変更したいです` },
+      { applies: ({ jp }) => changeable.has(jp), target: ({ jp, target }) => jp === "静かな部屋" ? `${koInstrument(target)} 바꾸고 싶어요.` : `${target}${koObject(target)} 바꾸고 싶어요.`, jp: ({ jp }) => jp === "静かな部屋" ? "静かな部屋に変えたいです" : jp === "部屋" ? "部屋を変えたいです" : `${jp}を変更したいです` },
       { applies: ({ jp }) => buyable.has(jp), target: ({ target }) => `${target}${koObject(target)} 사고 싶어요.`, jp: ({ jp }) => `${jp}を買いたいです` },
       { applies: ({ jp }) => payable.has(jp), target: ({ target }) => `${koInstrument(target)} 결제할 수 있나요?`, jp: ({ jp }) => `${jp}で支払えますか` },
       { applies: ({ jp }) => storable.has(jp), target: ({ target }) => `${target}${koObject(target)} 맡기고 싶어요.`, jp: ({ jp }) => `${jp}を預けたいです` },
@@ -985,7 +985,11 @@ function travelPhrasePatterns(lang) {
       { applies: ({ jp }) => requestGiveable.has(jp), target: ({ target }) => `请给我${target}。`, jp: ({ jp }) => `${jp}をください` },
       { applies: ({ jp }) => lostable.has(jp), target: ({ target }) => `我丢了${target}。`, jp: ({ jp }) => `${jp}をなくしました` },
       { applies: ({ jp }) => bookable.has(jp), target: ({ target }) => `我想预订${target}。`, jp: ({ jp }) => `${jp}を予約したいです` },
-      { applies: ({ jp }) => changeable.has(jp), target: ({ target }) => `我想更改${target}。`, jp: ({ jp }) => `${jp}を変更したいです` },
+      { applies: ({ jp }) => changeable.has(jp), target: ({ jp, target }) => {
+        if (jp === "静かな部屋") return `我想换到${target}。`;
+        if (jp === "部屋") return "我想换房间。";
+        return `我想更改${target}。`;
+      }, jp: ({ jp }) => jp === "静かな部屋" ? "静かな部屋に変えたいです" : jp === "部屋" ? "部屋を変えたいです" : `${jp}を変更したいです` },
       { applies: ({ jp }) => buyable.has(jp), target: ({ target }) => `我想买${target}。`, jp: ({ jp }) => `${jp}を買いたいです` },
       { applies: ({ jp }) => payable.has(jp), target: ({ target }) => `可以用${target}支付吗？`, jp: ({ jp }) => `${jp}で支払えますか` },
       { applies: ({ jp }) => storable.has(jp), target: ({ target }) => `我想寄存${target}。`, jp: ({ jp }) => `${jp}を預けたいです` },
@@ -1010,7 +1014,12 @@ function travelPhrasePatterns(lang) {
     { applies: ({ jp }) => requestGiveable.has(jp), target: ({ target }) => frSentenceStart(`${target}, s'il vous plaît.`), jp: ({ jp }) => `${jp}をください` },
     { applies: ({ jp }) => lostable.has(jp), target: ({ target }) => `J'ai perdu ${target}.`, jp: ({ jp }) => `${jp}をなくしました` },
     { applies: ({ jp }) => bookable.has(jp), target: ({ target }) => `Je voudrais réserver ${target}.`, jp: ({ jp }) => `${jp}を予約したいです` },
-    { applies: ({ jp }) => changeable.has(jp), target: ({ target }) => `Je voudrais changer ${target}.`, jp: ({ jp }) => `${jp}を変更したいです` },
+    { applies: ({ jp }) => changeable.has(jp), target: ({ jp, target }) => {
+      if (jp === "静かな部屋") return "Je voudrais passer à une chambre plus calme.";
+      if (jp === "部屋") return "Je voudrais changer de chambre.";
+      if (jp === "座席") return "Je voudrais changer de siège.";
+      return `Je voudrais modifier ${target}.`;
+    }, jp: ({ jp }) => jp === "静かな部屋" ? "静かな部屋に変えたいです" : ["部屋", "座席"].includes(jp) ? `${jp}を変えたいです` : `${jp}を変更したいです` },
     { applies: ({ jp }) => buyable.has(jp), target: ({ target }) => `Je voudrais acheter ${target}.`, jp: ({ jp }) => `${jp}を買いたいです` },
     { applies: ({ jp }) => payable.has(jp), target: ({ jp, target }) => jp === "現金" ? "Je peux payer en espèces ?" : `Je peux payer avec ${target} ?`, jp: ({ jp }) => `${jp}で支払えますか` },
     { applies: ({ jp }) => storable.has(jp), target: ({ target }) => `Je voudrais laisser ${target}.`, jp: ({ jp }) => `${jp}を預けたいです` },

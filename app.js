@@ -1,4 +1,4 @@
-import { languagePacks } from "./language-packs.js?v=20260425-feature39";
+import { languagePacks } from "./language-packs.js?v=20260425-feature40";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";

@@ -34,6 +34,8 @@ const bannedJapanesePatterns = [
   /の要点を確認します$/,
   /の注意点を確認します$/,
   /^売り切れ(を確認してください|をもう一度確認します|について教えてください)$/,
+  /^静かな部屋を変更したいです$/,
+  /^部屋を変更したいです$/,
   /^(.+)についてメモします$/
 ];
 
@@ -43,6 +45,9 @@ const bannedTargetPatterns = [
   /révise le sens .+\.$/,
   /\bde (un|une)\b/,
   /Je cherche la (route|rue)\./,
+  /changer une chambre calme/i,
+  /changer la chambre/i,
+  /(조용한 방){2,}/,
   /\(으\)로/,
   /\b(au matin|à la journée|à la nuit|au week-end)\b/
 ];
