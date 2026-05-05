@@ -68,6 +68,19 @@ const uiText = {
     resetProfileButton: "このIDの学習履歴をリセット",
     advertisement: "Advertisement",
     adAria: "広告",
+    learningGuideLabel: "Learning Guide",
+    learningGuideTitle: "StrideWordsで学べること",
+    noSignupBadge: "登録なしで利用可能",
+    learningGuideLead: "StrideWordsは、日常会話で使う単語・実用フレーズ・音声学習をまとめて練習できる語学学習サイトです。4択クイズでは意味を確認し、ウォーキングモードでは耳で聞きながら反復できます。",
+    guideCardQuizLabel: "Quiz",
+    guideCardQuizTitle: "4択で意味を確認",
+    guideCardQuizText: "初級・実用・ビジネス・旅行のカテゴリから、単語やフレーズを選んで学習できます。間違えた項目は復習対象になり、苦手な表現を重点的に確認できます。",
+    guideCardAudioLabel: "Audio",
+    guideCardAudioTitle: "音声で反復練習",
+    guideCardAudioText: "ウォーキングモードでは、選んだカテゴリの単語やフレーズを読み上げます。速度と待ち時間を調整して、移動中や作業前の短い時間にも使えます。",
+    guideCardSampleLabel: "Sample",
+    guideCardSampleTitle: "学習例",
+    guideCardSampleText: "例: 「締切に間に合う」→ meet the deadline。例文や日本語訳を確認しながら、直訳ではなく自然な表現として覚えられます。",
     studyLanguageLabel: "学習言語",
     studyLanguageAria: "学習言語選択",
     categoryLabel: "カテゴリー",
@@ -253,6 +266,19 @@ const uiText = {
     resetProfileButton: "Reset this ID's progress",
     advertisement: "Advertisement",
     adAria: "Advertisement",
+    learningGuideLabel: "Learning Guide",
+    learningGuideTitle: "What you can study with StrideWords",
+    noSignupBadge: "No sign-up required",
+    learningGuideLead: "StrideWords is a practical language-learning site for everyday words, useful phrases, and audio review. Use quizzes to check meaning, then use Walking Mode to repeat items by ear.",
+    guideCardQuizLabel: "Quiz",
+    guideCardQuizTitle: "Check meaning with multiple choice",
+    guideCardQuizText: "Choose beginner, practical, business, or travel categories, then study words and phrases. Missed items become review targets so you can focus on weak expressions.",
+    guideCardAudioLabel: "Audio",
+    guideCardAudioTitle: "Repeat with audio",
+    guideCardAudioText: "Walking Mode reads items from your selected category. Adjust speed and pause length so you can study during a walk, commute, or short break.",
+    guideCardSampleLabel: "Sample",
+    guideCardSampleTitle: "Study example",
+    guideCardSampleText: "Example: 「締切に間に合う」 → meet the deadline. Check example sentences and translations so you learn natural expressions, not only direct translations.",
     studyLanguageLabel: "Reference language",
     studyLanguageAria: "Choose reference language",
     categoryLabel: "Category",
@@ -501,7 +527,6 @@ const sessionCorrectCount = document.querySelector("#sessionCorrectCount");
 const sessionAttemptCount = document.querySelector("#sessionAttemptCount");
 const sessionSkipCount = document.querySelector("#sessionSkipCount");
 const sessionAccuracyRate = document.querySelector("#sessionAccuracyRate");
-const sessionSummaryAdSlot = document.querySelector("#sessionSummaryAdSlot");
 const sessionContinueButton = document.querySelector("#sessionContinueButton");
 const sessionReviewWrongButton = document.querySelector("#sessionReviewWrongButton");
 const sessionStopButton = document.querySelector("#sessionStopButton");
@@ -539,8 +564,6 @@ const state = {
   settings: initialSettings,
   usageExamples: new Map(),
   reviewMode: null,
-  sessionSummaryAdLoaded: false,
-  sessionSummaryAdAttempts: 0,
   wakeLock: {
     sentinel: null,
     supported: "wakeLock" in navigator
@@ -1297,30 +1320,6 @@ function hideSessionSummary() {
   sessionSummaryCard.classList.add("hidden");
 }
 
-function loadSessionSummaryAd() {
-  if (state.sessionSummaryAdLoaded || !sessionSummaryAdSlot) {
-    return;
-  }
-
-  if (!window.adsbygoogle) {
-    if (state.sessionSummaryAdAttempts < 3) {
-      state.sessionSummaryAdAttempts += 1;
-      window.setTimeout(loadSessionSummaryAd, 700);
-    }
-    return;
-  }
-
-  window.requestAnimationFrame(() => {
-    try {
-      sessionSummaryAdSlot.classList.add("adsbygoogle");
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-      state.sessionSummaryAdLoaded = true;
-    } catch {
-      // Ad blockers or pending AdSense review can prevent this slot from loading.
-    }
-  });
-}
-
 function renderSessionSummary() {
   const accuracy = getQuizSessionAccuracy();
   const categoryLabel = getCategoryLabel();
@@ -1338,7 +1337,6 @@ function renderSessionSummary() {
   sessionAccuracyRate.textContent = `${accuracy}%`;
   sessionReviewWrongButton.disabled = getSessionWrongItems().length === 0;
   sessionSummaryCard.classList.remove("hidden");
-  loadSessionSummaryAd();
 }
 
 function completeQuizSessionItem(result) {
